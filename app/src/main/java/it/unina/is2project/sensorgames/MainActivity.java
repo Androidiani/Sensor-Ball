@@ -24,9 +24,6 @@ public class MainActivity extends ActionBarActivity {
 
         findViews();
         setListners();
-
-
-
     }
 
 
