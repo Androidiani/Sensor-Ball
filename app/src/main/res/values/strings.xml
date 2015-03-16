@@ -14,4 +14,16 @@
     <!-- Main Activity Strings -->
     <string name="text_intro">Welcome to Sensor Games App</string>
 
+    <!-- About Activity Strings -->
+    <string name="text_app_about_description">This app has been developed by students of University "Federico II", Naples.\n
+        It is a project created within software engineering's course of 2014/2015 academic year.\n
+        \n
+        Authors: (in alphabetical order)\n
+        -Gargiulo Alessandro\n
+        -Marigliano Francesco\n
+        -Saviano Gabriele\n
+        -Toscano Giovanni\n
+    </string>
+    <string name="logoniversitydesc">University of \"Federico II\" logo</string>
+
 </resources>
