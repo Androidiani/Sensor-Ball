@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.unina.is2project.sensorgames" >
 
+    <!-- Permessi di connessione e trasferimento dati via bluetooth -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <!-- Permessi di accensione adattatore bluetooth e di scoperta devices -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
