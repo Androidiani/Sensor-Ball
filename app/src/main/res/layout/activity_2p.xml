@@ -1,71 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:columnCount="2"
-    android:rowCount="3">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <GridLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_bluetooth"
-        android:id="@+id/lblBluetooth"
-        android:textSize="22sp"
-        android:layout_gravity="left" />
+        android:columnCount="2"
+        android:rowCount="3"
+        android:id="@+id/gridBase">
 
-    <Switch
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/switchBluetooth"
-        android:layout_gravity="right" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_enemy"
-        android:id="@+id/lblEnemy"
-        android:textSize="22sp"
-        android:layout_gravity="left" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/txtEnemy"
-        android:textSize="22sp"
-        android:text="@string/text_none"
-        android:layout_gravity="right" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_conn_type"
-        android:id="@+id/lblConnectType"
-        android:textSize="22sp"
-        android:layout_gravity="left" />
-
-    <RadioGroup
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right">
-
-        <RadioButton
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_secure_conn"
-            android:button="@null"
-            android:id="@+id/radioSecure"
-            android:drawableRight="@android:drawable/btn_radio"
-            android:layout_gravity="right"
-            android:singleLine="false" />
+            android:text="@string/text_bluetooth"
+            android:id="@+id/lblBluetooth"
+            android:textSize="22sp"
+            android:layout_gravity="left" />
 
-        <RadioButton
+        <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_insecure"
-            android:button="@null"
-            android:id="@+id/radioInsecure"
-            android:drawableRight="@android:drawable/btn_radio"
-            android:layout_gravity="right"
-            android:checked="false" />
-    </RadioGroup>
+            android:id="@+id/switchBluetooth"
+            android:layout_gravity="right" />
 
-</GridLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_enemy"
+            android:id="@+id/lblEnemy"
+            android:textSize="22sp"
+            android:layout_gravity="left" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtEnemy"
+            android:textSize="22sp"
+            android:text="@string/text_none"
+            android:layout_gravity="right" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_conn_type"
+            android:id="@+id/lblConnectType"
+            android:textSize="22sp"
+            android:layout_gravity="left" />
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right">
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_secure_conn"
+                android:button="@null"
+                android:id="@+id/radioSecure"
+                android:drawableRight="@android:drawable/btn_radio"
+                android:layout_gravity="right"
+                android:singleLine="false" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_insecure"
+                android:button="@null"
+                android:id="@+id/radioInsecure"
+                android:drawableRight="@android:drawable/btn_radio"
+                android:layout_gravity="right"
+                android:checked="false" />
+        </RadioGroup>
+
+    </GridLayout>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_play"
+        android:id="@+id/btnPlay"
+        android:layout_below="@+id/gridBase" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/listDevice"
+        android:layout_below="@+id/btnPlay" />
+
+</RelativeLayout>
