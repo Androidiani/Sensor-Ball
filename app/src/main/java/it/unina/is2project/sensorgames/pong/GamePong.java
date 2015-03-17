@@ -126,9 +126,10 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
 
 
     private void loadGraphics() {
+        /** Setting the Asset base path for graphics */
         setAssetBasePath("gfx/");
 
-        // Ball
+        /** Ball texture loading */
         ballTexture = new BitmapTextureAtlas(getTextureManager(),
                 60,
                 60);
@@ -141,7 +142,7 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
 
         ballTexture.load();
 
-        // Bar
+        /** Bar texture loading */
         barTexture = new BitmapTextureAtlas(getTextureManager(),
                 260,
                 90);
@@ -154,7 +155,7 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
 
         barTexture.load();
 
-        // Life
+        /** Life texture loading */
         lifeTexture = new BitmapTextureAtlas(getTextureManager(),
                 48,
                 48);
@@ -169,8 +170,10 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
     }
 
     private void loadFonts(){
+        /** Setting the Asset Base Path for fonts */
         FontFactory.setAssetBasePath("font/");
 
+        /** "secrcode.ttf" texture loading */
         fontTexture = new BitmapTextureAtlas(getTextureManager(),
                 256,
                 256,
@@ -181,10 +184,12 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
                 getAssets(),
                 "secrcode.ttf",
                 40, true, Color.BLACK);
+
         font.load();
     }
 
     private void loadSouns(){
+        /** "paddlehit.ogg" sound loading */
         try
         {
             touch = SoundFactory.createSoundFromAsset(getEngine().getSoundManager(), this, "mfx/paddlehit.ogg");
@@ -196,10 +201,13 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
     }
     @Override
     protected Scene onCreateScene() {
+        /** Making a new scene */
         scene = new Scene();
 
+        /** Setting up the background color */
         scene.setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
 
+        /** Adding the ballSprite to the scene */
         ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth())/2,
                 (CAMERA_HEIGHT - ballTexture.getHeight())/2,
                 ballTextureRegion,
@@ -207,25 +215,27 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
 
         scene.attachChild(ballSprite);
 
-        // Score text
+        /** Adding the scoring text to the scene */
         txtScore = new Text(10,
                 10,
                 font,
                 "",
                 20,
                 getVertexBufferObjectManager());
+
         scene.attachChild(txtScore);
 
-        // Game events text
+        /** Adding the event text to the scene */
         txtEvnt = new Text(10,
                 45,
                 font,
                 "",
                 20,
                 getVertexBufferObjectManager());
+
         scene.attachChild(txtEvnt);
 
-        // Lifes
+        /** Adding the life sprites to the scene */
         lifeSprite1 = new Sprite(CAMERA_WIDTH - lifeTexture.getWidth(),
                 0,
                 lifeTextureRegion,
@@ -248,28 +258,31 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
         scene.attachChild(lifeSprite3);
 
 
-        // Physics settings
+        /** Setting up physics
+         * - A physics handler is linked to the ballSprite */
         handler = new PhysicsHandler(ballSprite);
         ballSprite.registerUpdateHandler(handler);
 
-        // First time set Ball Velocity
+        /** The ball has the initial speed
+         * - vx = BALL_SPEED
+         * - vy = - BALL_SPEED
+         */
         handler.setVelocity(BALL_SPEED,-BALL_SPEED);
 
-        // Update Handler - La scena viene aggiornata periodicamente (può
-        // provocare delay) e si valuta la velocità e la posizione della
-        // palla per stabilire gli eventi da gestire
-
-        // previous_event: utile ad evitare che la palla rimanga ancorata
-        // ai lati del campo
+        /** The Update Handler is linked to the scene. It evalutates the condition of the scene
+         *  every frame.
+         */
         scene.registerUpdateHandler(new IUpdateHandler() {
             @Override
             public void onUpdate(float pSecondsElapsed) {
-                // variabili per i bordi (associati alla sfera)
+                /** Border variables */
                 int rL = CAMERA_WIDTH - (int)ballSprite.getWidth()/2;
                 int bL = CAMERA_HEIGHT - (int)ballSprite.getHeight()/2;
 
-                //edge's condition (rimbalzo sui muri)
-
+                /** Edge's condition
+                 *  The direction of the ball changes depending on the
+                 *  affected side
+                 */
                 if((ballSprite.getX() > rL - (int)ballSprite.getWidth()/2) && previous_event != RIGHT && !game_over){
                     handler.setVelocityX(-handler.getVelocityX());
                     touch.play();
@@ -283,12 +296,12 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
                     previous_event = LEFT;
                 }
                 if((ballSprite.getY() > bL - (int)ballSprite.getHeight()/2) && previous_event != BOTTOM && !game_over){
+                    /** If the previous_event is "SIDE" it will reduce the undeserved points. */
                     if(previous_event == SIDE)
                         remScore();
-                    //handler.setVelocityY(-handler.getVelocityY());
-                    //touch.play();
                     Log.d("","Bottom. V(X,Y): " + handler.getVelocityX() + ","  + handler.getVelocityY());
                     previous_event = BOTTOM;
+                    /** If the game is not over it's restarted */
                     if(!game_over)
                         restart_game();
                 }
@@ -299,74 +312,41 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
                     previous_event = TOP;
                 }
 
+                /** When the barSprite and the ballSprite collides */
                 if(ballSprite.collidesWith(barSprite)){
+                    /** Condition variable who understand if the ball hit the bar side or front
+                     *
+                     * - ya: is the relative position of the ball according
+                     *      to the CAMERA_HEIGHT
+                     *
+                     * - yb: is the relative position of the ball according
+                     *      to the CAMERA_HEIGHT
+                     */
                     float ya = ballSprite.getY() - ballSprite.getHeight()/2;
                     float yb = barSprite.getY() - barSprite.getHeight()/2;
 
+                    /** The ball hit the bar's top surface */
                     if(ya <= yb && previous_event != OVER && previous_event != SIDE){
-                        Log.d("","Evento sopra");
+                        Log.d("","Top event");
                         handler.setVelocityY(-handler.getVelocityY());
                         previous_event = OVER;
                         addScore();
                     }
+                    /** The ball hit the bar's side surface */
                     else if(previous_event != SIDE && previous_event != OVER){
                         handler.setVelocityX(-handler.getVelocityX());
-                        Log.d("","Evento lato");
+                        Log.d("","Side event");
                         previous_event = SIDE;
                         addScore();
                     }
                     touch.play();
-                    Log.d("","ya = " + ya + " yb = " + yb);
                 }
 
+                /** The score text is updated to the current value */
                 txtScore.setText("Score: " + score);
 
-                // Condizioni di confine per la barra
-
-                // Confine destro
-                if( barSprite.getX() > CAMERA_WIDTH - barSprite.getWidth())
-                    barSprite.setX(CAMERA_WIDTH - barSprite.getWidth() - 15);
-
-                // Confine sinistro
-                if ( barSprite.getX() < 15)
-                    barSprite.setX(15);
-
-                // Game events
-
-                // 2x Bar Speed
-                if(score >= X2_BARSPEED && !x2_barspeed){
-                    GAME_VELOCITY *= 2;
-                    x2_barspeed = true;
-                    txtEvnt.setText("2X Bar Speed");
-                }
-
-                // 2x Ball Speed
-                if(score >= X2_BALLSPEED && !x2_ballspeed){
-                    handler.setVelocity(handler.getVelocityX()*2,handler.getVelocityY()*2);
-                    x2_ballspeed = true;
-                    txtEvnt.setText("2X Ball Speed");
-                }
-
-                // 3x Bar Speed
-                if(score >= X3_BARSPEED && !x3_barspeed){
-                    GAME_VELOCITY *= 1.5f;
-                    x3_barspeed = true;
-                    txtEvnt.setText("3X Bar Speed");
-                }
-
-                // 4x Ball Speed
-                if(score >= X4_BALLSPEED && !x4_ballspeed){
-                    handler.setVelocity(handler.getVelocityX()*2,handler.getVelocityY()*2);
-                    x4_ballspeed = true;
-                    txtEvnt.setText("4X Ball Speed");
-                }
-
-                // reduce bar
-                if(score >= REDUCE_BAR && !reduce_bar){
-                    barSprite.setScale(0.7f);
-                    reduce_bar = true;
-                    txtEvnt.setText("Bar reduced");
-                }
+                /** Game events section */
+                game_events();
             }
             @Override
             public void reset() {
@@ -374,6 +354,7 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
             }
         });
 
+        /** Adding the barSprite to the scene */
         barSprite = new Sprite((CAMERA_WIDTH - barTexture.getWidth())/2,
                 (CAMERA_HEIGHT - 2*barTexture.getHeight()),
                 barTextureRegion,
@@ -381,20 +362,17 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
 
         scene.attachChild(barSprite);
 
-        //enabling sensor
+        /** Enable the Acceleration Sensor
+         * - Option: SensorDelay.GAME */
         this.enableAccelerationSensor(this);
         mAccelerationOptions = new AccelerationSensorOptions(SensorDelay.GAME);
 
+        /** Return the completed scene */
         return scene;
     }
 
     public void addScore(){
-        /**
-         * Aumenta il punteggio in base allo score ottenuto
-         *
-         * Colpire il lato della barra e rimanere in gioco,
-         * incrementa maggiormente lo score
-         */
+        /** This procedure increase the score according to the current score. */
 
         if(score >= 0 && score <= 9){
             if(previous_event == SIDE)
@@ -416,11 +394,8 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
     }
 
     public void remScore(){
-        /**
-         * Diminuisce il punteggio nel caso in cui il
-         * giocatore colpisce il bordo della barra e
-         * successivamente perde la partita
-         */
+        /** If the previous_event is "SIDE" it will reduce the undeserved points. */
+
         if(previous_event == SIDE){
             if(score >= 0 && score <= 9)
                 score -= 3;
@@ -434,8 +409,13 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
     }
 
     private void restart_game(){
-        // Toglie una vita
+        /** This procedure restart the game if it's not over.
+         *
+         *  The ballSprite is detached.
+         */
         scene.detachChild(ballSprite);
+
+        /** The lifeSprite is detached */
         switch(life){
             case 2:{
                 scene.detachChild(lifeSprite3);
@@ -450,38 +430,89 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
                 break;
             }
         }
+
+        /** Life count is decremented */
         life--;
+
+        /** If the life count is less equal than 0, the game is over */
         if(life < 0){
             game_over = true;
             txtEvnt.setText("Game over");
         }
+        /** Else you can replace the ball */
         else{
-            // Riposiziona la palla
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2,
                     (CAMERA_HEIGHT - ballSprite.getHeight())/2);
 
-            // La indirizza verso l'alto
+            /** Set the direction upward */
             handler.setVelocityY(-handler.getVelocityY());
             scene.attachChild(ballSprite);
         }
     }
 
+    private void game_events(){
+        /** This procedure understand what modifier needs to associate with the game according to
+         * the score.
+         */
+
+        /** Increasing x2 tha bar speed */
+        if(score >= X2_BARSPEED && !x2_barspeed){
+            GAME_VELOCITY *= 2;
+            x2_barspeed = true;
+            txtEvnt.setText("2X Bar Speed");
+        }
+
+        /** Increasing x2 the ball speed */
+        if(score >= X2_BALLSPEED && !x2_ballspeed){
+            handler.setVelocity(handler.getVelocityX()*2,handler.getVelocityY()*2);
+            x2_ballspeed = true;
+            txtEvnt.setText("2X Ball Speed");
+        }
+
+        /** Increasing x3 the bar speed */
+        if(score >= X3_BARSPEED && !x3_barspeed){
+            GAME_VELOCITY *= 1.5f;
+            x3_barspeed = true;
+            txtEvnt.setText("3X Bar Speed");
+        }
+
+        /** Increasing x4 the ball speed */
+        if(score >= X4_BALLSPEED && !x4_ballspeed){
+            handler.setVelocity(handler.getVelocityX()*2,handler.getVelocityY()*2);
+            x4_ballspeed = true;
+            txtEvnt.setText("4X Ball Speed");
+        }
+
+        /** Scale by 70% the bar dimensions */
+        if(score >= REDUCE_BAR && !reduce_bar){
+            barSprite.setScale(0.7f);
+            reduce_bar = true;
+            txtEvnt.setText("Bar reduced");
+        }
+    }
+
     @Override
     public EngineOptions onCreateEngineOptions() {
+        /** Understanding the device display's dimensions */
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         CAMERA_WIDTH = size.x;
         CAMERA_HEIGHT = size.y;
+
+        /** Setting up the andengine camera */
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 
+        /** Setting up the andengine options */
         EngineOptions engineOptions = new EngineOptions(true,
                 ScreenOrientation.PORTRAIT_FIXED,
                 new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
                 camera);
 
+        /** Enable the sound option */
         engineOptions.getAudioOptions().setNeedsSound(true);
 
+        /** Return the engineOptions */
         return engineOptions;
     }
 
@@ -492,7 +523,19 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
 
     @Override
     public void onAccelerationChanged(AccelerationData pAccelerationData) {
-        // Il movimento della barra è gestito mediante l'accelerometro
-        barSprite.setX(barSprite.getX()+pAccelerationData.getX()*GAME_VELOCITY);
+        /** The bar is moving only on X
+         *
+         * There's the edges' condition that do not hide the bar beyond the walls.
+         *
+         * New position variable
+         */
+        float new_position = barSprite.getX()+pAccelerationData.getX()*GAME_VELOCITY;
+
+        /** Border variables */
+        float rL = CAMERA_WIDTH - barSprite.getWidth()/2;
+        float lL = -barSprite.getWidth()/2;
+
+        if ( !(new_position > rL || new_position < lL) )
+            barSprite.setX(new_position);
     }
 }
