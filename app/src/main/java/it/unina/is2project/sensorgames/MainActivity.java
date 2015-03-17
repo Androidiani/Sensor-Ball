@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
+import it.unina.is2project.sensorgames.pong.GamePong;
+
 public class MainActivity extends ActionBarActivity {
 
     // Views on screen declaration
@@ -72,6 +74,14 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        // Training Button
+        btnTraining.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnTrainingClick();
+            }
+        });
+
         // About Us Button
         btnAboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +95,15 @@ public class MainActivity extends ActionBarActivity {
      * Manage click on onePlayer button.
      */
     private void btnOnePlayerClick() {
+    }
+
+    /**
+     * Manage click on training button.
+     */
+    private void btnTrainingClick() {
+        Intent i = new Intent(MainActivity.this, GamePong.class);
+        startActivity(i);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
     /**
