@@ -26,6 +26,10 @@
         </activity>
         <activity android:name=".pong.GamePong">
         </activity>
+        <activity android:name=".pong.GamePongOnePlayer">
+        </activity>
+        <activity android:name=".pong.GamePongTraining">
+        </activity>
     </application>
 
 </manifest>

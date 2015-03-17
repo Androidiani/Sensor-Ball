@@ -1,6 +1,8 @@
 package it.unina.is2project.sensorgames;
 
 import it.unina.is2project.sensorgames.pong.GamePong;
+import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
+import it.unina.is2project.sensorgames.pong.GamePongTraining;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
@@ -95,7 +97,7 @@ public class MainActivity extends ActionBarActivity {
      * Manage click on onePlayer button.
      */
     private void btnOnePlayerClick() {
-        Intent i = new Intent(MainActivity.this, GamePong.class);
+        Intent i = new Intent(MainActivity.this, GamePongOnePlayer.class);
         startActivity(i);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
@@ -104,7 +106,7 @@ public class MainActivity extends ActionBarActivity {
      * Manage click on training button.
      */
     private void btnTrainingClick() {
-        Intent i = new Intent(MainActivity.this, GamePong.class);
+        Intent i = new Intent(MainActivity.this, GamePongTraining.class);
         startActivity(i);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
