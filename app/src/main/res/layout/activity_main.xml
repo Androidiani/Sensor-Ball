@@ -22,13 +22,11 @@
             android:layout_height="fill_parent"
             android:gravity="center_horizontal">
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/text_intro"
-                android:id="@+id/lblIntro"
-                android:textColor="#ffffffff"
-                android:textSize="25sp" />
+                android:id="@+id/imageView"
+                android:src="@drawable/splash_name" />
         </TableRow>
 
         <TableRow
@@ -41,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_p1"
-                android:src="@drawable/buttonp1"
+                android:src="@drawable/one_player"
                 android:background="#00000000"
                 android:contentDescription="@string/btn1desc" />
         </TableRow>
@@ -56,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_p2"
                 android:layout_marginTop="40dp"
-                android:src="@drawable/buttonp2"
+                android:src="@drawable/two_player"
                 android:background="#00000000"
                 android:contentDescription="@string/btn2desc" />
         </TableRow>
@@ -71,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_trng"
                 android:layout_marginTop="40dp"
-                android:src="@drawable/buttontraining"
+                android:src="@drawable/training"
                 android:background="#00000000"
                 android:contentDescription="@string/btnTrngDesc" />
         </TableRow>
@@ -86,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_about"
                 android:layout_marginTop="40dp"
-                android:src="@drawable/buttonabout"
+                android:src="@drawable/about"
                 android:background="#00000000"
                 android:contentDescription="@string/btnAboutDesc" />
         </TableRow>
