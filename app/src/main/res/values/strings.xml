@@ -28,6 +28,11 @@
 
     <!-- 2 Player Activity -->
     <string name="text_bluetooth">Bluetooth</string>
+    <string name="text_enemy">Play with</string>
+    <string name="text_none"><![CDATA[<none>]]></string>
+    <string name="text_conn_type">Connection type</string>
+    <string name="text_secure_conn">Secure</string>
+    <string name="text_insecure">Insecure</string>
 
 
 </resources>
