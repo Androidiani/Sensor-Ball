@@ -23,8 +23,7 @@
         </activity>
 
         <activity android:name=".AboutActivity">
-            </activity>
-
+        </activity>
         <activity android:name=".pong.GamePong">
         </activity>
     </application>
