@@ -24,7 +24,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.prova_activity_main);
 
         findViews();
         setListners();
@@ -76,6 +76,14 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        // 2 Player Button
+        btnTwoPlayer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnTwoPlayerClick();
+            }
+        });
+
         // Training Button
         btnTraining.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +106,15 @@ public class MainActivity extends ActionBarActivity {
      */
     private void btnOnePlayerClick() {
         Intent i = new Intent(MainActivity.this, GamePongOnePlayer.class);
+        startActivity(i);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
+    /**
+     * Manage click on twoPlayer button.
+     */
+    private void btnTwoPlayerClick() {
+        Intent i = new Intent(MainActivity.this, TwoPlayerActivity.class);
         startActivity(i);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
