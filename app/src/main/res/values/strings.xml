@@ -26,5 +26,8 @@
         -Toscano Giovanni\n
     </string>
 
+    <!-- 2 Player Activity -->
+    <string name="text_bluetooth">Bluetooth</string>
+
 
 </resources>
