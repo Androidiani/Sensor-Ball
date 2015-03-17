@@ -2,22 +2,18 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.graphics.Color;
 import android.graphics.Point;
-import android.util.Log;
 import android.view.Display;
 
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
-import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
-import org.andengine.input.sensor.SensorDelay;
 import org.andengine.input.sensor.acceleration.AccelerationData;
 import org.andengine.input.sensor.acceleration.AccelerationSensorOptions;
 import org.andengine.input.sensor.acceleration.IAccelerationListener;
@@ -110,7 +106,7 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
     @Override
     protected void onCreateResources() {
         loadGraphics();
-        loadSouns();
+        loadSounds();
         loadFonts();
     }
 
@@ -120,42 +116,18 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
         setAssetBasePath("gfx/");
 
         /** Ball texture loading */
-        ballTexture = new BitmapTextureAtlas(getTextureManager(),
-                60,
-                60);
-
-        ballTextureRegion = createFromAsset(ballTexture,
-                this,
-                "ball.png",
-                0,
-                0);
-
+        ballTexture = new BitmapTextureAtlas(getTextureManager(), 60, 60);
+        ballTextureRegion = createFromAsset(ballTexture, this, "ball.png", 0, 0);
         ballTexture.load();
 
         /** Bar texture loading */
-        barTexture = new BitmapTextureAtlas(getTextureManager(),
-                260,
-                90);
-
-        barTextureRegion = createFromAsset(barTexture,
-                this,
-                "bar.png",
-                0,
-                0);
-
+        barTexture = new BitmapTextureAtlas(getTextureManager(), 260, 90);
+        barTextureRegion = createFromAsset(barTexture, this, "bar.png", 0, 0);
         barTexture.load();
 
         /** Life texture loading */
-        lifeTexture = new BitmapTextureAtlas(getTextureManager(),
-                48,
-                48);
-
-        lifeTextureRegion = createFromAsset(lifeTexture,
-                this,
-                "life.png",
-                0,
-                0);
-
+        lifeTexture = new BitmapTextureAtlas(getTextureManager(), 48, 48);
+        lifeTextureRegion = createFromAsset(lifeTexture, this, "life.png", 0, 0);
         lifeTexture.load();
     }
 
@@ -164,31 +136,21 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
         FontFactory.setAssetBasePath("font/");
 
         /** "secrcode.ttf" texture loading */
-        fontTexture = new BitmapTextureAtlas(getTextureManager(),
-                256,
-                256,
-                TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-
-        font = FontFactory.createFromAsset(getFontManager(),
-                fontTexture,
-                getAssets(),
-                "secrcode.ttf",
-                40, true, Color.BLACK);
-
+        fontTexture = new BitmapTextureAtlas(getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", 40, true, Color.BLACK);
         font.load();
     }
 
-    private void loadSouns(){
+    private void loadSounds(){
         /** "paddlehit.ogg" sound loading */
-        try
-        {
+        try{
             touch = SoundFactory.createSoundFromAsset(getEngine().getSoundManager(), this, "mfx/paddlehit.ogg");
         }
-        catch (IOException e)
-        {
+        catch (IOException e){
             e.printStackTrace();
         }
     }
+
     @Override
     protected Scene onCreateScene() {
         return null;
@@ -260,12 +222,11 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
         /** If the life count is less equal than 0, the game is over */
         if(life < 0){
             game_over = true;
-            txtEvnt.setText("Game over");
+            txtEvnt.setText("Game Over");
         }
         /** Else you can replace the ball */
         else{
-            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2,
-                    (CAMERA_HEIGHT - ballSprite.getHeight())/2);
+            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
 
             /** Set the direction upward */
             handler.setVelocityY(-handler.getVelocityY());
@@ -287,7 +248,8 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 
         /** Setting up the andengine options */
-        EngineOptions engineOptions = new EngineOptions(true,
+        EngineOptions engineOptions = new EngineOptions(
+                true,
                 ScreenOrientation.PORTRAIT_FIXED,
                 new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
                 camera);
@@ -301,7 +263,7 @@ public class GamePong extends SimpleBaseGameActivity implements IAccelerationLis
 
     @Override
     public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {
-
+        //do nothing
     }
 
     @Override
