@@ -97,6 +97,7 @@ public class MainActivity extends ActionBarActivity {
     private void btnOnePlayerClick() {
         Intent i = new Intent(MainActivity.this, GamePong.class);
         startActivity(i);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
     /**
@@ -105,6 +106,7 @@ public class MainActivity extends ActionBarActivity {
     private void btnTrainingClick() {
         Intent i = new Intent(MainActivity.this, GamePong.class);
         startActivity(i);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
     /**
