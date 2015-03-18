@@ -16,7 +16,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/topView"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/splash_name" />
+        android:src="@drawable/splash_name"
+        android:contentDescription="@string/imgGame" />
 
     <LinearLayout
         android:orientation="vertical"
