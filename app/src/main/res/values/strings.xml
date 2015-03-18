@@ -1,6 +1,6 @@
 <resources>
     <!-- General -->
-    <string name="app_name">SensorGames</string>
+    <string name="app_name">Sensor-Games</string>
 
     <!-- Menu Entries -->
     <string name="action_settings">Settings</string>
@@ -22,14 +22,14 @@
     <string name="about">About Us</string>
 
     <!-- About Activity Strings -->
-    <string name="text_app_about_description">This app has been developed by students of University "Federico II", Naples.\n
+    <string name="text_app_about_description">\nThis app has been developed by students of University "Federico II", Naples.\n\n
         It is a project created within software engineering\'s course of 2014/2015 academic year.\n
         \n
         Authors: (in alphabetical order)\n
-        -Gargiulo Alessandro\n
-        -Marigliano Francesco\n
-        -Saviano Gabriele\n
-        -Toscano Giovanni\n
+        - Gargiulo Alessandro\n
+        - Marigliano Francesco\n
+        - Saviano Gabriele\n
+        - Toscano Giovanni\n
     </string>
 
     <!-- 2 Player Activity -->
