@@ -2,51 +2,65 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ff000000">
+    android:background="#ff000000"
+    android:weightSum="1">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.24" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView2"
+        android:id="@+id/topView"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/splash_name" />
 
-    <ImageButton
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="20sp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/mLinearLayout"
+        android:layout_weight="0.24"></LinearLayout>
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/one_player"
         android:id="@+id/btn_p1"
-        android:src="@drawable/one_player"
+        android:layout_gravity="center_horizontal"
         android:background="#00000000"
-        android:contentDescription="@string/btn1desc"
-        android:layout_gravity="center_horizontal" />
+        android:textColor="#ffffffff"
+        android:focusableInTouchMode="false" />
 
-    <ImageButton
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/two_player"
         android:id="@+id/btn_p2"
-        android:layout_marginTop="40dp"
-        android:src="@drawable/two_player"
+        android:layout_gravity="center_horizontal"
         android:background="#00000000"
-        android:contentDescription="@string/btn2desc"
-        android:layout_gravity="center_horizontal" />
+        android:textColor="#ffffffff" />
 
-    <ImageButton
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/training"
         android:id="@+id/btn_trng"
-        android:layout_marginTop="40dp"
-        android:src="@drawable/training"
+        android:layout_gravity="center_horizontal"
         android:background="#00000000"
-        android:contentDescription="@string/btnTrngDesc"
-        android:layout_gravity="center_horizontal" />
+        android:textColor="#ffffffff" />
 
-    <ImageButton
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/about"
         android:id="@+id/btn_about"
-        android:layout_marginTop="40dp"
-        android:src="@drawable/about"
+        android:layout_gravity="center_horizontal"
         android:background="#00000000"
-        android:contentDescription="@string/btnAboutDesc"
-        android:layout_gravity="center_horizontal" />
+        android:textColor="#ffffffff" />
+
 </LinearLayout>

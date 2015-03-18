@@ -1,25 +1,46 @@
 package it.unina.is2project.sensorgames;
 
-import it.unina.is2project.sensorgames.pong.GamePong;
 import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
 import it.unina.is2project.sensorgames.pong.GamePongTraining;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import java.util.logging.Handler;
 
 public class MainActivity extends ActionBarActivity {
 
     // Views on screen declaration
-    private ImageButton btnOnePlayer;
-    private ImageButton btnTwoPlayer;
-    private ImageButton btnTraining;
-    private ImageButton btnAboutUs;
+    private Button btnOnePlayer;
+    private Button btnTwoPlayer;
+    private Button btnTraining;
+    private Button btnAboutUs;
+
+    private LinearLayout mLinearLayout;
+    private ImageView mTopImage;
+    private int x_pos;
+    private int y_pos;
+
+    // Font typeface
+    private Typeface typeFace;
+
+    // Ball
+    private BallView mBallView;
+    private Handler redrawHandler;
+    private static final int BALL_RADIUS = 50;
+    private static final int BALL_COLOR = Color.WHITE;
 
 
     @Override
@@ -31,10 +52,22 @@ public class MainActivity extends ActionBarActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
+        /** Load the font */
+        typeFace = Typeface.createFromAsset(getAssets(),"font/secrcode.ttf");
+
         setContentView(R.layout.activity_main);
 
+        // Get the object id
         findViews();
+
+        // Set the button fonts
+        buttonFonts();
+
+        // Set the listners
         setListners();
+
+        // Place the ball
+        placeBall();
     }
 
 
@@ -64,10 +97,22 @@ public class MainActivity extends ActionBarActivity {
      * Find views in activity_main.xml routine.
      */
     public void findViews(){
-        btnOnePlayer = (ImageButton)findViewById(R.id.btn_p1);
-        btnTwoPlayer = (ImageButton)findViewById(R.id.btn_p2);
-        btnTraining = (ImageButton)findViewById(R.id.btn_trng);
-        btnAboutUs = (ImageButton)findViewById(R.id.btn_about);
+        btnOnePlayer = (Button)findViewById(R.id.btn_p1);
+        btnTwoPlayer = (Button)findViewById(R.id.btn_p2);
+        btnTraining = (Button)findViewById(R.id.btn_trng);
+        btnAboutUs = (Button)findViewById(R.id.btn_about);
+        mLinearLayout = (LinearLayout) findViewById(R.id.mLinearLayout);
+        mTopImage = (ImageView) findViewById(R.id.topView);
+    }
+
+    /**
+     * Set the font face to buttons
+     */
+    public void buttonFonts(){
+        btnOnePlayer.setTypeface(typeFace);
+        btnTwoPlayer.setTypeface(typeFace);
+        btnTraining.setTypeface(typeFace);
+        btnAboutUs.setTypeface(typeFace);
     }
 
     /**
@@ -106,6 +151,19 @@ public class MainActivity extends ActionBarActivity {
                 btnAboutUsClick();
             }
         });
+    }
+
+    /**
+     * Place the ball over the layout
+     */
+    private void placeBall(){
+        // Make the Ball View
+        mBallView = new BallView(this,BALL_RADIUS,BALL_RADIUS,BALL_RADIUS,BALL_COLOR);
+        Log.d("", "Ball placed in (X,Y) = " + x_pos + "," + y_pos);
+
+        // Attach mBallView to mLinearLayout
+        mLinearLayout.addView(mBallView);
+
     }
 
     /**

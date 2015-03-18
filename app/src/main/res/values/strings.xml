@@ -14,6 +14,12 @@
     <string name="btnAboutDesc">Button for app infos</string>
     <string name="logoniversitydesc">University of \"Federico II\" logo</string>
 
+    <!-- Button text -->
+    <string name="one_player">One Player</string>
+    <string name="two_player">Two Players</string>
+    <string name="training">Training</string>
+    <string name="about">About Us</string>
+
     <!-- Main Activity Strings -->
     <string name="text_intro">Welcome to Sensor Games App</string>
 
