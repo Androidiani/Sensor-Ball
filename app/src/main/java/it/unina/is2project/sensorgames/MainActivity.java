@@ -3,12 +3,19 @@ package it.unina.is2project.sensorgames;
 import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
 import it.unina.is2project.sensorgames.pong.GamePongTraining;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,29 +25,35 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.util.logging.Handler;
+import java.util.Timer;
+import java.util.TimerTask;
+import android.os.Handler;
 
 public class MainActivity extends ActionBarActivity {
+
+    private int CAMERA_WIDTH;
 
     // Views on screen declaration
     private Button btnOnePlayer;
     private Button btnTwoPlayer;
     private Button btnTraining;
     private Button btnAboutUs;
-
     private LinearLayout mLinearLayout;
-    private ImageView mTopImage;
-    private int x_pos;
-    private int y_pos;
 
     // Font typeface
     private Typeface typeFace;
 
     // Ball
     private BallView mBallView;
-    private Handler redrawHandler;
+    private Handler redrawHandler = new Handler();
     private static final int BALL_RADIUS = 50;
     private static final int BALL_COLOR = Color.WHITE;
+    private int x_pos;
+    private int x_speed;
+
+    // Timer
+    private Timer mTmr;
+    private TimerTask mTsk;
 
 
     @Override
@@ -57,6 +70,10 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
 
+        // Get screen dimensions
+        Point dim = getScreenDimensions();
+        CAMERA_WIDTH = dim.x;
+
         // Get the object id
         findViews();
 
@@ -68,6 +85,22 @@ public class MainActivity extends ActionBarActivity {
 
         // Place the ball
         placeBall();
+
+        // Sensor Manager
+        ((SensorManager)getSystemService(Context.SENSOR_SERVICE)).registerListener(
+                new SensorEventListener() {
+                    @Override
+                    public void onSensorChanged(SensorEvent event) {
+                        x_speed = (int)-event.values[0];
+                    }
+
+                    @Override
+                    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                    }
+                },
+                ((SensorManager) getSystemService(Context.SENSOR_SERVICE))
+                        .getSensorList(Sensor.TYPE_ACCELEROMETER).get(0),
+                SensorManager.SENSOR_DELAY_NORMAL);
     }
 
 
@@ -102,7 +135,6 @@ public class MainActivity extends ActionBarActivity {
         btnTraining = (Button)findViewById(R.id.btn_trng);
         btnAboutUs = (Button)findViewById(R.id.btn_about);
         mLinearLayout = (LinearLayout) findViewById(R.id.mLinearLayout);
-        mTopImage = (ImageView) findViewById(R.id.topView);
     }
 
     /**
@@ -158,12 +190,25 @@ public class MainActivity extends ActionBarActivity {
      */
     private void placeBall(){
         // Make the Ball View
-        mBallView = new BallView(this,BALL_RADIUS,BALL_RADIUS,BALL_RADIUS,BALL_COLOR);
-        Log.d("", "Ball placed in (X,Y) = " + x_pos + "," + y_pos);
+        mBallView = new BallView(this,x_pos,BALL_RADIUS,BALL_RADIUS,BALL_COLOR);
 
         // Attach mBallView to mLinearLayout
         mLinearLayout.addView(mBallView);
+        mBallView.invalidate();
+    }
 
+    /**
+     * Get the screen dimensions
+     */
+    private Point getScreenDimensions(){
+        Point mPoint = new Point();
+
+        //get screen dimensions
+        Display display = getWindowManager().getDefaultDisplay();
+
+        display.getSize(mPoint);
+
+        return mPoint;
     }
 
     /**
@@ -200,6 +245,32 @@ public class MainActivity extends ActionBarActivity {
         Intent i = new Intent(MainActivity.this, AboutActivity.class);
         startActivity(i);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
+    @Override
+    public void onResume() //app moved to foreground (also occurs at app startup)
+    {
+        //create timer to move ball to new position
+        mTmr = new Timer();
+        mTsk = new TimerTask() {
+            public void run() {
+
+                x_pos += x_speed;
+                if (x_pos > CAMERA_WIDTH + BALL_RADIUS) x_pos = 0;
+                if (x_pos < -BALL_RADIUS) x_pos = CAMERA_WIDTH;
+
+                mBallView.x = x_pos;
+
+                //redraw ball
+                redrawHandler.post(new Runnable() {
+                    public void run() {
+                        mBallView.invalidate();
+                    }
+                });
+            }
+        };
+        mTmr.schedule(mTsk,10,10);
+        super.onResume();
     }
 
 }
