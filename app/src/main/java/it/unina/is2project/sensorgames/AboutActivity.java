@@ -15,6 +15,7 @@ public class AboutActivity extends ActionBarActivity {
     // Font typeface
     private Typeface typeFace;
 
+    // TextView
     private TextView titolo;
     private TextView descrizione;
 
