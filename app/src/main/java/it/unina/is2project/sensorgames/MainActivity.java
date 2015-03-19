@@ -34,6 +34,7 @@ public class MainActivity extends ActionBarActivity {
     private Button btnOnePlayer;
     private Button btnTwoPlayer;
     private Button btnTraining;
+    private Button btnStats;
     private Button btnAboutUs;
     private LinearLayout mLinearLayout;
 
@@ -130,6 +131,7 @@ public class MainActivity extends ActionBarActivity {
         btnOnePlayer = (Button)findViewById(R.id.btn_p1);
         btnTwoPlayer = (Button)findViewById(R.id.btn_p2);
         btnTraining = (Button)findViewById(R.id.btn_trng);
+        btnStats = (Button)findViewById(R.id.btn_sts);
         btnAboutUs = (Button)findViewById(R.id.btn_about);
         mLinearLayout = (LinearLayout) findViewById(R.id.mLinearLayout);
     }
@@ -141,6 +143,7 @@ public class MainActivity extends ActionBarActivity {
         btnOnePlayer.setTypeface(typeFace);
         btnTwoPlayer.setTypeface(typeFace);
         btnTraining.setTypeface(typeFace);
+        btnStats.setTypeface(typeFace);
         btnAboutUs.setTypeface(typeFace);
     }
 

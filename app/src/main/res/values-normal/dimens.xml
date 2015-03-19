@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="home_font">36sp</dimen>
+    <dimen name="home_font">28sp</dimen>
 </resources>

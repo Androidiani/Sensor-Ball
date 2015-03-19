@@ -19,6 +19,7 @@
     <string name="one_player">One Player</string>
     <string name="two_player">Two Players</string>
     <string name="training">Training</string>
+    <string name="stats">Stats</string>
     <string name="about">About Us</string>
 
     <!-- About Activity Strings -->

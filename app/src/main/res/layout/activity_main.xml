@@ -38,7 +38,7 @@
         android:background="#00000000"
         android:textColor="#ffffffff"
         android:focusableInTouchMode="false"
-        android:layout_weight="0.15"
+        android:layout_weight="0.1"
         android:textSize="@dimen/home_font" />
 
     <Button
@@ -49,7 +49,7 @@
         android:layout_gravity="center_horizontal"
         android:background="#00000000"
         android:textColor="#ffffffff"
-        android:layout_weight="0.15"
+        android:layout_weight="0.1"
         android:textSize="@dimen/home_font" />
 
     <Button
@@ -60,7 +60,18 @@
         android:layout_gravity="center_horizontal"
         android:background="#00000000"
         android:textColor="#ffffffff"
-        android:layout_weight="0.15"
+        android:layout_weight="0.1"
+        android:textSize="@dimen/home_font" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/stats"
+        android:id="@+id/btn_sts"
+        android:layout_gravity="center_horizontal"
+        android:background="#00000000"
+        android:textColor="#ffffffff"
+        android:layout_weight="0.10"
         android:textSize="@dimen/home_font" />
 
     <Button
@@ -71,7 +82,7 @@
         android:layout_gravity="center_horizontal"
         android:background="#00000000"
         android:textColor="#ffffffff"
-        android:layout_weight="0.15"
+        android:layout_weight="0.1"
         android:textSize="@dimen/home_font" />
 
 </LinearLayout>
