@@ -32,7 +32,7 @@
         </activity>
         <activity android:name=".AboutActivity" >
         </activity>
-        <activity android:name=".pong.GamePong" >
+        <activity android:name=".pong.GamePongTwoPlayer" >
         </activity>
         <activity android:name=".pong.GamePongOnePlayer" >
         </activity>
@@ -40,8 +40,7 @@
         </activity>
         <activity android:name=".TwoPlayerActivity" >
         </activity>
-        <activity android:name=".StatsActivity" >
-        </activity>
+        <activity android:name=".StatsActivity" ></activity>
     </application>
 
 </manifest>
