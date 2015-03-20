@@ -136,6 +136,14 @@ public class TwoPlayerActivity extends ActionBarActivity {
             stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
             listDevice.setAdapter(stringArrayAdapter);
 
+            switchBluetooth.setChecked(mStatus);
+
+            IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+            this.registerReceiver(bReceiver, filter);
+
+            filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+            this.registerReceiver(bReceiver, filter);
+
             setListners();
         }
 
@@ -234,7 +242,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
         btnPlay = (Button) findViewById(R.id.btnPlay);
         btnPaired = (Button) findViewById(R.id.btnPaired);
         btnScan = (Button) findViewById(R.id.btnScan);
-        switchBluetooth = (Switch)findViewById(R.id.switchBluetooth);
+        listDevice = (ListView) findViewById(R.id.listDevice);
+        switchBluetooth = (Switch) findViewById(R.id.switchBluetooth);
     }
 
     /**
@@ -278,7 +287,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
         switchBluetooth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onToggleClicked(isChecked);
+                onSwitchClicked(isChecked);
             }
         });
     }
@@ -313,6 +322,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
      * Manage click on button paired
      */
     private void btnPairedClick() {
+        Log.d(TAG, "btnPaired()");
         pairedDevice = mBluetoothAdapter.getBondedDevices();
         stringArrayAdapter.clear();
         for(BluetoothDevice device : pairedDevice)
@@ -325,7 +335,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
      * Manage click on button scan
      */
     private void btnScanClick() {
-        Log.d(TAG, "doDiscovery()");
+        Log.d(TAG, "btnScan()");
 
         if(mBluetoothAdapter.isDiscovering()){
             mBluetoothAdapter.cancelDiscovery();
@@ -341,6 +351,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
      * Manage click on button play
      */
     private void btnPlayClick() {
+        Log.d(TAG, "btnPlay()");
         if(privateNumber == null) {
             // Crea un numero casuale per la scelta di dove far apparire la palla.
             Random rand = new Random();
@@ -376,7 +387,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
         connectDevice(address);
     }
 
-    private void onToggleClicked(boolean isChecked) {
+    private void onSwitchClicked(boolean isChecked) {
         if (isChecked){
             // If buttons is ON
             if(!mStatus){
