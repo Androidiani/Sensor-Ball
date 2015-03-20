@@ -41,5 +41,18 @@
     <string name="text_secure_conn">Secure</string>
     <string name="text_insecure">Insecure</string>
     <string name="text_play">Play</string>
+    <string name="title_activity_stats">StatsActivity</string>
+
+    <!-- Stats -->
+    <string name="sts_position">Position</string>
+    <string name="sts_name">Player</string>
+    <string name="sts_score">Score</string>
+    <string name="sts_date">Date</string>
+    <string name="sts_multi_play">Played</string>
+    <string name="sts_multi_win">Win</string>
+    <string name="sts_multi_perc">Winning rate</string>
+    <string name="sts_null">Null</string>
+
+    <string name="hello_world">Hello world!</string>
 
 </resources>

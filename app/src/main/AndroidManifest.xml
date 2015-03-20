@@ -3,9 +3,17 @@
     package="it.unina.is2project.sensorgames" >
 
     <!-- Permessi di connessione e trasferimento dati via bluetooth -->
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <!-- Permessi di accensione adattatore bluetooth e di scoperta devices -->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
 
     <application
         android:allowBackup="true"
@@ -15,31 +23,27 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".AboutActivity">
+        <activity android:name=".AboutActivity" >
         </activity>
-        <activity android:name=".pong.GamePong">
+        <activity android:name=".pong.GamePong" >
         </activity>
-        <activity android:name=".pong.GamePongOnePlayer">
+        <activity android:name=".pong.GamePongOnePlayer" >
         </activity>
-        <activity android:name=".pong.GamePongTraining">
+        <activity android:name=".pong.GamePongTraining" >
         </activity>
-        <activity android:name=".TwoPlayerActivity">
+        <activity android:name=".TwoPlayerActivity" >
+        </activity>
+        <activity
+            android:name=".StatsActivity"
+            android:label="@string/title_activity_stats" >
         </activity>
     </application>
-
-    <supports-screens android:resizeable="true"
-    android:smallScreens="true"
-    android:normalScreens="true"
-    android:largeScreens="true"
-    android:xlargeScreens="true"
-    android:anyDensity="true"/>
 
 </manifest>
