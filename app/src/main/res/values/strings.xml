@@ -1,10 +1,9 @@
 <resources>
     <!-- General -->
-    <string name="app_name">Sensor-Game</string>
+    <string name="app_name">Sensor-Games</string>
 
     <!-- Menu Entries -->
     <string name="action_settings">Settings</string>
-    <string name="text_scan">Scan</string>
     <string name="text_discoverable">Discoverable</string>
 
     <!-- Image Descriptors -->
@@ -37,22 +36,25 @@
     <string name="text_bluetooth">Bluetooth</string>
     <string name="text_enemy">Play with</string>
     <string name="text_none"><![CDATA[<none>]]></string>
-    <string name="text_conn_type">Connection type</string>
-    <string name="text_secure_conn">Secure</string>
-    <string name="text_insecure">Insecure</string>
     <string name="text_play">Play</string>
-    <string name="title_activity_stats">StatsActivity</string>
+    <string name="text_paired">Paired</string>
+    <string name="text_scan">Scan</string>
+    <string name="none_found">No discoverable device found</string>
 
-    <!-- Stats -->
-    <string name="sts_position">Position</string>
-    <string name="sts_name">Player</string>
-    <string name="sts_score">Score</string>
-    <string name="sts_date">Date</string>
+    <!-- Toasts -->
+    <string name="toast_bluetoothNotSupported">Bluetooth not supported on your device</string>
+    <string name="toast_bluetoothActived">Bluetooth actived</string>
+    <string name="toast_bluetoothDeactived">Bluetooth disabled</string>
+    <string name="toast_notConnected">You\'re not connected to any devicests_date">Date</string>
+
+    <!-- Stats Activity -->
     <string name="sts_multi_play">Played</string>
     <string name="sts_multi_win">Win</string>
     <string name="sts_multi_perc">Winning rate</string>
     <string name="sts_null">Null</string>
-
-    <string name="hello_world">Hello world!</string>
+    <string name="sts_position">Position</string>
+    <string name="sts_name">Player</string>
+    <string name="sts_score">Score</string>
+    <string name="sts_date">Date</string>
 
 </resources>

@@ -20,14 +20,17 @@
             android:id="@+id/lblBluetooth"
             android:textSize="22sp"
             android:layout_gravity="left"
-            android:textColor="#ffffffff" />
+            android:textColor="#ffffffff"
+            android:paddingTop="10sp" />
 
         <Switch
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/switchBluetooth"
             android:layout_gravity="right"
-            android:textColor="#ffffffff" />
+            android:textColor="#ffffffff"
+            android:paddingTop="10sp"
+            android:backgroundTint="#ffffffff" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -36,7 +39,8 @@
             android:id="@+id/lblEnemy"
             android:textSize="22sp"
             android:layout_gravity="left"
-            android:textColor="#ffffffff" />
+            android:textColor="#ffffffff"
+            android:paddingTop="25sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -45,9 +49,50 @@
             android:textSize="22sp"
             android:text="@string/text_none"
             android:layout_gravity="right"
-            android:textColor="#ffffffff" />
+            android:textColor="#ffffffff"
+            android:paddingTop="25sp" />
 
     </GridLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnBase"
+        android:layout_below="@+id/gridBase"
+        android:paddingTop="10sp">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_paired"
+            android:id="@+id/btnPaired"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_scan"
+            android:id="@+id/btnScan"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/btnBase"
+        android:layout_above="@+id/btnPlay"
+        android:id="@+id/listbase">
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/listDevice"
+            android:nestedScrollingEnabled="false"
+            android:alpha="100"
+            android:choiceMode="singleChoice" />
+    </LinearLayout>
 
     <Button
         android:layout_width="fill_parent"
@@ -58,13 +103,5 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/textView"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
