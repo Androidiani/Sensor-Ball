@@ -4,7 +4,6 @@
 
     <!-- Menu Entries -->
     <string name="action_settings">Settings</string>
-    <string name="text_scan">Scan</string>
     <string name="text_discoverable">Discoverable</string>
 
     <!-- Image Descriptors -->
@@ -37,9 +36,8 @@
     <string name="text_bluetooth">Bluetooth</string>
     <string name="text_enemy">Play with</string>
     <string name="text_none"><![CDATA[<none>]]></string>
-    <string name="text_conn_type">Connection type</string>
-    <string name="text_secure_conn">Secure</string>
-    <string name="text_insecure">Insecure</string>
     <string name="text_play">Play</string>
+    <string name="text_paired">Paired</string>
+    <string name="text_scan">Scan</string>
 
 </resources>
