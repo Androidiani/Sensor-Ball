@@ -34,6 +34,7 @@ import it.unina.is2project.sensorgames.bluetooth.Constants;
 import it.unina.is2project.sensorgames.bluetooth.Serializer;
 import it.unina.is2project.sensorgames.bluetooth.messages.IntegerMessage;
 import it.unina.is2project.sensorgames.pong.GamePong;
+import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
 
 public class TwoPlayerActivity extends ActionBarActivity {
 
@@ -133,7 +134,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
             mStatus = mBluetoothAdapter.isEnabled();
 
             // Adapter set
-            stringArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+            stringArrayAdapter = new ArrayAdapter<String>(this, R.layout.bluetooth_list_element);
+
             listDevice.setAdapter(stringArrayAdapter);
 
             switchBluetooth.setChecked(mStatus);
@@ -361,12 +363,12 @@ public class TwoPlayerActivity extends ActionBarActivity {
             sendMessage(ballChoise);
 
             // TODO MODIFICARE LA CLASSE TARGET DELL'INTENT!!!
-            Intent mIntent = new Intent(TwoPlayerActivity.this, GamePong.class);
+            Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongOnePlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", isMaster);
             startActivity(mIntent);
         }else{
-            Intent mIntent = new Intent(TwoPlayerActivity.this, GamePong.class);
+            Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongOnePlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", isMaster);
             startActivity(mIntent);

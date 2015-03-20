@@ -40,9 +40,7 @@
         </activity>
         <activity android:name=".TwoPlayerActivity" >
         </activity>
-        <activity
-            android:name=".StatsActivity"
-            android:label="@string/title_activity_stats" >
+        <activity android:name=".StatsActivity" >
         </activity>
     </application>
 
