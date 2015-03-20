@@ -176,6 +176,14 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
+        // Stats Button
+        btnStats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnStatsClick();
+            }
+        });
+
         // About Us Button
         btnAboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,6 +247,15 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
+     * Manage click on stats button.
+     */
+    private void btnStatsClick() {
+        Intent i = new Intent(MainActivity.this, StatsActivity.class);
+        startActivity(i);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
+    /**
      * Manage click on aboutUs button.
      */
     private void btnAboutUsClick(){
@@ -256,8 +273,8 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
 
                 x_pos += x_speed;
-                if (x_pos > CAMERA_WIDTH + BALL_RADIUS) x_pos = 0;
-                if (x_pos < -BALL_RADIUS) x_pos = CAMERA_WIDTH;
+                if (x_pos > CAMERA_WIDTH + 2*BALL_RADIUS) x_pos = 0;
+                if (x_pos < -2*BALL_RADIUS) x_pos = CAMERA_WIDTH;
 
                 mBallView.x = x_pos;
 
