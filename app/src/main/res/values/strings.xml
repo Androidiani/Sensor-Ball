@@ -21,6 +21,21 @@
     <string name="stats">Stats</string>
     <string name="about">About Us</string>
 
+    <!-- 2 Player Activity -->
+    <string name="text_bluetooth">Bluetooth</string>
+    <string name="text_enemy">Play with</string>
+    <string name="text_none"><![CDATA[<none>]]></string>
+    <string name="text_play">Play</string>
+    <string name="text_paired">Paired</string>
+    <string name="text_scan">Scan</string>
+    <string name="none_found">No discoverable device found</string>
+
+    <!-- Toasts -->
+    <string name="toast_bluetoothNotSupported">Bluetooth not supported on your device</string>
+    <string name="toast_bluetoothActived">Bluetooth actived</string>
+    <string name="toast_bluetoothDeactived">Bluetooth disabled</string>
+    <string name="toast_notConnected">You\'re not connected to any device</string>
+
     <!-- About Activity Strings -->
     <string name="text_app_about_description">\nThis app has been developed by students of University "Federico II", Naples.\n\n
         It is a project created within software engineering\'s course of 2014/2015 academic year.\n
@@ -32,12 +47,5 @@
         - Toscano Giovanni\n
     </string>
 
-    <!-- 2 Player Activity -->
-    <string name="text_bluetooth">Bluetooth</string>
-    <string name="text_enemy">Play with</string>
-    <string name="text_none"><![CDATA[<none>]]></string>
-    <string name="text_play">Play</string>
-    <string name="text_paired">Paired</string>
-    <string name="text_scan">Scan</string>
 
 </resources>
