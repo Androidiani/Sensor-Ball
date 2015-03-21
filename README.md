@@ -1,14 +1,15 @@
 # SensorApp
-Android App - Sensor Games
+Android App - Sensor Pong
 
 # Sviluppatori
 Gabriele Saviano, Giovanni Toscano, Francesco Marigliano, Alessandro Gargiulo
 
-# 1 Player Games
-Guess The Angle, Ball In The Hole
+# 1 Player Game
 
-# 2 Player Games
-Shaker Game, (Gioco con palla swipe)
+
+# 2 Player Game
+
 
 #Training
-Shaker Game, Ball In The Hole
+
+
