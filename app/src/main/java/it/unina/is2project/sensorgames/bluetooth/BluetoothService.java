@@ -40,7 +40,7 @@ public class BluetoothService implements Cloneable{
     private final BluetoothAdapter mAdapter;
     private Handler mHandler;
     private AcceptThread mSecureAcceptThread;
-    private AcceptThread mInsecureAcceptThread;
+//    private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
@@ -147,10 +147,11 @@ public class BluetoothService implements Cloneable{
             mSecureAcceptThread.start();
         }
 
-        if(mInsecureAcceptThread == null){
+/*        if(mInsecureAcceptThread == null){
             mInsecureAcceptThread = new AcceptThread(false);
             mInsecureAcceptThread.start();
         }
+*/
     }
 
     /**
@@ -213,10 +214,11 @@ public class BluetoothService implements Cloneable{
             mSecureAcceptThread.cancel();
             mSecureAcceptThread = null;
         }
-        if (mInsecureAcceptThread != null) {
+/*        if (mInsecureAcceptThread != null) {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;
         }
+*/
 
         // Avvia il thread per gestire la connessione
         mConnectedThread = new ConnectedThread(socket, socketType);
@@ -254,10 +256,11 @@ public class BluetoothService implements Cloneable{
             mSecureAcceptThread = null;
         }
 
-        if (mInsecureAcceptThread != null) {
+/*        if (mInsecureAcceptThread != null) {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;
         }
+*/
 
         // Imposta lo stato a "Nulla"
         setState(STATE_NONE);
