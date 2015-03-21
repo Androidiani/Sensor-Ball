@@ -3,6 +3,7 @@ package it.unina.is2project.sensorgames;
 import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
 import it.unina.is2project.sensorgames.pong.GamePongTraining;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -202,6 +204,9 @@ public class MainActivity extends ActionBarActivity {
 
         // Attach mBallView to mLinearLayout
         mLinearLayout.addView(mBallView);
+
+        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, BALL_RADIUS*2);
+        mLinearLayout.setLayoutParams(parms);
         mBallView.invalidate();
     }
 

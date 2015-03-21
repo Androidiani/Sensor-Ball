@@ -1,10 +1,13 @@
 package it.unina.is2project.sensorgames;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -74,7 +77,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
     private Integer privateNumber = null;
 
     // Intents code
-    private static final int REQUEST_ENABLE_BT = 1;
+    public static final int REQUEST_ENABLE_BT = 1;
 
     //----------------------------------------------
     // ACTIVITY ELEMENTS
@@ -112,9 +115,9 @@ public class TwoPlayerActivity extends ActionBarActivity {
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Set the fullscreen window
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+/*        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        getSupportActionBar().hide();*/
 
         // Load the font
         typeFace = Typeface.createFromAsset(getAssets(),"font/secrcode.ttf");
@@ -204,7 +207,9 @@ public class TwoPlayerActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return super.onCreateOptionsMenu(menu);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_2player_bluetooth, menu);
+        return true;
     }
 
     @Override
@@ -229,6 +234,10 @@ public class TwoPlayerActivity extends ActionBarActivity {
                         mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
                     }
                     mBluetoothService.start();
+                    if(!mStatus){
+                        mStatus = true;
+                        switchBluetooth.setChecked(true);
+                    }
                 }
         }
     }
@@ -399,7 +408,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 //If bluetooth is not enable, it enables.
                 Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
-                mStatus = true;
+                //mStatus = true;
 
                 Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_bluetoothActived) ,
                         Toast.LENGTH_LONG).show();
@@ -439,6 +448,24 @@ public class TwoPlayerActivity extends ActionBarActivity {
      */
     private void ensureDiscoverable() {
         Log.d(TAG, "ensureDiscoverable()");
+        if(!mStatus){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.alert_bluetooth_activator)
+                    .setPositiveButton(R.string.text_yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                            startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
+                        }
+                    })
+                    .setNegativeButton(R.string.text_no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+        }
+
         if (mBluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
