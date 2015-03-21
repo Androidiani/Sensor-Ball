@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -107,6 +108,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
         Log.i(LIFE_CYCLE, "OnCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_2p);
+
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Set the fullscreen window
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,

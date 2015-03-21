@@ -30,17 +30,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AboutActivity" >
-        </activity>
+        <activity android:name=".AboutActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".TwoPlayerActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".StatsActivity"
+            android:screenOrientation="portrait"/>
+
         <activity android:name=".pong.GamePongTwoPlayer" >
         </activity>
         <activity android:name=".pong.GamePongOnePlayer" >
         </activity>
         <activity android:name=".pong.GamePongTraining" >
         </activity>
-        <activity android:name=".TwoPlayerActivity" >
-        </activity>
-        <activity android:name=".StatsActivity" ></activity>
+
     </application>
 
 </manifest>
