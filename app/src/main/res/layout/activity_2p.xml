@@ -91,7 +91,9 @@
             android:id="@+id/listDevice"
             android:nestedScrollingEnabled="false"
             android:alpha="100"
-            android:choiceMode="singleChoice" />
+            android:choiceMode="singleChoice"
+            android:divider="@drawable/divider"
+            android:dividerHeight="10dp" />
     </LinearLayout>
 
     <Button
@@ -99,7 +101,6 @@
         android:layout_height="wrap_content"
         android:text="@string/text_play"
         android:id="@+id/btnPlay"
-        android:textColor="#ffffffff"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />

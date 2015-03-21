@@ -1,5 +1,6 @@
 package it.unina.is2project.sensorgames;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -22,6 +23,7 @@ public class AboutActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         /** Set the fullscreen window */
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
