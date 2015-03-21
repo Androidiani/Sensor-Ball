@@ -103,7 +103,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         scene = new Scene();
 
         /** Setting up the background color */
-        scene.setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
+        scene.setBackground(new Background(0f, 0f, 0f));
 
         /** Adding the ballSprite to the scene */
         ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
@@ -187,7 +187,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         /** "secrcode.ttf" texture loading */
         fontTexture = new BitmapTextureAtlas(getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-        font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", 40, true, Color.BLACK);
+        font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", 40, true, Color.WHITE);
         font.load();
     }
 
