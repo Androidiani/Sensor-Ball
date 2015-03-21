@@ -1,5 +1,6 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import org.andengine.engine.handler.IUpdateHandler;
@@ -10,7 +11,13 @@ import org.andengine.entity.text.Text;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import it.unina.is2project.sensorgames.R;
+
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromAsset;
+import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
 public class GamePongOnePlayer extends GamePong {
 
@@ -29,9 +36,7 @@ public class GamePongOnePlayer extends GamePong {
     // Life
     private BitmapTextureAtlas lifeTexture;
     private ITextureRegion lifeTextureRegion;
-    private Sprite lifeSprite1;
-    private Sprite lifeSprite2;
-    private Sprite lifeSprite3;
+    private List<Sprite> lifeSprites = new ArrayList<Sprite>();
 
     /*
         Game data
@@ -39,6 +44,8 @@ public class GamePongOnePlayer extends GamePong {
     private int score = 0;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
+
+    // Events
     private boolean x2_ballspeed = false;
     private static final int X2_BALLSPEED = 7;
     private boolean x2_barspeed = false;
@@ -55,8 +62,9 @@ public class GamePongOnePlayer extends GamePong {
         super.loadGraphics();
 
         /** Life texture loading */
-        lifeTexture = new BitmapTextureAtlas(getTextureManager(), 48, 48);
-        lifeTextureRegion = createFromAsset(lifeTexture, this, "life.png", 0, 0);
+        Drawable starDraw = getResources().getDrawable(R.drawable.life);
+        lifeTexture = new BitmapTextureAtlas(getTextureManager(), starDraw.getIntrinsicWidth(), starDraw.getIntrinsicHeight());
+        lifeTextureRegion = createFromResource(lifeTexture, this, R.drawable.life, 0, 0);
         lifeTexture.load();
     }
 
@@ -73,12 +81,12 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(txtEvnt);
 
         /** Adding the life sprites to the scene */
-        lifeSprite1 = new Sprite(CAMERA_WIDTH - lifeTexture.getWidth(), 0, lifeTextureRegion, getVertexBufferObjectManager());
-        scene.attachChild(lifeSprite1);
-        lifeSprite2 = new Sprite(CAMERA_WIDTH - 2 * lifeTexture.getWidth(), 0, lifeTextureRegion, getVertexBufferObjectManager());
-        scene.attachChild(lifeSprite2);
-        lifeSprite3 = new Sprite(CAMERA_WIDTH - 3 * lifeTexture.getWidth(), 0, lifeTextureRegion, getVertexBufferObjectManager());
-        scene.attachChild(lifeSprite3);
+        for ( int i = 1 ; i <= MAX_LIFE ; i++ ){
+            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion,getVertexBufferObjectManager());
+            lifeSprite.setX(CAMERA_WIDTH - i*lifeSprite.getWidth());
+            lifeSprites.add(lifeSprite);
+            scene.attachChild(lifeSprites.get(i-1));
+        }
 
         /** The score text is updated to the current value */
         txtScore.setText("Score: " + score);
@@ -188,20 +196,7 @@ public class GamePongOnePlayer extends GamePong {
         scene.detachChild(ballSprite);
 
         /** The lifeSprite is detached */
-        switch(life) {
-            case 2:{
-                scene.detachChild(lifeSprite3);
-                break;
-            }
-            case 1:{
-                scene.detachChild(lifeSprite2);
-                break;
-            }
-            case 0:{
-                scene.detachChild(lifeSprite1);
-                break;
-            }
-        }
+        scene.detachChild(lifeSprites.get(life));
 
         /** Life count is decremented */
         life--;
@@ -288,11 +283,11 @@ public class GamePongOnePlayer extends GamePong {
             txtEvnt.setText("4X Ball Speed");
         }
 
-        /** Scale by 70% the bar dimensions */
+        /** Scale the bar dimensions to small */
         if(score >= REDUCE_BAR && !reduce_bar){
-            barSprite.setScale(0.7f);
+            barSprite.setWidth(CAMERA_WIDTH*0.2f);
             reduce_bar = true;
-            txtEvnt.setText("Bar reduced");
+            txtEvnt.setText("Bar dimension: small");
         }
     }
 
