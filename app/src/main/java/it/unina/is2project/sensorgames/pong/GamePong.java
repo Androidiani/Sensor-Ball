@@ -2,6 +2,7 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.view.Display;
 
 import org.andengine.audio.sound.Sound;
@@ -28,7 +29,10 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import java.io.IOException;
 
+import it.unina.is2project.sensorgames.R;
+
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromAsset;
+import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.setAssetBasePath;
 
 public abstract class GamePong extends SimpleBaseGameActivity implements IAccelerationListener {
@@ -103,10 +107,13 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         /** Adding the ballSprite to the scene */
         ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
+        ballSprite.setWidth(CAMERA_WIDTH*0.1f);
+        ballSprite.setHeight(CAMERA_WIDTH*0.1f);
         scene.attachChild(ballSprite);
 
         /** Adding the barSprite to the scene */
         barSprite = new Sprite((CAMERA_WIDTH - barTexture.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barTexture.getHeight()), barTextureRegion, getVertexBufferObjectManager());
+        barSprite.setWidth(CAMERA_WIDTH*0.3f);
         scene.attachChild(barSprite);
 
         /** Enable the Acceleration Sensor
@@ -161,17 +168,16 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void loadGraphics() {
-        /** Setting the Asset base path for graphics */
-        setAssetBasePath("gfx/");
-
-        /** Ball texture loading */
-        ballTexture = new BitmapTextureAtlas(getTextureManager(), 60, 60);
-        ballTextureRegion = createFromAsset(ballTexture, this, "ball.png", 0, 0);
+        /** White Ball texture loading */
+        Drawable ballDraw = getResources().getDrawable(R.drawable.ball_white);
+        ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
+        ballTextureRegion = createFromResource(ballTexture, this,R.drawable.ball_white , 0, 0);
         ballTexture.load();
 
         /** Bar texture loading */
-        barTexture = new BitmapTextureAtlas(getTextureManager(), 260, 90);
-        barTextureRegion = createFromAsset(barTexture, this, "bar.png", 0, 0);
+        Drawable barDraw = getResources().getDrawable(R.drawable.bar_white);
+        barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
+        barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_white, 0, 0);
         barTexture.load();
     }
 

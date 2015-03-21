@@ -1,5 +1,6 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import org.andengine.engine.handler.IUpdateHandler;
@@ -10,7 +11,10 @@ import org.andengine.entity.text.Text;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
+import it.unina.is2project.sensorgames.R;
+
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromAsset;
+import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
 public class GamePongOnePlayer extends GamePong {
 
@@ -55,8 +59,9 @@ public class GamePongOnePlayer extends GamePong {
         super.loadGraphics();
 
         /** Life texture loading */
-        lifeTexture = new BitmapTextureAtlas(getTextureManager(), 48, 48);
-        lifeTextureRegion = createFromAsset(lifeTexture, this, "life.png", 0, 0);
+        Drawable starDraw = getResources().getDrawable(R.drawable.life);
+        lifeTexture = new BitmapTextureAtlas(getTextureManager(), starDraw.getIntrinsicWidth(), starDraw.getIntrinsicHeight());
+        lifeTextureRegion = createFromResource(lifeTexture, this, R.drawable.life, 0, 0);
         lifeTexture.load();
     }
 
