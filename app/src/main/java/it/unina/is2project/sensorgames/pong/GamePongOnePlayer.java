@@ -11,6 +11,9 @@ import org.andengine.entity.text.Text;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.unina.is2project.sensorgames.R;
 
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromAsset;
@@ -33,9 +36,7 @@ public class GamePongOnePlayer extends GamePong {
     // Life
     private BitmapTextureAtlas lifeTexture;
     private ITextureRegion lifeTextureRegion;
-    private Sprite lifeSprite1;
-    private Sprite lifeSprite2;
-    private Sprite lifeSprite3;
+    private List<Sprite> lifeSprites = new ArrayList<Sprite>();
 
     /*
         Game data
@@ -78,12 +79,12 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(txtEvnt);
 
         /** Adding the life sprites to the scene */
-        lifeSprite1 = new Sprite(CAMERA_WIDTH - lifeTexture.getWidth(), 0, lifeTextureRegion, getVertexBufferObjectManager());
-        scene.attachChild(lifeSprite1);
-        lifeSprite2 = new Sprite(CAMERA_WIDTH - 2 * lifeTexture.getWidth(), 0, lifeTextureRegion, getVertexBufferObjectManager());
-        scene.attachChild(lifeSprite2);
-        lifeSprite3 = new Sprite(CAMERA_WIDTH - 3 * lifeTexture.getWidth(), 0, lifeTextureRegion, getVertexBufferObjectManager());
-        scene.attachChild(lifeSprite3);
+        for ( int i = 1 ; i <= MAX_LIFE ; i++ ){
+            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion,getVertexBufferObjectManager());
+            lifeSprite.setX(CAMERA_WIDTH - i*lifeSprite.getWidth());
+            lifeSprites.add(lifeSprite);
+            scene.attachChild(lifeSprites.get(i-1));
+        }
 
         /** The score text is updated to the current value */
         txtScore.setText("Score: " + score);
@@ -193,20 +194,7 @@ public class GamePongOnePlayer extends GamePong {
         scene.detachChild(ballSprite);
 
         /** The lifeSprite is detached */
-        switch(life) {
-            case 2:{
-                scene.detachChild(lifeSprite3);
-                break;
-            }
-            case 1:{
-                scene.detachChild(lifeSprite2);
-                break;
-            }
-            case 0:{
-                scene.detachChild(lifeSprite1);
-                break;
-            }
-        }
+        scene.detachChild(lifeSprites.get(life));
 
         /** Life count is decremented */
         life--;
