@@ -44,6 +44,8 @@ public class GamePongOnePlayer extends GamePong {
     private int score = 0;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
+
+    // Events
     private boolean x2_ballspeed = false;
     private static final int X2_BALLSPEED = 7;
     private boolean x2_barspeed = false;
@@ -281,11 +283,11 @@ public class GamePongOnePlayer extends GamePong {
             txtEvnt.setText("4X Ball Speed");
         }
 
-        /** Scale by 70% the bar dimensions */
+        /** Scale the bar dimensions to small */
         if(score >= REDUCE_BAR && !reduce_bar){
-            barSprite.setScale(0.7f);
+            barSprite.setWidth(CAMERA_WIDTH*0.2f);
             reduce_bar = true;
-            txtEvnt.setText("Bar reduced");
+            txtEvnt.setText("Bar dimension: small");
         }
     }
 
