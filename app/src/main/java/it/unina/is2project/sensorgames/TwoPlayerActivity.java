@@ -363,23 +363,25 @@ public class TwoPlayerActivity extends ActionBarActivity {
      */
     private void btnPlayClick() {
         Log.d(TAG, "btnPlay()");
+        int intMaster;
+        intMaster = isMaster? 1 : 0;
         if(privateNumber == null) {
             // Crea un numero casuale per la scelta di dove far apparire la palla.
             Random rand = new Random();
             privateNumber = rand.nextInt(1000);
             privateNumber = privateNumber % 2;
-            IntegerMessage ballChoise = new IntegerMessage(Constants.MSG_TYPE_DATA, privateNumber);
+            IntegerMessage ballChoise = new IntegerMessage(Constants.MSG_TYPE_SYNC, privateNumber);
             sendMessage(ballChoise);
 
             // TODO MODIFICARE LA CLASSE TARGET DELL'INTENT!!!
             Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
-            mIntent.putExtra("master", isMaster);
+            mIntent.putExtra("master", intMaster);
             startActivity(mIntent);
         }else{
             Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
-            mIntent.putExtra("master", isMaster);
+            mIntent.putExtra("master", intMaster);
             startActivity(mIntent);
         }
     }
@@ -544,24 +546,25 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 case Constants.MESSAGE_WRITE:
                     break;
                 case Constants.MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    IntegerMessage recMsg = (IntegerMessage)Serializer.deserializeObject(readBuf);
-                    if(recMsg != null) {
-                        if (recMsg.TYPE == Constants.MSG_TYPE_DATA) {
-                            if (recMsg.MESSAGE == 0) {
-                                privateNumber = new Integer(1);
+                    if(!isMaster) {
+                        byte[] readBuf = (byte[]) msg.obj;
+                        IntegerMessage recMsg = (IntegerMessage) Serializer.deserializeObject(readBuf);
+                        if (recMsg != null) {
+                            if (recMsg.TYPE == Constants.MSG_TYPE_SYNC) {
+                                if (recMsg.MESSAGE == 0) {
+                                    privateNumber = new Integer(1);
+                                } else {
+                                    privateNumber = new Integer(0);
+                                }
+                                btnPlay.setEnabled(true);
                             } else {
-                                privateNumber = new Integer(0);
+                                Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                             }
-                            btnPlay.setEnabled(true);
                         } else {
-                            Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
+                            Log.e(TAG, "Ricevuto messaggio nullo.");
                         }
-                    }else{
-                        Log.e(TAG, "Ricevuto messaggio nullo.");
+                        Log.i(TAG, "Numero ricevuto " + recMsg.MESSAGE);
                     }
-                    Log.i(TAG, "Numero ricevuto " + recMsg.MESSAGE);
-
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
                     // salvo il nome del dispositivo connesso
