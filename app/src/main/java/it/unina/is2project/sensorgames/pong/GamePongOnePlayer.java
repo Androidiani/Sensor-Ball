@@ -18,6 +18,9 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import it.unina.is2project.sensorgames.R;
 
@@ -30,7 +33,6 @@ public class GamePongOnePlayer extends GamePong {
         Scene
     */
     private boolean game_over = false;
-    private boolean isPause = false;
 
     /*
         Graphics
@@ -38,35 +40,52 @@ public class GamePongOnePlayer extends GamePong {
     // Text View
     private Text txtScore;
     private Text txtEvnt;
+    private Text txtLvl;
 
     // Life
     private BitmapTextureAtlas lifeTexture;
     private ITextureRegion lifeTextureRegion;
     private List<Sprite> lifeSprites = new ArrayList<Sprite>();
 
-    // Pause
-    private BitmapTextureAtlas pauseTexture;
-    private ITextureRegion pauseTextureRegion;
-    private Sprite pauseSprite;
-
     /*
         Game data
     */
     private int score = 0;
+    private int gain;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
 
+    // Levels
+    private int level;
+    private boolean level_one = true;
+    private static final int LEVEL_ONE = 0;
+    private static final int BARRIER_ONE = 150;
+    private boolean level_two = false;
+    private static final int LEVEL_TWO = 0;
+    private static final int BARRIER_TWO = 300;
+    private boolean level_three = false;
+    private static final int LEVEL_THREE = 2;
+    private static final int BARRIER_THREE = 900;
+    private boolean level_four = false;
+    private static final int LEVEL_FOUR = 3;
+    private static final int BARRIER_FOUR = 1800;
+    private boolean level_five = false;
+    private static final int LEVEL_FIVE = 4;
+    private static final int BARRIER_FIVE = 3600;
+    private boolean level_six = false;
+    private static final int LEVEL_SIX = 5;
+    private static final int BARRIER_SIX = 5200;
+    private boolean level_seven = false;
+    private static final int LEVEL_SEVEN = 6;
+    private static final int BARRIER_SEVEN = 9200;
+
     // Events
-    private boolean x2_ballspeed = false;
-    private static final int X2_BALLSPEED = 7;
-    private boolean x2_barspeed = false;
-    private static final int X2_BARSPEED = 4;
-    private boolean x3_barspeed = false;
-    private static final int X3_BARSPEED = 11;
-    private boolean x4_ballspeed = false;
-    private static final int X4_BALLSPEED = 235;
-    private boolean reduce_bar = false;
-    private static final int REDUCE_BAR = 45;
+    private int game_event;
+    private boolean new_event = true;
+    private static final int NO_EVENT = 0;
+    private static final int RUSH_HOUR = 1;
+    private static final int PARTY_TIME = 2;
+    private static final int FREEZE = 3;
 
 
     @Override
@@ -89,8 +108,12 @@ public class GamePongOnePlayer extends GamePong {
         txtScore = new Text(10, 10, font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(txtScore);
 
-        /** Adding the event text to the scene */
-        txtEvnt = new Text(10, 45, font, "", 20, getVertexBufferObjectManager());
+        /** Adding the level text to the scene */
+        txtLvl = new Text(10, txtScore.getY() + txtScore.getHeight(), font, "", 20, getVertexBufferObjectManager());
+        scene.attachChild(txtLvl);
+
+        /** Adding the level text to the scene */
+        txtEvnt = new Text(10, txtLvl.getY() + txtLvl.getHeight(), font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(txtEvnt);
 
         /** Adding the life sprites to the scene */
@@ -192,6 +215,12 @@ public class GamePongOnePlayer extends GamePong {
                 /** The score text is updated to the current value */
                 txtScore.setText("Score: " + score);
 
+                /** Game levels section */
+                gameLevels();
+
+                /** Setting up random events generator */
+                randomEventsGenerator();
+
                 /** Game events section */
                 gameEvents();
             }
@@ -218,7 +247,7 @@ public class GamePongOnePlayer extends GamePong {
         /** If the life count is less equal than 0, the game is over */
         if(life < 0){
             game_over = true;
-            txtEvnt.setText("Game Over");
+            txtLvl.setText("Game Over");
         }
         /** Else replace the ball */
         else{
@@ -236,83 +265,139 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     public void addScore() {
         /** This procedure increase the score according to the current score. */
-        if (score >= 0 && score <= 9) {
-            if (previous_event == SIDE)
-                score += 3;
-            else score++;
+        if(score >= 0 && score < BARRIER_ONE) {
+            score += 2;
+            gain = 2;
         }
-        if (score >= 10 && score <= 30) {
-            if (previous_event == SIDE)
-                score += 9;
-            else score += 3;
+
+        if(score >= BARRIER_ONE && score < BARRIER_TWO) {
+            score += 5;
+            gain = 5;
         }
-        if (score >= 31) {
-            if (previous_event == SIDE)
-                score += 27;
-            else score += 9;
+
+        if(score >= BARRIER_TWO && score < BARRIER_THREE) {
+            score += 15;
+            gain = 15;
         }
+
+        if(score >= BARRIER_THREE && score < BARRIER_FOUR) {
+            score += 30;
+            gain = 30;
+        }
+
+        if(score >= BARRIER_FOUR && score < BARRIER_FIVE) {
+            score += 60;
+            gain = 60;
+        }
+
+        if(score >= BARRIER_FIVE && score < BARRIER_SIX) {
+            score += 90;
+            gain = 90;
+        }
+
+        if(score >= BARRIER_SEVEN) {
+            score += 150;
+            gain = 150;
+        }
+
+        if(game_event == PARTY_TIME)
+            score += gain;
     }
 
     @Override
     public void remScore() {
-        /** If the previous_event is "SIDE" it will reduce the undeserved points. */
-        if (previous_event == SIDE) {
-            if (score >= 0 && score <= 9)
-                score -= 3;
-            if (score >= 10 && score <= 30)
-                score -= 9;
-            if (score >= 31)
-                score -= 27;
-        }
+        // do nothing
     }
 
     @Override
     public void actionDownEvent() {
-
+        // do nothing
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        Log.d("","Touch event");
-        return super.onTouchEvent(event);
+
+    private void gameLevels(){
+        /** This procedure understand what modifier needs according to the score */
+        if(score < BARRIER_ONE && level_one){
+            level = LEVEL_ONE;
+            txtLvl.setText("Level one");
+        }
+
+        if(score >= BARRIER_ONE && score < BARRIER_TWO && !level_two) {
+            GAME_VELOCITY *= 2;
+            level_two = true;
+            txtLvl.setText("Level two");
+        }
+
+        if(score >= BARRIER_TWO && score < BARRIER_THREE && !level_three) {
+            handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
+            level_three = true;
+            txtLvl.setText("Level three");
+        }
+
+        if(score >= BARRIER_THREE && score < BARRIER_FOUR && !level_four) {
+            barSprite.setWidth(0.2f * CAMERA_WIDTH);
+            level_four = true;
+            txtLvl.setText("Level four");
+        }
+
+        if(score >= BARRIER_FOUR && score < BARRIER_FIVE && !level_five) {
+            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
+            level_five = true;
+            txtLvl.setText("Level five");
+        }
+
+        if(score >= BARRIER_FIVE && score < BARRIER_SIX && !level_six) {
+            barSprite.setWidth(0.15f * CAMERA_WIDTH);
+            level_six = true;
+            txtLvl.setText("Level six");
+        }
+
+        if(score >= BARRIER_SEVEN && !level_seven) {
+            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
+            level_seven = true;
+            txtLvl.setText("Level seven");
+        }
+    }
+
+    private void randomEventsGenerator(){
+        if(new_event) {
+            Timer timer = new Timer();
+            Random random = new Random();
+            timer.schedule(new SetGameEvents(), 5000 + random.nextInt(5000));
+            new_event = false;
+        }
     }
 
     private void gameEvents(){
-        /** This procedure understand what modifier needs according to the score */
+        switch(game_event){
+            case NO_EVENT:
+                txtEvnt.setText("");
+                break;
 
-        /** Increasing x2 tha bar speed */
-        if(score >= X2_BARSPEED && !x2_barspeed){
-            GAME_VELOCITY *= 2;
-            x2_barspeed = true;
-            txtEvnt.setText("2X Bar Speed");
+            case RUSH_HOUR:
+                txtEvnt.setText("Rush Hour");
+                break;
+
+            case PARTY_TIME:
+                txtEvnt.setText("Party Time");
+                break;
+
+            case FREEZE:
+                txtEvnt.setText("Freeze");
+                handler.setVelocity(handler.getVelocityX()/2, handler.getVelocityY()/2);
+                break;
         }
+    }
 
-        /** Increasing x2 the ball speed */
-        if(score >= X2_BALLSPEED && !x2_ballspeed){
-            handler.setVelocity(handler.getVelocityX()*2,handler.getVelocityY()*2);
-            x2_ballspeed = true;
-            txtEvnt.setText("2X Ball Speed");
-        }
+    class SetGameEvents extends TimerTask {
 
-        /** Increasing x3 the bar speed */
-        if(score >= X3_BARSPEED && !x3_barspeed){
-            GAME_VELOCITY *= 1.5f;
-            x3_barspeed = true;
-            txtEvnt.setText("3X Bar Speed");
-        }
-
-        /** Increasing x4 the ball speed */
-        if(score >= X4_BALLSPEED && !x4_ballspeed){
-            handler.setVelocity(handler.getVelocityX()*2,handler.getVelocityY()*2);
-            x4_ballspeed = true;
-            txtEvnt.setText("4X Ball Speed");
-        }
-
-        /** Scale the bar dimensions to small */
-        if(score >= REDUCE_BAR && !reduce_bar){
-            barSprite.setWidth(CAMERA_WIDTH*0.2f);
-            reduce_bar = true;
-            txtEvnt.setText("Bar dimension: small");
+        @Override
+        public void run() {
+            Random random = new Random();
+            if(game_event == FREEZE)
+                handler.setVelocity(handler.getVelocityX()*2, handler.getVelocityY()*2); // If previous event was FREEZE
+            game_event = random.nextInt(3);
+            new_event = true;
         }
     }
 
