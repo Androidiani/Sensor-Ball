@@ -26,6 +26,8 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean isMaster = false;
     // Indicates when we starts to play
     private boolean synchronizedGame = false;
+    // Indicates when ball is passing
+    private boolean transferringBall = false;
 
     // Service bluetooth
     private BluetoothService mBluetoothService = null;
@@ -34,16 +36,16 @@ public class GamePongTwoPlayer extends GamePong {
     protected Scene onCreateScene() {
         // Retrieve intent message
         Intent i = getIntent();
-        if (i.getIntExtra("ball", 0) == 1) {
+        if(i.getIntExtra("ball", 0) == 1){
             haveBall = true;
-        } else {
+        }else{
             haveBall = false;
         }
 
-        if (i.getIntExtra("master", 0) == 1) {
+        if(i.getIntExtra("master", 0) == 1){
             isMaster = true;
             synchronizedGame = false;
-        } else {
+        }else{
             isMaster = false;
             synchronizedGame = true;
         }
@@ -74,10 +76,10 @@ public class GamePongTwoPlayer extends GamePong {
          * - vx = BALL_SPEED
          * - vy = - BALL_SPEED
          */
-        if (!synchronizedGame) {
+        if(!synchronizedGame){
             handler.setVelocity(0, 0);
             GAME_VELOCITY = 0;
-        } else {
+        }else {
             handler.setVelocity(BALL_SPEED, -BALL_SPEED);
             CoordsMessage cm = new CoordsMessage(Constants.MSG_TYPE_SYNC, 0, 0, 0);
             sendMessage(cm);
@@ -108,19 +110,29 @@ public class GamePongTwoPlayer extends GamePong {
                     touch.play();
                     previous_event = LEFT;
                 }
-                if (ballSprite.getY() < 0 && previous_event != TOP && haveBall) {
+                //if (ballSprite.getY() < 0 && previous_event != TOP && haveBall) {
+                if (ballSprite.getY() < ballSprite.getWidth()/2 && previous_event != TOP && haveBall && !transferringBall) {
                     //handler.setVelocityY(-handler.getVelocityY());
                     //touch.play();
-                    float xRatio = ballSprite.getX() / CAMERA_WIDTH;
+                    float xRatio = ballSprite.getX()/CAMERA_WIDTH;
                     CoordsMessage cm = new CoordsMessage(Constants.MSG_TYPE_DATA,
                             handler.getVelocityX(),
                             handler.getVelocityY(),
                             xRatio);
                     sendMessage(cm);
-                    scene.detachChild(ballSprite);
+                    //scene.detachChild(ballSprite);
                     haveBall = false;
+                    transferringBall = true;
                     previous_event = TOP;
                 }
+                if (ballSprite.getY() < -ballSprite.getWidth()/2){
+                    scene.detachChild(ballSprite);
+                    transferringBall = false;
+                }
+                if (ballSprite.getY() > ballSprite.getWidth()/2){
+                    transferringBall = false;
+                }
+
                 if ((ballSprite.getY() > bL - (int) ballSprite.getHeight() / 2) && previous_event != BOTTOM) {
                     previous_event = BOTTOM;
                     restartOnBallLost();
@@ -164,7 +176,7 @@ public class GamePongTwoPlayer extends GamePong {
         scene.detachChild(ballSprite);
 
         /** Setting the position on centre of screen */
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
+        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
 
         /** Set the direction upward */
         handler.setVelocityY(-handler.getVelocityY());
@@ -191,11 +203,11 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected void attachBall() {
         Log.i("TwoPlayer", "Call drawBall() with haveBall = " + haveBall);
-        if (haveBall) super.attachBall();
+        if(haveBall) super.attachBall();
 
     }
 
-    private final Handler mHandler = new Handler() {
+    private final Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             Log.i(TAG, "Handler Called");
@@ -209,23 +221,24 @@ public class GamePongTwoPlayer extends GamePong {
                     Log.i(TAG, "Message Read");
                     byte[] readBuf = (byte[]) msg.obj;
                     CoordsMessage recMsg = (CoordsMessage) Serializer.deserializeObject(readBuf);
-                    if (recMsg != null) {
+                    if(recMsg != null) {
                         if (recMsg.TYPE == Constants.MSG_TYPE_DATA && !haveBall) {
-                            float xPos = (1 - recMsg.X_RATIO) * CAMERA_WIDTH;
-                            ballSprite.setPosition(xPos, 0);
-                            handler.setVelocity(-recMsg.VELOCITY_X, -recMsg.VELOCITY_Y);
+                            float xPos = (1-recMsg.X_RATIO) * CAMERA_WIDTH;
+                            ballSprite.setPosition(xPos, -ballSprite.getWidth()/2 );
+                            handler.setVelocity(-recMsg.VELOCITY_X,-recMsg.VELOCITY_Y);
                             scene.attachChild(ballSprite);
+                            transferringBall = true;
                             haveBall = true;
                             Log.i(TAG, "x = " + recMsg.VELOCITY_X + " y = " + recMsg.VELOCITY_Y);
                         } else {
                             Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                         }
-                        if (recMsg.TYPE == Constants.MSG_TYPE_SYNC && !synchronizedGame) {
+                        if (recMsg.TYPE == Constants.MSG_TYPE_SYNC && !synchronizedGame){
                             handler.setVelocity(BALL_SPEED, -BALL_SPEED);
                             GAME_VELOCITY = 2;
                             synchronizedGame = true;
                         }
-                    } else {
+                    }else{
                         Log.e(TAG, "Ricevuto messaggio nullo.");
                     }
                     break;
@@ -237,7 +250,7 @@ public class GamePongTwoPlayer extends GamePong {
         }
     };
 
-    private void sendMessage(CoordsMessage fm) {
+    private void sendMessage(CoordsMessage fm){
         if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
             return;
