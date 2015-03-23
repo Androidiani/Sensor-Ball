@@ -158,6 +158,11 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
+    public void actionDownEvent() {
+
+    }
+
+    @Override
     protected void attachBall() {
         Log.i("TwoPlayer", "Call drawBall() with haveBall = " + haveBall);
         if(haveBall) super.attachBall();
