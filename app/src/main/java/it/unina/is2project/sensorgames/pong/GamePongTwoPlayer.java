@@ -26,6 +26,8 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean isMaster = false;
     // Indicates when we starts to play
     private boolean synchronizedGame = false;
+    // Indicates when ball is passing
+    private boolean transferringBall = false;
 
     // Service bluetooth
     private BluetoothService mBluetoothService = null;
@@ -34,13 +36,13 @@ public class GamePongTwoPlayer extends GamePong {
     protected Scene onCreateScene() {
         // Retrieve intent message
         Intent i = getIntent();
-        if(i.getIntExtra("ball",0) == 1){
+        if(i.getIntExtra("ball", 0) == 1){
             haveBall = true;
         }else{
             haveBall = false;
         }
 
-        if(i.getIntExtra("master",0) == 1){
+        if(i.getIntExtra("master", 0) == 1){
             isMaster = true;
             synchronizedGame = false;
         }else{
@@ -108,7 +110,8 @@ public class GamePongTwoPlayer extends GamePong {
                     touch.play();
                     previous_event = LEFT;
                 }
-                if (ballSprite.getY() < 0 && previous_event != TOP && haveBall) {
+                //if (ballSprite.getY() < 0 && previous_event != TOP && haveBall) {
+                if (ballSprite.getY() < ballSprite.getWidth()/2 && previous_event != TOP && haveBall && !transferringBall) {
                     //handler.setVelocityY(-handler.getVelocityY());
                     //touch.play();
                     float xRatio = ballSprite.getX()/CAMERA_WIDTH;
@@ -117,10 +120,19 @@ public class GamePongTwoPlayer extends GamePong {
                             handler.getVelocityY(),
                             xRatio);
                     sendMessage(cm);
-                    scene.detachChild(ballSprite);
+                    //scene.detachChild(ballSprite);
                     haveBall = false;
+                    transferringBall = true;
                     previous_event = TOP;
                 }
+                if (ballSprite.getY() < -ballSprite.getWidth()/2){
+                    scene.detachChild(ballSprite);
+                    transferringBall = false;
+                }
+                if (ballSprite.getY() > ballSprite.getWidth()/2){
+                    transferringBall = false;
+                }
+
                 if ((ballSprite.getY() > bL - (int) ballSprite.getHeight() / 2) && previous_event != BOTTOM) {
                     previous_event = BOTTOM;
                     restartOnBallLost();
@@ -184,6 +196,11 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
+    public void actionDownEvent() {
+
+    }
+
+    @Override
     protected void attachBall() {
         Log.i("TwoPlayer", "Call drawBall() with haveBall = " + haveBall);
         if(haveBall) super.attachBall();
@@ -207,9 +224,10 @@ public class GamePongTwoPlayer extends GamePong {
                     if(recMsg != null) {
                         if (recMsg.TYPE == Constants.MSG_TYPE_DATA && !haveBall) {
                             float xPos = (1-recMsg.X_RATIO) * CAMERA_WIDTH;
-                            ballSprite.setPosition(xPos, 0 );
+                            ballSprite.setPosition(xPos, -ballSprite.getWidth()/2 );
                             handler.setVelocity(-recMsg.VELOCITY_X,-recMsg.VELOCITY_Y);
                             scene.attachChild(ballSprite);
+                            transferringBall = true;
                             haveBall = true;
                             Log.i(TAG, "x = " + recMsg.VELOCITY_X + " y = " + recMsg.VELOCITY_Y);
                         } else {
