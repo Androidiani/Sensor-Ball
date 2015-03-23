@@ -45,7 +45,7 @@
     <string name="toast_bluetoothNotSupported">Bluetooth not supported on your device</string>
     <string name="toast_bluetoothActived">Bluetooth actived</string>
     <string name="toast_bluetoothDeactived">Bluetooth disabled</string>
-    <string name="toast_notConnected">You\'re not connected to any devicests_date">Date</string>
+    <string name="toast_notConnected">You\'re not connected to any devices</string>
 
     <!-- Stats Activity -->
     <string name="sts_multi_play">Played</string>

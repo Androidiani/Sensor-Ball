@@ -109,7 +109,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
         ballSprite.setWidth(CAMERA_WIDTH*0.1f);
         ballSprite.setHeight(CAMERA_WIDTH*0.1f);
-        scene.attachChild(ballSprite);
+        attachBall();
 
         /** Adding the barSprite to the scene */
         barSprite = new Sprite((CAMERA_WIDTH - barTexture.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barTexture.getHeight()), barTextureRegion, getVertexBufferObjectManager());
@@ -201,6 +201,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    protected void attachBall() {
+        scene.attachChild(ballSprite);
     }
 
     abstract public void settingPhysics();

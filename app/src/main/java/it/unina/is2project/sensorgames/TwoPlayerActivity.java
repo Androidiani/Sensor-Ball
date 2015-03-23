@@ -2,7 +2,6 @@ package it.unina.is2project.sensorgames;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -20,7 +19,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,8 +35,7 @@ import it.unina.is2project.sensorgames.bluetooth.BluetoothService;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
 import it.unina.is2project.sensorgames.bluetooth.Serializer;
 import it.unina.is2project.sensorgames.bluetooth.messages.IntegerMessage;
-import it.unina.is2project.sensorgames.pong.GamePong;
-import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
+import it.unina.is2project.sensorgames.pong.GamePongTwoPlayer;
 
 public class TwoPlayerActivity extends ActionBarActivity {
 
@@ -375,12 +372,12 @@ public class TwoPlayerActivity extends ActionBarActivity {
             sendMessage(ballChoise);
 
             // TODO MODIFICARE LA CLASSE TARGET DELL'INTENT!!!
-            Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongOnePlayer.class);
+            Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", isMaster);
             startActivity(mIntent);
         }else{
-            Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongOnePlayer.class);
+            Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", isMaster);
             startActivity(mIntent);
