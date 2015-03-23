@@ -308,15 +308,15 @@ public class GamePongTraining extends GamePong {
                 handler.setVelocityX(BALL_SPEED*2*DIRECTIONS.x);
                 handler.setVelocityY(BALL_SPEED*2*DIRECTIONS.y);
                 GAME_VELOCITY = 4;
-                barSprite.setWidth(CAMERA_WIDTH*0.3f);
+                barSprite.setWidth(CAMERA_WIDTH*0.2f);
                 break;
             }
 
             case INSANE_MODE: {
-                handler.setVelocityX(BALL_SPEED*3*DIRECTIONS.x);
-                handler.setVelocityY(BALL_SPEED*3*DIRECTIONS.y);
+                handler.setVelocityX(BALL_SPEED*4*DIRECTIONS.x);
+                handler.setVelocityY(BALL_SPEED*4*DIRECTIONS.y);
                 GAME_VELOCITY = 4;
-                barSprite.setWidth(CAMERA_WIDTH*0.2f);
+                barSprite.setWidth(CAMERA_WIDTH*0.15f);
                 break;
             }
         }
