@@ -2,12 +2,17 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.physics.PhysicsHandler;
+import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
@@ -25,6 +30,7 @@ public class GamePongOnePlayer extends GamePong {
         Scene
     */
     private boolean game_over = false;
+    private boolean isPause = false;
 
     /*
         Graphics
@@ -37,6 +43,11 @@ public class GamePongOnePlayer extends GamePong {
     private BitmapTextureAtlas lifeTexture;
     private ITextureRegion lifeTextureRegion;
     private List<Sprite> lifeSprites = new ArrayList<Sprite>();
+
+    // Pause
+    private BitmapTextureAtlas pauseTexture;
+    private ITextureRegion pauseTextureRegion;
+    private Sprite pauseSprite;
 
     /*
         Game data
@@ -57,6 +68,7 @@ public class GamePongOnePlayer extends GamePong {
     private boolean reduce_bar = false;
     private static final int REDUCE_BAR = 45;
 
+
     @Override
     protected void loadGraphics() {
         super.loadGraphics();
@@ -66,6 +78,7 @@ public class GamePongOnePlayer extends GamePong {
         lifeTexture = new BitmapTextureAtlas(getTextureManager(), starDraw.getIntrinsicWidth(), starDraw.getIntrinsicHeight());
         lifeTextureRegion = createFromResource(lifeTexture, this, R.drawable.life, 0, 0);
         lifeTexture.load();
+
     }
 
     @Override
@@ -108,6 +121,7 @@ public class GamePongOnePlayer extends GamePong {
          * - vy = - BALL_SPEED
          */
         handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+        GAME_VELOCITY = 2;
 
         /** The Update Handler is linked to the scene. It evalutates the condition of the scene every frame */
         scene.registerUpdateHandler(new IUpdateHandler() {
@@ -250,6 +264,17 @@ public class GamePongOnePlayer extends GamePong {
             if (score >= 31)
                 score -= 27;
         }
+    }
+
+    @Override
+    public void actionDownEvent() {
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d("","Touch event");
+        return super.onTouchEvent(event);
     }
 
     private void gameEvents(){

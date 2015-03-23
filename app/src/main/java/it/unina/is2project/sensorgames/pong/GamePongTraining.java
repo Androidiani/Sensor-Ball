@@ -44,8 +44,9 @@ public class GamePongTraining extends GamePong {
     private static final int INSANE_MODE = 2;
 
     // Events
-    private boolean settingsPause = false;
     private boolean enableModes = false;
+    private long firstTap;
+    private long secondTap;
 
     // Speed directions
     private Point DIRECTIONS;
@@ -59,69 +60,57 @@ public class GamePongTraining extends GamePong {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if(enableModes){
-                    Log.d("","Easy mode");
-                    setMode(EASY_MODE);
+                    secondTap = System.currentTimeMillis();
+                    if(secondTap - firstTap > 500) {
+                        Log.d("", "Easy mode");
+                        setMode(EASY_MODE);
+                    }
                 }
                 return true;
             }
         };
-        easySprite.setWidth(CAMERA_WIDTH*0.5f);
-        easySprite.setHeight(easySprite.getWidth()*0.581f); // 0.581 is the rate between image width and height
-        easySprite.setX((CAMERA_WIDTH - easySprite.getWidth())/2); // Position set after scaling
-        easySprite.setY(((CAMERA_HEIGHT - easySprite.getHeight())/2) - easySprite.getHeight());
-        scene.registerTouchArea(easySprite);
+        easySprite.setWidth(CAMERA_WIDTH * 0.5f);
+        easySprite.setHeight(easySprite.getWidth() * 0.581f); // 0.581 is the rate between image width and height
+        easySprite.setX((CAMERA_WIDTH - easySprite.getWidth()) / 2); // Position set after scaling
+        easySprite.setY(((CAMERA_HEIGHT - easySprite.getHeight()) / 2) - easySprite.getHeight());
 
         /** Adding the normalSprite to the scene */
         normalSprite = new Sprite(0, 0, normalTextureRegion, getVertexBufferObjectManager()){
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if(enableModes){
-                    Log.d("","Normal mode");
-                    setMode(NORMAL_MODE);
+                    secondTap = System.currentTimeMillis();
+                    if(secondTap - firstTap > 500) {
+                        Log.d("", "Normal mode");
+                        setMode(NORMAL_MODE);
+                    }
                 }
                 return true;
             }
         };
-        normalSprite.setWidth(CAMERA_WIDTH*0.5f);
-        normalSprite.setHeight(normalSprite.getWidth()*0.581f); // 0.581 is the rate between image width and height
-        normalSprite.setX((CAMERA_WIDTH - normalSprite.getWidth())/2); // Position set after scaling
-        normalSprite.setY((CAMERA_HEIGHT - normalSprite.getHeight())/2);
-        scene.registerTouchArea(normalSprite);
+        normalSprite.setWidth(CAMERA_WIDTH * 0.5f);
+        normalSprite.setHeight(normalSprite.getWidth() * 0.581f); // 0.581 is the rate between image width and height
+        normalSprite.setX((CAMERA_WIDTH - normalSprite.getWidth()) / 2); // Position set after scaling
+        normalSprite.setY((CAMERA_HEIGHT - normalSprite.getHeight()) / 2);
 
         /** Adding the insaneSprite to the scene */
         insaneSprite = new Sprite(0, 0, insaneTextureRegion, getVertexBufferObjectManager()){
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if(enableModes){
-                    Log.d("","Insane mode");
-                    setMode(INSANE_MODE);
+                    secondTap = System.currentTimeMillis();
+                    if(secondTap - firstTap > 500) {
+                        Log.d("", "Insane mode");
+                        setMode(INSANE_MODE);
+                    }
                 }
                 return true;
             }
         };
-        insaneSprite.setWidth(CAMERA_WIDTH*0.5f);
-        insaneSprite.setHeight(insaneSprite.getWidth()*0.581f); // 0.581 is the rate between image width and height
-        insaneSprite.setX((CAMERA_WIDTH - insaneSprite.getWidth())/2); // Position set after scaling
-        insaneSprite.setY(((CAMERA_HEIGHT - insaneSprite.getHeight())/2) + insaneSprite.getHeight());
-        scene.registerTouchArea(insaneSprite);
-
-        /** Adding the settingsSprite to the scene */
-        settingsSprite = new Sprite(0, 0, settingsTextureRegion, getVertexBufferObjectManager()){
-            @Override
-            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(!settingsPause){ // Can't touch settings again
-                    showMenu();
-                    settingsPause = true;
-                    enableModes = true;
-                }
-                return true;
-            }
-        };
-        settingsSprite.setWidth(CAMERA_WIDTH*0.1f);
-        settingsSprite.setHeight(CAMERA_WIDTH * 0.1f);
-        settingsSprite.setX(CAMERA_WIDTH - settingsSprite.getWidth()); // Position set after scaling
-        scene.attachChild(settingsSprite);
-        scene.registerTouchArea(settingsSprite);
+        insaneSprite.setWidth(CAMERA_WIDTH * 0.5f);
+        insaneSprite.setHeight(insaneSprite.getWidth() * 0.581f); // 0.581 is the rate between image width and height
+        insaneSprite.setX((CAMERA_WIDTH - insaneSprite.getWidth()) / 2); // Position set after scaling
+        insaneSprite.setY(((CAMERA_HEIGHT - insaneSprite.getHeight()) / 2) + insaneSprite.getHeight());
 
         /** Setting up the physics of the game */
         settingPhysics();
@@ -133,12 +122,6 @@ public class GamePongTraining extends GamePong {
     @Override
     protected void loadGraphics() {
         super.loadGraphics();
-
-        /** Settings button */
-        Drawable settingsDrawable = getResources().getDrawable(R.drawable.menu_button_settings);
-        settingsTexture = new BitmapTextureAtlas(getTextureManager(), settingsDrawable.getIntrinsicWidth(), settingsDrawable.getIntrinsicHeight());
-        settingsTextureRegion = createFromResource(settingsTexture, this,R.drawable.menu_button_settings , 0, 0);
-        settingsTexture.load();
 
         /** Easy mode */
         Drawable easyDrawable = getResources().getDrawable(R.drawable.training_setting_easy);
@@ -264,6 +247,15 @@ public class GamePongTraining extends GamePong {
         //do nothing
     }
 
+    @Override
+    public void actionDownEvent() {
+        if(!enableModes){
+            Log.i("","Game Paused");
+            showMenu();
+        }
+    }
+
+
     /**
      * Show the mode's menù
      */
@@ -276,11 +268,19 @@ public class GamePongTraining extends GamePong {
         handler.setVelocity(0f);
         GAME_VELOCITY = 0;
 
+        // Register Touch Area
+        scene.registerTouchArea(easySprite);
+        scene.registerTouchArea(normalSprite);
+        scene.registerTouchArea(insaneSprite);
+
         // Attach the menu's children
         scene.attachChild(easySprite);
         scene.attachChild(normalSprite);
         scene.attachChild(insaneSprite);
 
+        firstTap = System.currentTimeMillis();
+
+        enableModes = true;
     }
     /**
      * Hide the mode's menù
@@ -290,6 +290,13 @@ public class GamePongTraining extends GamePong {
         scene.detachChild(easySprite);
         scene.detachChild(normalSprite);
         scene.detachChild(insaneSprite);
+
+        // Unregister Touch Area
+        scene.unregisterTouchArea(easySprite);
+        scene.unregisterTouchArea(normalSprite);
+        scene.unregisterTouchArea(insaneSprite);
+
+        enableModes = false;
     }
     /**
      * Set the game's mode
@@ -321,8 +328,6 @@ public class GamePongTraining extends GamePong {
             }
         }
         hideMenu();
-        settingsPause = false;
-        enableModes = false;
     }
 
     /**

@@ -3,7 +3,10 @@ package it.unina.is2project.sensorgames.pong;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
@@ -19,6 +22,7 @@ import org.andengine.input.sensor.SensorDelay;
 import org.andengine.input.sensor.acceleration.AccelerationData;
 import org.andengine.input.sensor.acceleration.AccelerationSensorOptions;
 import org.andengine.input.sensor.acceleration.IAccelerationListener;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
@@ -31,6 +35,7 @@ import java.io.IOException;
 
 import it.unina.is2project.sensorgames.R;
 
+import static android.view.GestureDetector.SimpleOnGestureListener;
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromAsset;
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.setAssetBasePath;
@@ -100,7 +105,15 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     @Override
     protected Scene onCreateScene() {
         /** Create a new scene */
-        scene = new Scene();
+        scene = new Scene(){
+            @Override
+            public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
+                if(pSceneTouchEvent.isActionDown()){
+                    actionDownEvent();
+                }
+                return super.onSceneTouchEvent(pSceneTouchEvent);
+            }
+        };
 
         /** Setting up the background color */
         scene.setBackground(new Background(0f, 0f, 0f));
@@ -214,5 +227,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     abstract public void addScore();
 
     abstract public void remScore();
+
+    abstract public void actionDownEvent();
 
 }
