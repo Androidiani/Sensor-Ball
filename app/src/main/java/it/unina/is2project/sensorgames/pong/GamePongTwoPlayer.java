@@ -1,9 +1,9 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import org.andengine.engine.handler.IUpdateHandler;
@@ -20,25 +20,43 @@ public class GamePongTwoPlayer extends GamePong {
 
     private final String TAG = "2PlayersGame";
 
+    // Indicates the holding's ball
     private boolean haveBall = false;
+    // Indicates who starts game
+    private boolean isMaster = false;
+    // Indicates when we starts to play
+    private boolean synchronizedGame = false;
 
     // Service bluetooth
     private BluetoothService mBluetoothService = null;
 
     @Override
     protected Scene onCreateScene() {
-
         // Retrieve intent message
-        if(getIntent().getIntExtra("ball",0) == 1){
+        Intent i = getIntent();
+        if(i.getIntExtra("ball",0) == 1){
             haveBall = true;
         }else{
             haveBall = false;
         }
+
+        if(i.getIntExtra("master",0) == 1){
+            isMaster = true;
+            synchronizedGame = false;
+        }else{
+            isMaster = false;
+            synchronizedGame = true;
+        }
+
+        Log.d(TAG, "Sono master : " + isMaster);
+        Log.d(TAG, "Ho la palla : " + haveBall);
+        Log.d(TAG, "Sono pronto : " + synchronizedGame);
+
         super.onCreateScene();
 
-        settingPhysics();
-
         mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
+
+        settingPhysics();
 
         return scene;
 
@@ -56,7 +74,15 @@ public class GamePongTwoPlayer extends GamePong {
          * - vx = BALL_SPEED
          * - vy = - BALL_SPEED
          */
-        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+        if(!synchronizedGame){
+            handler.setVelocity(0, 0);
+            GAME_VELOCITY = 0;
+        }else {
+            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+            CoordsMessage cm = new CoordsMessage(Constants.MSG_TYPE_SYNC, 0, 0, 0);
+            sendMessage(cm);
+        }
+
 
         /** The Update Handler is linked to the scene. It evalutates the condition of the scene
          *  every frame.
@@ -86,7 +112,7 @@ public class GamePongTwoPlayer extends GamePong {
                     //handler.setVelocityY(-handler.getVelocityY());
                     //touch.play();
                     float xRatio = ballSprite.getX()/CAMERA_WIDTH;
-                    CoordsMessage cm = new CoordsMessage(Constants.MSG_TYPE_SYNC,
+                    CoordsMessage cm = new CoordsMessage(Constants.MSG_TYPE_DATA,
                             handler.getVelocityX(),
                             handler.getVelocityY(),
                             xRatio);
@@ -179,7 +205,7 @@ public class GamePongTwoPlayer extends GamePong {
                     byte[] readBuf = (byte[]) msg.obj;
                     CoordsMessage recMsg = (CoordsMessage) Serializer.deserializeObject(readBuf);
                     if(recMsg != null) {
-                        if (recMsg.TYPE == Constants.MSG_TYPE_SYNC && !haveBall) {
+                        if (recMsg.TYPE == Constants.MSG_TYPE_DATA && !haveBall) {
                             float xPos = (1-recMsg.X_RATIO) * CAMERA_WIDTH;
                             ballSprite.setPosition(xPos, 0 );
                             handler.setVelocity(-recMsg.VELOCITY_X,-recMsg.VELOCITY_Y);
@@ -188,6 +214,11 @@ public class GamePongTwoPlayer extends GamePong {
                             Log.i(TAG, "x = " + recMsg.VELOCITY_X + " y = " + recMsg.VELOCITY_Y);
                         } else {
                             Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
+                        }
+                        if (recMsg.TYPE == Constants.MSG_TYPE_SYNC && !synchronizedGame){
+                            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+                            GAME_VELOCITY = 2;
+                            synchronizedGame = true;
                         }
                     }else{
                         Log.e(TAG, "Ricevuto messaggio nullo.");
