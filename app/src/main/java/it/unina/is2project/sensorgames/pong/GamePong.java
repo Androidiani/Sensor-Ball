@@ -105,10 +105,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     @Override
     protected Scene onCreateScene() {
         /** Create a new scene */
-        scene = new Scene(){
+        scene = new Scene() {
             @Override
             public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
-                if(pSceneTouchEvent.isActionDown()){
+                if (pSceneTouchEvent.isActionDown()) {
                     actionDownEvent();
                 }
                 return super.onSceneTouchEvent(pSceneTouchEvent);
@@ -120,13 +120,13 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         /** Adding the ballSprite to the scene */
         ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
-        ballSprite.setWidth(CAMERA_WIDTH*0.1f);
-        ballSprite.setHeight(CAMERA_WIDTH*0.1f);
+        ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
+        ballSprite.setHeight(CAMERA_WIDTH * 0.1f);
         attachBall();
 
         /** Adding the barSprite to the scene */
         barSprite = new Sprite((CAMERA_WIDTH - barTexture.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barTexture.getHeight()), barTextureRegion, getVertexBufferObjectManager());
-        barSprite.setWidth(CAMERA_WIDTH*0.3f);
+        barSprite.setWidth(CAMERA_WIDTH * 0.3f);
         scene.attachChild(barSprite);
 
         /** Enable the Acceleration Sensor
@@ -184,7 +184,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         /** White Ball texture loading */
         Drawable ballDraw = getResources().getDrawable(R.drawable.ball_white);
         ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
-        ballTextureRegion = createFromResource(ballTexture, this,R.drawable.ball_white , 0, 0);
+        ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_white, 0, 0);
         ballTexture.load();
 
         /** Bar texture loading */

@@ -373,7 +373,6 @@ public class TwoPlayerActivity extends ActionBarActivity {
             IntegerMessage ballChoise = new IntegerMessage(Constants.MSG_TYPE_SYNC, privateNumber);
             sendMessage(ballChoise);
 
-            // TODO MODIFICARE LA CLASSE TARGET DELL'INTENT!!!
             Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", intMaster);
