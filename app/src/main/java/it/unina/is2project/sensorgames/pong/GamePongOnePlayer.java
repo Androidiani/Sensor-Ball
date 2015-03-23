@@ -94,11 +94,11 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(txtEvnt);
 
         /** Adding the life sprites to the scene */
-        for ( int i = 1 ; i <= MAX_LIFE ; i++ ){
-            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion,getVertexBufferObjectManager());
-            lifeSprite.setX(CAMERA_WIDTH - i*lifeSprite.getWidth());
+        for (int i = 1; i <= MAX_LIFE; i++) {
+            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
+            lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
             lifeSprites.add(lifeSprite);
-            scene.attachChild(lifeSprites.get(i-1));
+            scene.attachChild(lifeSprites.get(i - 1));
         }
 
         /** The score text is updated to the current value */
@@ -134,7 +134,7 @@ public class GamePongOnePlayer extends GamePong {
                 /** Edge's condition
                  *  The direction of the ball changes depending on the affected side
                  */
-                if(!game_over) {
+                if (!game_over) {
                     if ((ballSprite.getX() > rL - (int) ballSprite.getWidth() / 2) && previous_event != RIGHT) {
                         handler.setVelocityX(-handler.getVelocityX());
                         touch.play();
@@ -216,14 +216,14 @@ public class GamePongOnePlayer extends GamePong {
         life--;
 
         /** If the life count is less equal than 0, the game is over */
-        if(life < 0){
+        if (life < 0) {
             game_over = true;
             txtEvnt.setText("Game Over");
         }
         /** Else replace the ball */
-        else{
+        else {
             /** Setting the position on centre of screen */
-            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
+            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
 
             /** Set the direction upward */
             handler.setVelocityY(-handler.getVelocityY());
@@ -273,44 +273,44 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d("","Touch event");
+        Log.d("", "Touch event");
         return super.onTouchEvent(event);
     }
 
-    private void gameEvents(){
+    private void gameEvents() {
         /** This procedure understand what modifier needs according to the score */
 
         /** Increasing x2 tha bar speed */
-        if(score >= X2_BARSPEED && !x2_barspeed){
+        if (score >= X2_BARSPEED && !x2_barspeed) {
             GAME_VELOCITY *= 2;
             x2_barspeed = true;
             txtEvnt.setText("2X Bar Speed");
         }
 
         /** Increasing x2 the ball speed */
-        if(score >= X2_BALLSPEED && !x2_ballspeed){
-            handler.setVelocity(handler.getVelocityX()*2,handler.getVelocityY()*2);
+        if (score >= X2_BALLSPEED && !x2_ballspeed) {
+            handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
             x2_ballspeed = true;
             txtEvnt.setText("2X Ball Speed");
         }
 
         /** Increasing x3 the bar speed */
-        if(score >= X3_BARSPEED && !x3_barspeed){
+        if (score >= X3_BARSPEED && !x3_barspeed) {
             GAME_VELOCITY *= 1.5f;
             x3_barspeed = true;
             txtEvnt.setText("3X Bar Speed");
         }
 
         /** Increasing x4 the ball speed */
-        if(score >= X4_BALLSPEED && !x4_ballspeed){
-            handler.setVelocity(handler.getVelocityX()*2,handler.getVelocityY()*2);
+        if (score >= X4_BALLSPEED && !x4_ballspeed) {
+            handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
             x4_ballspeed = true;
             txtEvnt.setText("4X Ball Speed");
         }
 
         /** Scale the bar dimensions to small */
-        if(score >= REDUCE_BAR && !reduce_bar){
-            barSprite.setWidth(CAMERA_WIDTH*0.2f);
+        if (score >= REDUCE_BAR && !reduce_bar) {
+            barSprite.setWidth(CAMERA_WIDTH * 0.2f);
             reduce_bar = true;
             txtEvnt.setText("Bar dimension: small");
         }

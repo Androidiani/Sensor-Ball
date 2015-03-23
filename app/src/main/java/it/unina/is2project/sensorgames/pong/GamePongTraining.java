@@ -56,12 +56,12 @@ public class GamePongTraining extends GamePong {
         super.onCreateScene();
 
         /** Adding the easySprite to the scene */
-        easySprite = new Sprite(0, 0, easyTextureRegion, getVertexBufferObjectManager()){
+        easySprite = new Sprite(0, 0, easyTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(enableModes){
+                if (enableModes) {
                     secondTap = System.currentTimeMillis();
-                    if(secondTap - firstTap > 500) {
+                    if (secondTap - firstTap > 500) {
                         Log.d("", "Easy mode");
                         setMode(EASY_MODE);
                     }
@@ -75,12 +75,12 @@ public class GamePongTraining extends GamePong {
         easySprite.setY(((CAMERA_HEIGHT - easySprite.getHeight()) / 2) - easySprite.getHeight());
 
         /** Adding the normalSprite to the scene */
-        normalSprite = new Sprite(0, 0, normalTextureRegion, getVertexBufferObjectManager()){
+        normalSprite = new Sprite(0, 0, normalTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(enableModes){
+                if (enableModes) {
                     secondTap = System.currentTimeMillis();
-                    if(secondTap - firstTap > 500) {
+                    if (secondTap - firstTap > 500) {
                         Log.d("", "Normal mode");
                         setMode(NORMAL_MODE);
                     }
@@ -94,12 +94,12 @@ public class GamePongTraining extends GamePong {
         normalSprite.setY((CAMERA_HEIGHT - normalSprite.getHeight()) / 2);
 
         /** Adding the insaneSprite to the scene */
-        insaneSprite = new Sprite(0, 0, insaneTextureRegion, getVertexBufferObjectManager()){
+        insaneSprite = new Sprite(0, 0, insaneTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(enableModes){
+                if (enableModes) {
                     secondTap = System.currentTimeMillis();
-                    if(secondTap - firstTap > 500) {
+                    if (secondTap - firstTap > 500) {
                         Log.d("", "Insane mode");
                         setMode(INSANE_MODE);
                     }
@@ -126,19 +126,19 @@ public class GamePongTraining extends GamePong {
         /** Easy mode */
         Drawable easyDrawable = getResources().getDrawable(R.drawable.training_setting_easy);
         easyTexture = new BitmapTextureAtlas(getTextureManager(), easyDrawable.getIntrinsicWidth(), easyDrawable.getIntrinsicHeight());
-        easyTextureRegion = createFromResource(easyTexture, this,R.drawable.training_setting_easy , 0, 0);
+        easyTextureRegion = createFromResource(easyTexture, this, R.drawable.training_setting_easy, 0, 0);
         easyTexture.load();
 
         /** Normal mode */
         Drawable normalDrawable = getResources().getDrawable(R.drawable.training_setting_normal);
         normalTexture = new BitmapTextureAtlas(getTextureManager(), normalDrawable.getIntrinsicWidth(), normalDrawable.getIntrinsicHeight());
-        normalTextureRegion = createFromResource(normalTexture, this,R.drawable.training_setting_normal , 0, 0);
+        normalTextureRegion = createFromResource(normalTexture, this, R.drawable.training_setting_normal, 0, 0);
         normalTexture.load();
 
         /** Insane mode */
         Drawable insaneDrawable = getResources().getDrawable(R.drawable.training_setting_insane);
         insaneTexture = new BitmapTextureAtlas(getTextureManager(), insaneDrawable.getIntrinsicWidth(), insaneDrawable.getIntrinsicHeight());
-        insaneTextureRegion = createFromResource(insaneTexture, this,R.drawable.training_setting_insane , 0, 0);
+        insaneTextureRegion = createFromResource(insaneTexture, this, R.drawable.training_setting_insane, 0, 0);
         insaneTexture.load();
     }
 
@@ -249,8 +249,8 @@ public class GamePongTraining extends GamePong {
 
     @Override
     public void actionDownEvent() {
-        if(!enableModes){
-            Log.i("","Game Paused");
+        if (!enableModes) {
+            Log.i("", "Game Paused");
             showMenu();
         }
     }
@@ -259,10 +259,10 @@ public class GamePongTraining extends GamePong {
     /**
      * Show the mode's menù
      */
-    private void showMenu(){
+    private void showMenu() {
         // Store directions data
         DIRECTIONS = getDirections();
-        Log.d("","Directions:" + DIRECTIONS.x + " " + DIRECTIONS.y);
+        Log.d("", "Directions:" + DIRECTIONS.x + " " + DIRECTIONS.y);
 
         // Stop the ball
         handler.setVelocity(0f);
@@ -282,10 +282,11 @@ public class GamePongTraining extends GamePong {
 
         enableModes = true;
     }
+
     /**
      * Hide the mode's menù
      */
-    private void hideMenu(){
+    private void hideMenu() {
         // Detach menu's children
         scene.detachChild(easySprite);
         scene.detachChild(normalSprite);
@@ -298,32 +299,33 @@ public class GamePongTraining extends GamePong {
 
         enableModes = false;
     }
+
     /**
      * Set the game's mode
      */
-    private void setMode(int mode){
+    private void setMode(int mode) {
         switch (mode) {
             case EASY_MODE: {
-                handler.setVelocityX(BALL_SPEED*DIRECTIONS.x);
-                handler.setVelocityY(BALL_SPEED*DIRECTIONS.y);
+                handler.setVelocityX(BALL_SPEED * DIRECTIONS.x);
+                handler.setVelocityY(BALL_SPEED * DIRECTIONS.y);
                 GAME_VELOCITY = 2;
-                barSprite.setWidth(CAMERA_WIDTH*0.3f);
+                barSprite.setWidth(CAMERA_WIDTH * 0.3f);
                 break;
             }
 
             case NORMAL_MODE: {
-                handler.setVelocityX(BALL_SPEED*2*DIRECTIONS.x);
-                handler.setVelocityY(BALL_SPEED*2*DIRECTIONS.y);
+                handler.setVelocityX(BALL_SPEED * 2 * DIRECTIONS.x);
+                handler.setVelocityY(BALL_SPEED * 2 * DIRECTIONS.y);
                 GAME_VELOCITY = 4;
-                barSprite.setWidth(CAMERA_WIDTH*0.2f);
+                barSprite.setWidth(CAMERA_WIDTH * 0.2f);
                 break;
             }
 
             case INSANE_MODE: {
-                handler.setVelocityX(BALL_SPEED*4*DIRECTIONS.x);
-                handler.setVelocityY(BALL_SPEED*4*DIRECTIONS.y);
+                handler.setVelocityX(BALL_SPEED * 4 * DIRECTIONS.x);
+                handler.setVelocityY(BALL_SPEED * 4 * DIRECTIONS.y);
                 GAME_VELOCITY = 4;
-                barSprite.setWidth(CAMERA_WIDTH*0.15f);
+                barSprite.setWidth(CAMERA_WIDTH * 0.15f);
                 break;
             }
         }
@@ -332,21 +334,22 @@ public class GamePongTraining extends GamePong {
 
     /**
      * Get the directions of the ball
+     *
      * @return
      */
-    private Point getDirections(){
+    private Point getDirections() {
         Point mPoint = new Point();
-        if(handler.getVelocityX() < 0 && handler.getVelocityY() < 0){
-            mPoint.set(-1,-1);
+        if (handler.getVelocityX() < 0 && handler.getVelocityY() < 0) {
+            mPoint.set(-1, -1);
         }
-        if(handler.getVelocityX() < 0 && handler.getVelocityY() > 0){
-            mPoint.set(-1,1);
+        if (handler.getVelocityX() < 0 && handler.getVelocityY() > 0) {
+            mPoint.set(-1, 1);
         }
-        if(handler.getVelocityX() > 0 && handler.getVelocityY() < 0){
-            mPoint.set(1,-1);
+        if (handler.getVelocityX() > 0 && handler.getVelocityY() < 0) {
+            mPoint.set(1, -1);
         }
-        if(handler.getVelocityX() > 0 && handler.getVelocityY() > 0){
-            mPoint.set(1,1);
+        if (handler.getVelocityX() > 0 && handler.getVelocityY() > 0) {
+            mPoint.set(1, 1);
         }
         return mPoint;
     }
