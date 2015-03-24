@@ -18,7 +18,7 @@ import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.bluetooth.BluetoothService;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
 import it.unina.is2project.sensorgames.bluetooth.Serializer;
-import it.unina.is2project.sensorgames.bluetooth.messages.CoordsMessage;
+import it.unina.is2project.sensorgames.bluetooth.messages.AppMessage;
 
 public class GamePongTwoPlayer extends GamePong {
 
@@ -91,8 +91,8 @@ public class GamePongTwoPlayer extends GamePong {
             GAME_VELOCITY = 0;
         }else {
             handler.setVelocity(BALL_SPEED, -BALL_SPEED);
-            CoordsMessage cm = new CoordsMessage(Constants.MSG_TYPE_SYNC, 0, 0, 0);
-            sendMessage(cm);
+            AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
+            sendMessage(messageSync);
         }
 
 
@@ -125,11 +125,11 @@ public class GamePongTwoPlayer extends GamePong {
                     //handler.setVelocityY(-handler.getVelocityY());
                     //touch.play();
                     float xRatio = ballSprite.getX()/CAMERA_WIDTH;
-                    CoordsMessage cm = new CoordsMessage(Constants.MSG_TYPE_DATA,
+                    AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
                             handler.getVelocityX(),
                             handler.getVelocityY(),
                             xRatio);
-                    sendMessage(cm);
+                    sendMessage(messageCoords);
                     //scene.detachChild(ballSprite);
                     haveBall = false;
                     transferringBall = true;
@@ -230,18 +230,19 @@ public class GamePongTwoPlayer extends GamePong {
                 case Constants.MESSAGE_READ:
                     Log.i(TAG, "Message Read");
                     byte[] readBuf = (byte[]) msg.obj;
-                    CoordsMessage recMsg = (CoordsMessage) Serializer.deserializeObject(readBuf);
+                    AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
+                    //CoordsMessage recMsg = (CoordsMessage) Serializer.deserializeObject(readBuf);
                     if(recMsg != null) {
                         switch (recMsg.TYPE){
-                            case Constants.MSG_TYPE_DATA:
+                            case Constants.MSG_TYPE_COORDS:
                                 if(!haveBall){
-                                    float xPos = (1-recMsg.X_RATIO) * CAMERA_WIDTH;
+                                    float xPos = (1-recMsg.OP4) * CAMERA_WIDTH;
                                     ballSprite.setPosition(xPos, -ballSprite.getWidth()/2 );
-                                    handler.setVelocity(-recMsg.VELOCITY_X,-recMsg.VELOCITY_Y);
+                                    handler.setVelocity(-recMsg.OP2,-recMsg.OP3);
                                     scene.attachChild(ballSprite);
                                     transferringBall = true;
                                     haveBall = true;
-                                    Log.i(TAG, "x = " + recMsg.VELOCITY_X + " y = " + recMsg.VELOCITY_Y);
+                                    Log.i(TAG, "x = " + recMsg.OP2 + " y = " + recMsg.OP3);
                                 }
                                 break;
 
@@ -285,21 +286,21 @@ public class GamePongTwoPlayer extends GamePong {
         }
     };
 
-    private void sendMessage(CoordsMessage fm){
+    private void sendMessage(AppMessage message){
         if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        byte[] send = Serializer.serializeObject(fm);
+        byte[] send = Serializer.serializeObject(message);
         mBluetoothService.write(send);
     }
 
     @Override
     public void onBackPressed() {
         if(synchronizedGame) {
-            CoordsMessage cm = new CoordsMessage(Constants.MSG_TYPE_FAIL, 0, 0, 0);
-            sendMessage(cm);
+            AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
+            sendMessage(messageFail);
             synchronizedGame = false;
         }
         setResult(Activity.RESULT_CANCELED);
