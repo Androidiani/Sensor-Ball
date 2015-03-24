@@ -52,7 +52,7 @@
     <string name="sts_multi_win">Win</string>
     <string name="sts_multi_perc">Winning rate</string>
     <string name="sts_null">Null</string>
-    <string name="sts_position">Position</string>
+    <string name="sts_position">#</string>
     <string name="sts_name">Player</string>
     <string name="sts_score">Score</string>
     <string name="sts_date">Date</string>
