@@ -99,6 +99,9 @@ public class TwoPlayerActivity extends ActionBarActivity {
     // ListView
     private ListView listDevice;
 
+    // Request Code
+    private final int GAME_START = 200;
+
     //----------------------------------------------
     // LIFECYCLE METHODS
     //----------------------------------------------
@@ -235,6 +238,13 @@ public class TwoPlayerActivity extends ActionBarActivity {
                         mStatus = true;
                         switchBluetooth.setChecked(true);
                     }
+                }
+            case GAME_START:
+                mBluetoothService.getBluetoothService(getApplicationContext(), mHandler);
+                if(resultCode == Activity.RESULT_CANCELED){
+                    Log.d(TAG, "2 Players Game Was Canceled");
+                    mBluetoothService.stop();
+                    mBluetoothService.start();
                 }
         }
     }
@@ -376,12 +386,14 @@ public class TwoPlayerActivity extends ActionBarActivity {
             Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", intMaster);
-            startActivity(mIntent);
+            startActivityForResult(mIntent, GAME_START);
+            //startActivity(mIntent);
         }else{
             Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", intMaster);
-            startActivity(mIntent);
+            startActivityForResult(mIntent, GAME_START);
+            //startActivity(mIntent);
         }
     }
 
@@ -535,10 +547,13 @@ public class TwoPlayerActivity extends ActionBarActivity {
                             Log.i(TAG, "Listening...");
                             break;
                         case BluetoothService.STATE_NONE:
+                            Log.i(TAG, "State None");
                             btnPlay.setEnabled(false);
                             mConnectedDeviceName = null;
                             privateNumber = null;
                             txtEnemy.setText("");
+                            stringArrayAdapter.clear();
+                            stringArrayAdapter.notifyDataSetChanged();
                             break;
                     }
                     break;

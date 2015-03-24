@@ -12,6 +12,8 @@ public interface Constants {
     // Message types
     public static final int MSG_TYPE_DATA = 6;
     public static final int MSG_TYPE_SYNC = 7;
+    public static final int MSG_TYPE_FAIL = 8;
+
 
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
