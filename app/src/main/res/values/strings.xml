@@ -61,5 +61,6 @@
     <string name="alert_bluetooth_activator">Bluetooth is disabled, please active bluetooth and retry. Do you want to activate bluetooth now?</string>
     <string name="text_yes">Yes</string>
     <string name="text_no">No</string>
+    <string name="text_opponent_left">Your opponent\nleft the game</string>
 
 </resources>

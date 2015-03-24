@@ -34,7 +34,7 @@ import java.util.Set;
 import it.unina.is2project.sensorgames.bluetooth.BluetoothService;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
 import it.unina.is2project.sensorgames.bluetooth.Serializer;
-import it.unina.is2project.sensorgames.bluetooth.messages.IntegerMessage;
+import it.unina.is2project.sensorgames.bluetooth.messages.AppMessage;
 import it.unina.is2project.sensorgames.pong.GamePongTwoPlayer;
 
 public class TwoPlayerActivity extends ActionBarActivity {
@@ -98,6 +98,9 @@ public class TwoPlayerActivity extends ActionBarActivity {
 
     // ListView
     private ListView listDevice;
+
+    // Request Code
+    private final int GAME_START = 200;
 
     //----------------------------------------------
     // LIFECYCLE METHODS
@@ -236,6 +239,15 @@ public class TwoPlayerActivity extends ActionBarActivity {
                         switchBluetooth.setChecked(true);
                     }
                 }
+            case GAME_START:
+                mBluetoothService.getBluetoothService(getApplicationContext(), mHandler);
+                if(resultCode == Activity.RESULT_CANCELED){
+                    Log.d(TAG, "2 Players Game Was Canceled");
+                    mBluetoothService.stop();
+                    isMaster = false;
+                    privateNumber = null;
+                    mBluetoothService.start();
+                }
         }
     }
 
@@ -370,18 +382,18 @@ public class TwoPlayerActivity extends ActionBarActivity {
             Random rand = new Random();
             privateNumber = rand.nextInt(1000);
             privateNumber = privateNumber % 2;
-            IntegerMessage ballChoise = new IntegerMessage(Constants.MSG_TYPE_SYNC, privateNumber);
+            AppMessage ballChoise = new AppMessage(Constants.MSG_TYPE_INTEGER, privateNumber);
             sendMessage(ballChoise);
 
             Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", intMaster);
-            startActivity(mIntent);
+            startActivityForResult(mIntent, GAME_START);
         }else{
             Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
             mIntent.putExtra("ball", privateNumber);
             mIntent.putExtra("master", intMaster);
-            startActivity(mIntent);
+            startActivityForResult(mIntent, GAME_START);
         }
     }
 
@@ -406,7 +418,6 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 //If bluetooth is not enable, it enables.
                 Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
-                //mStatus = true;
 
                 Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_bluetoothActived) ,
                         Toast.LENGTH_LONG).show();
@@ -482,7 +493,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
         isMaster = true;
     }
 
-    private void sendMessage(IntegerMessage ballChoise) {
+    private void sendMessage(AppMessage ballChoise) {
         if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
             return;
@@ -535,10 +546,13 @@ public class TwoPlayerActivity extends ActionBarActivity {
                             Log.i(TAG, "Listening...");
                             break;
                         case BluetoothService.STATE_NONE:
+                            Log.i(TAG, "State None");
                             btnPlay.setEnabled(false);
                             mConnectedDeviceName = null;
                             privateNumber = null;
                             txtEnemy.setText("");
+                            stringArrayAdapter.clear();
+                            stringArrayAdapter.notifyDataSetChanged();
                             break;
                     }
                     break;
@@ -547,22 +561,21 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 case Constants.MESSAGE_READ:
                     if(!isMaster) {
                         byte[] readBuf = (byte[]) msg.obj;
-                        IntegerMessage recMsg = (IntegerMessage) Serializer.deserializeObject(readBuf);
+                        AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
                         if (recMsg != null) {
-                            if (recMsg.TYPE == Constants.MSG_TYPE_SYNC) {
-                                if (recMsg.MESSAGE == 0) {
-                                    privateNumber = new Integer(1);
-                                } else {
-                                    privateNumber = new Integer(0);
-                                }
-                                btnPlay.setEnabled(true);
-                            } else {
-                                Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
+                            switch (recMsg.TYPE){
+                                case Constants.MSG_TYPE_INTEGER:
+                                    privateNumber = recMsg.OP1 == 0 ? new Integer(1) : new Integer(0);
+                                    btnPlay.setEnabled(true);
+                                    break;
+                                default:
+                                    Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
+
                             }
                         } else {
                             Log.e(TAG, "Ricevuto messaggio nullo.");
                         }
-                        Log.i(TAG, "Numero ricevuto " + recMsg.MESSAGE);
+                        Log.i(TAG, "Numero ricevuto " + recMsg.OP1);
                     }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
