@@ -332,25 +332,4 @@ public class GamePongTraining extends GamePong {
         hideMenu();
     }
 
-    /**
-     * Get the directions of the ball
-     *
-     * @return
-     */
-    private Point getDirections() {
-        Point mPoint = new Point();
-        if (handler.getVelocityX() < 0 && handler.getVelocityY() < 0) {
-            mPoint.set(-1, -1);
-        }
-        if (handler.getVelocityX() < 0 && handler.getVelocityY() > 0) {
-            mPoint.set(-1, 1);
-        }
-        if (handler.getVelocityX() > 0 && handler.getVelocityY() < 0) {
-            mPoint.set(1, -1);
-        }
-        if (handler.getVelocityX() > 0 && handler.getVelocityY() > 0) {
-            mPoint.set(1, 1);
-        }
-        return mPoint;
-    }
 }

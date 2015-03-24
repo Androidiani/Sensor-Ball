@@ -1,5 +1,6 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -59,16 +60,16 @@ public class GamePongOnePlayer extends GamePong {
     private int level;
     private boolean level_one = true;
     private static final int LEVEL_ONE = 0;
-    private static final int BARRIER_ONE = 150;
+    private static final int BARRIER_ONE = 10;
     private boolean level_two = false;
     private static final int LEVEL_TWO = 0;
-    private static final int BARRIER_TWO = 300;
+    private static final int BARRIER_TWO = 60;
     private boolean level_three = false;
     private static final int LEVEL_THREE = 2;
-    private static final int BARRIER_THREE = 900;
+    private static final int BARRIER_THREE = 400;
     private boolean level_four = false;
     private static final int LEVEL_FOUR = 3;
-    private static final int BARRIER_FOUR = 1800;
+    private static final int BARRIER_FOUR = 1000;
     private boolean level_five = false;
     private static final int LEVEL_FIVE = 4;
     private static final int BARRIER_FIVE = 3600;
@@ -82,10 +83,22 @@ public class GamePongOnePlayer extends GamePong {
     // Events
     private int game_event;
     private boolean new_event = true;
+    private boolean no_event = false;
+    private boolean rush_hour = false;
+    private boolean party_time = false;
+    private boolean freeze = false;
     private static final int NO_EVENT = 0;
-    private static final int RUSH_HOUR = 1;
-    private static final int PARTY_TIME = 2;
+    private static final int RUSH_HOUR = 2;
+    private static final int PARTY_TIME = 1;
     private static final int FREEZE = 3;
+
+    // Pause utils
+    private boolean pause = false;
+    private Point directions;
+    private float old_x_speed;
+    private float old_y_speed;
+    private int old_game_speed;
+    private long tap;
 
 
     @Override
@@ -218,9 +231,6 @@ public class GamePongOnePlayer extends GamePong {
                 /** Game levels section */
                 gameLevels();
 
-                /** Setting up random events generator */
-                randomEventsGenerator();
-
                 /** Game events section */
                 gameEvents();
             }
@@ -311,7 +321,22 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     public void actionDownEvent() {
-        // do nothing
+        if(!pause) {
+            directions = getDirections();
+            old_x_speed = handler.getVelocityX();
+            old_y_speed = handler.getVelocityY();
+            old_game_speed = GAME_VELOCITY;
+            tap = System.currentTimeMillis();
+            handler.setVelocity(0);
+            GAME_VELOCITY = 0;
+            pause = true;
+        }
+
+        if(pause && (System.currentTimeMillis() - tap > 500)){
+            handler.setVelocity(old_x_speed,old_y_speed);
+            GAME_VELOCITY = old_game_speed;
+            pause = false;
+        }
     }
 
 
@@ -323,36 +348,42 @@ public class GamePongOnePlayer extends GamePong {
         }
 
         if(score >= BARRIER_ONE && score < BARRIER_TWO && !level_two) {
+            level = LEVEL_TWO;
             GAME_VELOCITY *= 2;
             level_two = true;
             txtLvl.setText("Level two");
         }
 
         if(score >= BARRIER_TWO && score < BARRIER_THREE && !level_three) {
+            level = LEVEL_THREE;
             handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
             level_three = true;
             txtLvl.setText("Level three");
         }
 
         if(score >= BARRIER_THREE && score < BARRIER_FOUR && !level_four) {
+            level = LEVEL_FOUR;
             barSprite.setWidth(0.2f * CAMERA_WIDTH);
             level_four = true;
             txtLvl.setText("Level four");
         }
 
         if(score >= BARRIER_FOUR && score < BARRIER_FIVE && !level_five) {
+            level = LEVEL_FIVE;
             handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
             level_five = true;
             txtLvl.setText("Level five");
         }
 
         if(score >= BARRIER_FIVE && score < BARRIER_SIX && !level_six) {
+            level = LEVEL_SIX;
             barSprite.setWidth(0.15f * CAMERA_WIDTH);
             level_six = true;
             txtLvl.setText("Level six");
         }
 
         if(score >= BARRIER_SEVEN && !level_seven) {
+            level = LEVEL_SEVEN;
             handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
             level_seven = true;
             txtLvl.setText("Level seven");
@@ -369,24 +400,10 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void gameEvents(){
-        switch(game_event){
-            case NO_EVENT:
-                txtEvnt.setText("");
-                break;
 
-            case RUSH_HOUR:
-                txtEvnt.setText("Rush Hour");
-                break;
+        /** Setting up random events generator */
+        randomEventsGenerator();
 
-            case PARTY_TIME:
-                txtEvnt.setText("Party Time");
-                break;
-
-            case FREEZE:
-                txtEvnt.setText("Freeze");
-                handler.setVelocity(handler.getVelocityX()/2, handler.getVelocityY()/2);
-                break;
-        }
     }
 
     class SetGameEvents extends TimerTask {
@@ -394,9 +411,10 @@ public class GamePongOnePlayer extends GamePong {
         @Override
         public void run() {
             Random random = new Random();
-            if(game_event == FREEZE)
-                handler.setVelocity(handler.getVelocityX()*2, handler.getVelocityY()*2); // If previous event was FREEZE
-            game_event = random.nextInt(3);
+
+            if(level != LEVEL_ONE)
+                game_event = random.nextInt(level);
+
             new_event = true;
         }
     }

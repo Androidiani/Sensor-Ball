@@ -216,6 +216,28 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         }
     }
 
+    /**
+     * Get the directions of the ball
+     *
+     * @return
+     */
+    protected Point getDirections() {
+        Point mPoint = new Point();
+        if (handler.getVelocityX() < 0 && handler.getVelocityY() < 0) {
+            mPoint.set(-1, -1);
+        }
+        if (handler.getVelocityX() < 0 && handler.getVelocityY() > 0) {
+            mPoint.set(-1, 1);
+        }
+        if (handler.getVelocityX() > 0 && handler.getVelocityY() < 0) {
+            mPoint.set(1, -1);
+        }
+        if (handler.getVelocityX() > 0 && handler.getVelocityY() > 0) {
+            mPoint.set(1, 1);
+        }
+        return mPoint;
+    }
+
     protected void attachBall() {
         scene.attachChild(ballSprite);
     }
