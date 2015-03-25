@@ -5,12 +5,11 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.Display;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
@@ -35,10 +34,7 @@ import java.io.IOException;
 
 import it.unina.is2project.sensorgames.R;
 
-import static android.view.GestureDetector.SimpleOnGestureListener;
-import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromAsset;
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
-import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.setAssetBasePath;
 
 public abstract class GamePong extends SimpleBaseGameActivity implements IAccelerationListener {
 
@@ -64,6 +60,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected static final int SIDE = 5;
     protected static final int OVER = 6;
     protected int previous_event = 0;
+    protected boolean game_over = false;
 
     /*
         Graphics
@@ -161,8 +158,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     @Override
-    public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {
-    }
+    public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {}
 
     @Override
     public void onAccelerationChanged(AccelerationData pAccelerationData) {
@@ -216,6 +212,145 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         }
     }
 
+    protected void settingPhysics() {
+        /** A physics handler is linked to the ballSprite */
+        handler = new PhysicsHandler(ballSprite);
+        ballSprite.registerUpdateHandler(handler);
+
+        /** The ball has the initial speed
+         * - vx = BALL_SPEED
+         * - vy = - BALL_SPEED
+         */
+        setBallVeloctity();
+
+        /** The Update Handler is linked to the scene. It evalutates the condition of the scene every frame */
+        scene.registerUpdateHandler(new IUpdateHandler() {
+            @Override
+            public void onUpdate(float pSecondsElapsed) {
+                /** Edge's condition
+                 *  The direction of the ball changes depending on the affected side */
+                if(!game_over) {
+                    if (leftCondition()) {
+                        collidesLeft();
+                    }
+                    if (rightCondition()) {
+                        collidesRight();
+                    }
+                    if (topCondition()) {
+                        collidesTop();
+                    }
+                    if (bottomCondition()) {
+                        collidesBottom();
+                    }
+
+                    /** When the barSprite and the ballSprite collides */
+                    if (ballSprite.collidesWith(barSprite)) {
+                        collidesBar();
+                    }
+
+                    /** Game levels section */
+                    gameLevels();
+                    /** Game events section */
+                    gameEvents();
+                }
+            }
+
+            @Override
+            public void reset() {
+            }
+        });
+    }
+
+    protected void attachBall() {
+        scene.attachChild(ballSprite);
+    }
+
+    protected void setBallVeloctity() {
+        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+    }
+
+    protected boolean leftCondition() {
+        if (ballSprite.getX() < 0 && previous_event != LEFT) {
+            return true;
+        } else return false;
+    }
+
+    protected boolean rightCondition() {
+        int rL = CAMERA_WIDTH - (int) ballSprite.getWidth() / 2;
+        if ((ballSprite.getX() > rL - (int) ballSprite.getWidth() / 2) && previous_event != RIGHT) {
+            return true;
+        } else return false;
+    }
+
+    protected boolean topCondition() {
+        if (ballSprite.getY() < 0 && previous_event != TOP) {
+            return true;
+        } else return false;
+    }
+
+    protected boolean bottomCondition() {
+        int bL = CAMERA_HEIGHT - (int) ballSprite.getHeight() / 2;
+        if ((ballSprite.getY() > bL - (int) ballSprite.getHeight() / 2) && previous_event != BOTTOM) {
+            return true;
+        } else return false;
+    }
+
+    protected void collidesLeft() {
+        Log.d("", "Left. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        previous_event = LEFT;
+        handler.setVelocityX(-handler.getVelocityX());
+        touch.play();
+    }
+
+    protected void collidesRight() {
+        Log.d("", "Right. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        previous_event = RIGHT;
+        handler.setVelocityX(-handler.getVelocityX());
+        touch.play();
+    }
+
+    protected void collidesTop() {
+        Log.d("", "Top. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        previous_event = TOP;
+        handler.setVelocityY(-handler.getVelocityY());
+        touch.play();
+    }
+
+    protected void collidesBottom() {
+        Log.d("", "Bottom. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        previous_event = BOTTOM;
+        scene.detachChild(ballSprite);
+        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
+        handler.setVelocityY(-handler.getVelocityY());
+        scene.attachChild(ballSprite);
+    }
+
+    protected void collidesBar() {
+        /** Condition variable who understand if the ball hit the bar side or front
+         *
+         * - ya: is the relative position of the ball according
+         *      to the CAMERA_HEIGHT
+         * - yb: is the relative position of the ball according
+         *      to the CAMERA_HEIGHT
+         */
+        float ya = ballSprite.getY() - ballSprite.getHeight() / 2;
+        float yb = barSprite.getY() - barSprite.getHeight() / 2;
+
+        /** The ball hit the bar's top surface */
+        if (ya <= yb && previous_event != OVER && previous_event != SIDE) {
+            Log.d("", "Over. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+            previous_event = OVER;
+            handler.setVelocityY(-handler.getVelocityY());
+        }
+        /** The ball hit the bar's side surface */
+        if (previous_event != SIDE && previous_event != OVER) {
+            Log.d("", "Side. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+            previous_event = SIDE;
+            handler.setVelocityX(-handler.getVelocityX());
+        }
+        touch.play();
+    }
+
     /**
      * Get the directions of the ball
      *
@@ -238,18 +373,16 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         return mPoint;
     }
 
-    protected void attachBall() {
-        scene.attachChild(ballSprite);
-    }
+    protected abstract void gameLevels();
 
-    abstract public void settingPhysics();
+    protected abstract void gameEvents();
 
-    abstract public void restartOnBallLost();
+    protected abstract void addScore();
 
-    abstract public void addScore();
+    protected abstract void remScore();
 
-    abstract public void remScore();
+    protected abstract void actionDownEvent();
 
-    abstract public void actionDownEvent();
+    protected abstract void gameOver();
 
 }

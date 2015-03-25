@@ -74,126 +74,6 @@ public class GamePongTwoPlayer extends GamePong {
 
     }
 
-    @Override
-    public void settingPhysics() {
-        /** Setting up physics
-         * - A physics handler is linked to the ballSprite
-         */
-        handler = new PhysicsHandler(ballSprite);
-        ballSprite.registerUpdateHandler(handler);
-
-        /** The ball has the initial speed
-         * - vx = BALL_SPEED
-         * - vy = - BALL_SPEED
-         */
-        if(!synchronizedGame){
-            handler.setVelocity(0, 0);
-            GAME_VELOCITY = 0;
-        }else {
-            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
-            AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
-            sendMessage(messageSync);
-        }
-
-
-        /** The Update Handler is linked to the scene. It evalutates the condition of the scene
-         *  every frame.
-         */
-        scene.registerUpdateHandler(new IUpdateHandler() {
-            @Override
-            public void onUpdate(float pSecondsElapsed) {
-                /** Border variables */
-                int rL = CAMERA_WIDTH - (int) ballSprite.getWidth() / 2;
-                int bL = CAMERA_HEIGHT - (int) ballSprite.getHeight() / 2;
-
-                /** Edge's condition
-                 *  The direction of the ball changes depending on the
-                 *  affected side
-                 */
-                if ((ballSprite.getX() > rL - (int) ballSprite.getWidth() / 2) && previous_event != RIGHT) {
-                    handler.setVelocityX(-handler.getVelocityX());
-                    touch.play();
-                    previous_event = RIGHT;
-                }
-                if (ballSprite.getX() < 0 && previous_event != LEFT) {
-                    handler.setVelocityX(-handler.getVelocityX());
-                    touch.play();
-                    previous_event = LEFT;
-                }
-                //if (ballSprite.getY() < 0 && previous_event != TOP && haveBall) {
-                if (ballSprite.getY() < ballSprite.getWidth()/2 && previous_event != TOP && haveBall && !transferringBall) {
-                    //handler.setVelocityY(-handler.getVelocityY());
-                    //touch.play();
-                    float xRatio = ballSprite.getX()/CAMERA_WIDTH;
-                    AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
-                            handler.getVelocityX(),
-                            handler.getVelocityY(),
-                            xRatio);
-                    sendMessage(messageCoords);
-                    //scene.detachChild(ballSprite);
-                    haveBall = false;
-                    transferringBall = true;
-                    previous_event = TOP;
-                }
-                if (ballSprite.getY() < -ballSprite.getWidth()/2){
-                    scene.detachChild(ballSprite);
-                    transferringBall = false;
-                }
-                if (ballSprite.getY() > ballSprite.getWidth()/2){
-                    transferringBall = false;
-                }
-
-                if ((ballSprite.getY() > bL - (int) ballSprite.getHeight() / 2) && previous_event != BOTTOM) {
-                    previous_event = BOTTOM;
-                    restartOnBallLost();
-                }
-
-                /** When the barSprite and the ballSprite collides */
-                if (ballSprite.collidesWith(barSprite)) {
-                    /** Condition variable who understand if the ball hit the bar side or front
-                     *
-                     * - ya: is the relative position of the ball according
-                     *      to the CAMERA_HEIGHT
-                     * - yb: is the relative position of the ball according
-                     *      to the CAMERA_HEIGHT
-                     */
-                    float ya = ballSprite.getY() - ballSprite.getHeight() / 2;
-                    float yb = barSprite.getY() - barSprite.getHeight() / 2;
-
-                    /** The ball hit the bar's top surface */
-                    if (ya <= yb && previous_event != OVER && previous_event != SIDE) {
-                        handler.setVelocityY(-handler.getVelocityY());
-                        previous_event = OVER;
-                    }
-                    /** The ball hit the bar's side surface */
-                    if (previous_event != SIDE && previous_event != OVER) {
-                        handler.setVelocityX(-handler.getVelocityX());
-                        previous_event = SIDE;
-                    }
-                    touch.play();
-                }
-            }
-
-            @Override
-            public void reset() {
-            }
-        });
-    }
-
-    @Override
-    public void restartOnBallLost() {
-        /**  The ballSprite is detached */
-        scene.detachChild(ballSprite);
-
-        /** Setting the position on centre of screen */
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
-
-        /** Set the direction upward */
-        handler.setVelocityY(-handler.getVelocityY());
-
-        /** The ballSprite is attached */
-        scene.attachChild(ballSprite);
-    }
 
     @Override
     public void addScore() {
@@ -211,9 +91,23 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
+    protected void gameOver() {
+
+    }
+
+    @Override
     protected void attachBall() {
         Log.i(TAG, "Call drawBall() with haveBall = " + haveBall);
         if(haveBall) super.attachBall();
+    }
+
+    @Override
+    protected void gameLevels() {
+
+    }
+
+    @Override
+    protected void gameEvents() {
 
     }
 
@@ -231,7 +125,6 @@ public class GamePongTwoPlayer extends GamePong {
                     Log.i(TAG, "Message Read");
                     byte[] readBuf = (byte[]) msg.obj;
                     AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
-                    //CoordsMessage recMsg = (CoordsMessage) Serializer.deserializeObject(readBuf);
                     if(recMsg != null) {
                         switch (recMsg.TYPE){
                             case Constants.MSG_TYPE_COORDS:
@@ -305,5 +198,51 @@ public class GamePongTwoPlayer extends GamePong {
         }
         setResult(Activity.RESULT_CANCELED);
         super.onBackPressed();
+    }
+
+    @Override
+    protected void setBallVeloctity() {
+        /** The ball has the initial speed
+         * - vx = BALL_SPEED
+         * - vy = - BALL_SPEED
+         */
+        if(!synchronizedGame){
+            handler.setVelocity(0, 0);
+            GAME_VELOCITY = 0;
+        }else {
+            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+            AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
+            sendMessage(messageSync);
+        }
+    }
+
+    @Override
+    protected boolean topCondition() {
+        if (ballSprite.getY() < 0 && previous_event != TOP && haveBall){
+            return true;
+        }
+        else return false;
+        //return super.topCondition() && haveBall;
+    }
+
+    @Override
+    protected void collidesTop() {
+        Log.d(TAG, "Top. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        previous_event = TOP;
+        if(!transferringBall) {
+            float xRatio = ballSprite.getX()/CAMERA_WIDTH;
+            AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
+                    handler.getVelocityX(),
+                    handler.getVelocityY(),
+                    xRatio);
+            sendMessage(messageCoords);
+            //scene.detachChild(ballSprite);
+            haveBall = false;
+            transferringBall = true;
+        }
+        if (ballSprite.getY() < -ballSprite.getWidth()){
+            scene.detachChild(ballSprite);
+            transferringBall = false;
+        }
     }
 }

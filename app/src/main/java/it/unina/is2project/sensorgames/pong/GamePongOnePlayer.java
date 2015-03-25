@@ -27,10 +27,10 @@ import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 
 public class GamePongOnePlayer extends GamePong {
 
-    /*
-        Scene
-    */
-    private boolean game_over = false;
+    /**
+     * Debug
+     */
+    private final String TAG = "1PlayerGame";
 
     /*
         Graphics
@@ -189,131 +189,11 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     @Override
-    public void settingPhysics() {
-        /** A physics handler is linked to the ballSprite */
-        handler = new PhysicsHandler(ballSprite);
-        ballSprite.registerUpdateHandler(handler);
-
-        /** The ball has the initial speed
-         * - vx = BALL_SPEED
-         * - vy = - BALL_SPEED
-         */
-        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+    protected void setBallVeloctity() {
+        super.setBallVeloctity();
         GAME_VELOCITY = 2;
-
-        /** The Update Handler is linked to the scene. It evalutates the condition of the scene every frame */
-        scene.registerUpdateHandler(new IUpdateHandler() {
-            @Override
-            public void onUpdate(float pSecondsElapsed) {
-                /** Border variables */
-                int rL = CAMERA_WIDTH - (int) ballSprite.getWidth() / 2;
-                int bL = CAMERA_HEIGHT - (int) ballSprite.getHeight() / 2;
-
-                /** Edge's condition
-                 *  The direction of the ball changes depending on the affected side
-                 */
-                if(!game_over) {
-                    if ((ballSprite.getX() > rL - (int) ballSprite.getWidth() / 2) && previous_event != RIGHT) {
-                        handler.setVelocityX(-handler.getVelocityX());
-                        touch.play();
-                        previous_event = RIGHT;
-                        Log.d("", "Right. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-                    }
-                    if (ballSprite.getX() < 0 && previous_event != LEFT) {
-                        handler.setVelocityX(-handler.getVelocityX());
-                        touch.play();
-                        previous_event = LEFT;
-                        Log.d("", "Left. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-                    }
-                    if (ballSprite.getY() < 0 && previous_event != TOP) {
-                        handler.setVelocityY(-handler.getVelocityY());
-                        touch.play();
-                        previous_event = TOP;
-                        Log.d("", "Top. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-                    }
-                    if ((ballSprite.getY() > bL - (int) ballSprite.getHeight() / 2) && previous_event != BOTTOM) {
-                        /** If the previous_event is "SIDE" it will reduce the undeserved points */
-                        if (previous_event == SIDE)
-                            remScore();
-                        previous_event = BOTTOM;
-                        restartOnBallLost();
-                        Log.d("", "Bottom. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-                    }
-
-
-                    /** When the barSprite and the ballSprite collides */
-                    if (ballSprite.collidesWith(barSprite)) {
-                        /** Condition variable who understand if the ball hit the bar side or front
-                         * - ya: is the relative position of the ball according to the CAMERA_HEIGHT
-                         * - yb: is the relative position of the ball according to the CAMERA_HEIGHT
-                         */
-                        float ya = ballSprite.getY() - ballSprite.getHeight() / 2;
-                        float yb = barSprite.getY() - barSprite.getHeight() / 2;
-
-                        /** The ball hit the bar's top surface */
-                        if (ya <= yb && previous_event != OVER && previous_event != SIDE) {
-                            Log.d("", "Top event");
-                            handler.setVelocityY(-handler.getVelocityY());
-                            previous_event = OVER;
-                            addScore();
-                        }
-                        /** The ball hit the bar's side surface */
-                        else if (previous_event != SIDE && previous_event != OVER) {
-                            Log.d("", "Side event");
-                            handler.setVelocityX(-handler.getVelocityX());
-                            previous_event = SIDE;
-                            addScore();
-                        }
-                        touch.play();
-                    }
-
-                    /** The score text is updated to the current value */
-                    txtScore.setText("Score: " + score);
-
-                    /** Game levels section */
-                    gameLevels();
-
-                    /** Game events section */
-                    gameEvents();
-                }
-                else gameOver();
-            }
-
-            @Override
-            public void reset() {
-
-            }
-        });
     }
 
-
-    @Override
-    public void restartOnBallLost() {
-        /**  The ballSprite is detached */
-        scene.detachChild(ballSprite);
-
-        /** The lifeSprite is detached */
-        scene.detachChild(lifeSprites.get(life));
-
-        /** Life count is decremented */
-        life--;
-
-        /** If the life count is less equal than 0, the game is over */
-        if(life < 0){
-            game_over = true;
-        }
-        /** Else replace the ball */
-        else{
-            /** Setting the position on centre of screen */
-            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
-
-            /** Set the direction upward */
-            handler.setVelocityY(-handler.getVelocityY());
-
-            /** The ballSprite is attached */
-            scene.attachChild(ballSprite);
-        }
-    }
 
     @Override
     public void addScore() {
@@ -361,6 +241,9 @@ public class GamePongOnePlayer extends GamePong {
 
         if(game_event == FIRST_ENEMY)
             score += gain*3;
+
+        /** Set score section */
+        txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
     }
 
     @Override
@@ -421,7 +304,8 @@ public class GamePongOnePlayer extends GamePong {
         pause = false;
     }
 
-    private void gameLevels(){
+    @Override
+    protected void gameLevels(){
         /** This procedure understand what modifier needs according to the score */
         if(score < BARRIER_ONE && level_one){
             level = LEVEL_ONE;
@@ -481,7 +365,8 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
-    private void gameEvents(){
+    @Override
+    protected void gameEvents(){
 
         /** Setting up random events generator */
         randomEventsGenerator();
@@ -495,7 +380,6 @@ public class GamePongOnePlayer extends GamePong {
                 if(!no_event) {
                     txtEvnt.setText("");
                     no_event = true;
-                    noEventLogic();
                 }
                 break;
 
@@ -548,10 +432,6 @@ public class GamePongOnePlayer extends GamePong {
                 break;
         }
 
-    }
-
-    private void noEventLogic(){
-        // do nothing
     }
 
     private void rushHourLogic(){
@@ -762,7 +642,9 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
-    private void gameOver(){
+    @Override
+    protected void gameOver(){
+        game_over = true;
         handler.setVelocity(0);
         GAME_VELOCITY = 0;
         touch.stop();
@@ -770,7 +652,39 @@ public class GamePongOnePlayer extends GamePong {
         // TODO: Salvataggio in DB
     }
 
-        class SetGameEvents extends TimerTask {
+    @Override
+    protected void collidesBottom() {
+        Log.d(TAG, "Bottom. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        previous_event = BOTTOM;
+
+        /**  The ballSprite is detached */
+        scene.detachChild(ballSprite);
+        /** The lifeSprite is detached */
+        scene.detachChild(lifeSprites.get(life));
+        /** Life count is decremented */
+        life--;
+        /** If the life count is less equal than 0, the game is over */
+        if(life < 0){
+            gameOver();
+        }
+        /** Else replace the ball */
+        else{
+            /** Setting the position on centre of screen */
+            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
+            /** Set the direction upward */
+            handler.setVelocityY(-handler.getVelocityY());
+            /** The ballSprite is attached */
+            scene.attachChild(ballSprite);
+        }
+    }
+
+    @Override
+    protected void collidesBar() {
+        super.collidesBar();
+        addScore();
+    }
+
+    class SetGameEvents extends TimerTask {
 
             @Override
             public void run() {
@@ -785,6 +699,4 @@ public class GamePongOnePlayer extends GamePong {
                 new_event = true;
             }
         }
-
-
 }
