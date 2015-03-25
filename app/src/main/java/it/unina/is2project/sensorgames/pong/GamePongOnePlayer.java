@@ -5,17 +5,13 @@ import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.physics.PhysicsHandler;
-import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
-import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
@@ -27,7 +23,6 @@ import java.util.TimerTask;
 
 import it.unina.is2project.sensorgames.R;
 
-import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromAsset;
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
 public class GamePongOnePlayer extends GamePong {
@@ -139,6 +134,7 @@ public class GamePongOnePlayer extends GamePong {
     private float old_y_speed;
     private int old_game_speed;
     private long tap;
+    private String old_event;
 
 
     @Override
@@ -406,6 +402,8 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void pauseGame(){
+        old_event = (String) txtEvnt.getText();
+        txtEvnt.setText(getResources().getString(R.string.text_pause));
         directions = getDirections();
         old_x_speed = handler.getVelocityX();
         old_y_speed = handler.getVelocityY();
@@ -417,6 +415,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void restartGame(){
+        txtEvnt.setText(old_event);
         handler.setVelocity(old_x_speed,old_y_speed);
         GAME_VELOCITY = old_game_speed;
         pause = false;
@@ -767,7 +766,7 @@ public class GamePongOnePlayer extends GamePong {
         handler.setVelocity(0);
         GAME_VELOCITY = 0;
         touch.stop();
-        txtLvl.setText(getApplicationContext().getString(R.string.text_gameover));
+        txtEvnt.setText(getApplicationContext().getString(R.string.text_gameover));
         // TODO: Salvataggio in DB
     }
 

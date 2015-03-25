@@ -32,6 +32,10 @@
         - Toscano Giovanni\n
     </string>
 
+    <!-- General game -->
+    <string name="text_pause">Pause</string>
+    <string name="text_gameover">Game Over</string>
+
     <!-- 2 Player Activity -->
     <string name="text_bluetooth">Bluetooth</string>
     <string name="text_enemy">Play with</string>
@@ -65,7 +69,6 @@
 
     <!-- One Player -->
     <string name="text_score">Score</string>
-    <string name="text_gameover">Game Over</string>
     <string name="text_lv1">Level one</string>
     <string name="text_lv2">Level two</string>
     <string name="text_lv3">Level three</string>
