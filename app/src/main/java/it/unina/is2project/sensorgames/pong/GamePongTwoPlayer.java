@@ -68,30 +68,10 @@ public class GamePongTwoPlayer extends GamePong {
 
         mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
 
+        /** Setting up the physics of the game */
         settingPhysics();
 
         return scene;
-
-    }
-
-
-    @Override
-    public void addScore() {
-
-    }
-
-    @Override
-    public void remScore() {
-
-    }
-
-    @Override
-    public void actionDownEvent() {
-
-    }
-
-    @Override
-    protected void gameOver() {
 
     }
 
@@ -102,13 +82,90 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
-    protected void gameLevels() {
+    protected void setBallVeloctity() {
+        /** The ball has the initial speed
+         * - vx = BALL_SPEED
+         * - vy = - BALL_SPEED
+         */
+        if(!synchronizedGame){
+            handler.setVelocity(0, 0);
+            GAME_VELOCITY = 0;
+        }else {
+            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+            AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
+            sendMessage(messageSync);
+        }
+    }
 
+    @Override
+    protected boolean topCondition() {
+        if (ballSprite.getY() < 0 && previous_event != TOP && haveBall){
+            return true;
+        }
+        else return false;
+        //return super.topCondition() && haveBall;
+    }
+
+    @Override
+    protected void collidesTop() {
+        Log.d(TAG, "Top. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        previous_event = TOP;
+        if(!transferringBall) {
+            float xRatio = ballSprite.getX()/CAMERA_WIDTH;
+            AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
+                    handler.getVelocityX(),
+                    handler.getVelocityY(),
+                    xRatio);
+            sendMessage(messageCoords);
+            //scene.detachChild(ballSprite);
+            haveBall = false;
+            transferringBall = true;
+        }
+        if (ballSprite.getY() < -ballSprite.getWidth()){
+            scene.detachChild(ballSprite);
+            transferringBall = false;
+        }
+    }
+
+    @Override
+    protected void gameLevels() {
+        //do nothing
     }
 
     @Override
     protected void gameEvents() {
+        //do nothing
+    }
 
+    @Override
+    protected void gameOver() {
+        //do nothing
+    }
+
+    @Override
+    public void addScore() {
+        //do nothing
+    }
+
+    @Override
+    public void remScore() {
+        //do nothing
+    }
+
+    @Override
+    public void actionDownEvent() {
+        //do nothing
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(synchronizedGame) {
+            AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
+            sendMessage(messageFail);
+            synchronizedGame = false;
+        }
+        setResult(Activity.RESULT_CANCELED);
+        super.onBackPressed();
     }
 
     private final Handler mHandler = new Handler(){
@@ -189,60 +246,4 @@ public class GamePongTwoPlayer extends GamePong {
         mBluetoothService.write(send);
     }
 
-    @Override
-    public void onBackPressed() {
-        if(synchronizedGame) {
-            AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
-            sendMessage(messageFail);
-            synchronizedGame = false;
-        }
-        setResult(Activity.RESULT_CANCELED);
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void setBallVeloctity() {
-        /** The ball has the initial speed
-         * - vx = BALL_SPEED
-         * - vy = - BALL_SPEED
-         */
-        if(!synchronizedGame){
-            handler.setVelocity(0, 0);
-            GAME_VELOCITY = 0;
-        }else {
-            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
-            AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
-            sendMessage(messageSync);
-        }
-    }
-
-    @Override
-    protected boolean topCondition() {
-        if (ballSprite.getY() < 0 && previous_event != TOP && haveBall){
-            return true;
-        }
-        else return false;
-        //return super.topCondition() && haveBall;
-    }
-
-    @Override
-    protected void collidesTop() {
-        Log.d(TAG, "Top. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = TOP;
-        if(!transferringBall) {
-            float xRatio = ballSprite.getX()/CAMERA_WIDTH;
-            AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
-                    handler.getVelocityX(),
-                    handler.getVelocityY(),
-                    xRatio);
-            sendMessage(messageCoords);
-            //scene.detachChild(ballSprite);
-            haveBall = false;
-            transferringBall = true;
-        }
-        if (ballSprite.getY() < -ballSprite.getWidth()){
-            scene.detachChild(ballSprite);
-            transferringBall = false;
-        }
-    }
 }

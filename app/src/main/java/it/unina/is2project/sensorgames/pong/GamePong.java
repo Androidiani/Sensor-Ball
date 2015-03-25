@@ -327,11 +327,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     protected void collidesBar() {
         /** Condition variable who understand if the ball hit the bar side or front
-         *
-         * - ya: is the relative position of the ball according
-         *      to the CAMERA_HEIGHT
-         * - yb: is the relative position of the ball according
-         *      to the CAMERA_HEIGHT
+         * - ya: is the relative position of the ball according to the CAMERA_HEIGHT
+         * - yb: is the relative position of the ball according to the CAMERA_HEIGHT
          */
         float ya = ballSprite.getY() - ballSprite.getHeight() / 2;
         float yb = barSprite.getY() - barSprite.getHeight() / 2;
@@ -377,12 +374,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     protected abstract void gameEvents();
 
+    protected abstract void gameOver();
+
     protected abstract void addScore();
 
     protected abstract void remScore();
 
     protected abstract void actionDownEvent();
-
-    protected abstract void gameOver();
 
 }

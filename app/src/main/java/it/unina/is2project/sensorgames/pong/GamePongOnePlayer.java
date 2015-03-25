@@ -179,8 +179,7 @@ public class GamePongOnePlayer extends GamePong {
             scene.attachChild(lifeSprites.get(i-1));
         }
 
-        /** The score text is updated to the current value */
-        txtScore.setText("Score: " + score);
+        txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
 
         /** Setting up the physics of the game */
         settingPhysics();
@@ -194,114 +193,36 @@ public class GamePongOnePlayer extends GamePong {
         GAME_VELOCITY = 2;
     }
 
-
     @Override
-    public void addScore() {
-        /** This procedure increase the score according to the current score. */
-        if(score >= 0 && score < BARRIER_ONE) {
-            score += 2;
-            gain = 2;
+    protected void collidesBottom() {
+        Log.d(TAG, "Bottom. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        previous_event = BOTTOM;
+
+        /**  The ballSprite is detached */
+        scene.detachChild(ballSprite);
+        /** The lifeSprite is detached */
+        scene.detachChild(lifeSprites.get(life));
+        /** Life count is decremented */
+        life--;
+        /** If the life count is less equal than 0, the game is over */
+        if(life < 0){
+            gameOver();
         }
-
-        if(score >= BARRIER_ONE && score < BARRIER_TWO) {
-            score += 5;
-            gain = 5;
-        }
-
-        if(score >= BARRIER_TWO && score < BARRIER_THREE) {
-            score += 15;
-            gain = 15;
-        }
-
-        if(score >= BARRIER_THREE && score < BARRIER_FOUR) {
-            score += 30;
-            gain = 30;
-        }
-
-        if(score >= BARRIER_FOUR && score < BARRIER_FIVE) {
-            score += 60;
-            gain = 60;
-        }
-
-        if(score >= BARRIER_FIVE && score < BARRIER_SIX) {
-            score += 90;
-            gain = 90;
-        }
-
-        if(score >= BARRIER_SEVEN) {
-            score += 150;
-            gain = 150;
-        }
-
-        if(game_event == PARTY_TIME)
-            score += gain;
-
-        if(game_event == RUSH_HOUR)
-            score += gain*4;
-
-        if(game_event == FIRST_ENEMY)
-            score += gain*3;
-
-        /** Set score section */
-        txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
-    }
-
-    @Override
-    public void remScore() {
-        // do nothing
-    }
-
-    @Override
-    public void actionDownEvent() {
-        if(!pause) {
-            pauseGame();
-        }
-
-        if(pause && (System.currentTimeMillis() - tap > 500)){
-            restartGame();
+        /** Else replace the ball */
+        else{
+            /** Setting the position on centre of screen */
+            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
+            /** Set the direction upward */
+            handler.setVelocityY(-handler.getVelocityY());
+            /** The ballSprite is attached */
+            scene.attachChild(ballSprite);
         }
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        pauseGame();
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getResources().getString(R.string.text_msg_oneplayer_dialog)).setTitle("").setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked YES button
-                finish();
-            }
-        }).setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-                restartGame();
-            }
-        }).show();
-
-        AlertDialog dialog = builder.create();
-
-        return super.onKeyDown(keyCode,event);
-    }
-
-    private void pauseGame(){
-        old_event = (String) txtEvnt.getText();
-        txtEvnt.setText(getResources().getString(R.string.text_pause));
-        directions = getDirections();
-        old_x_speed = handler.getVelocityX();
-        old_y_speed = handler.getVelocityY();
-        old_game_speed = GAME_VELOCITY;
-        tap = System.currentTimeMillis();
-        handler.setVelocity(0);
-        GAME_VELOCITY = 0;
-        pause = true;
-    }
-
-    private void restartGame(){
-        txtEvnt.setText(old_event);
-        handler.setVelocity(old_x_speed,old_y_speed);
-        GAME_VELOCITY = old_game_speed;
-        pause = false;
+    protected void collidesBar() {
+        super.collidesBar();
+        addScore();
     }
 
     @Override
@@ -353,15 +274,6 @@ public class GamePongOnePlayer extends GamePong {
             handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
             level_seven = true;
             txtLvl.setText(getApplicationContext().getString(R.string.text_lv7));
-        }
-    }
-
-    private void randomEventsGenerator(){
-        if(new_event) {
-            Timer timer = new Timer();
-            Random random = new Random();
-            timer.schedule(new SetGameEvents(), 5000 + random.nextInt(5000));
-            new_event = false;
         }
     }
 
@@ -434,6 +346,134 @@ public class GamePongOnePlayer extends GamePong {
 
     }
 
+    @Override
+    protected void gameOver(){
+        game_over = true;
+        handler.setVelocity(0);
+        GAME_VELOCITY = 0;
+        touch.stop();
+        txtEvnt.setText(getApplicationContext().getString(R.string.text_gameover));
+        // TODO: Salvataggio in DB
+    }
+
+    @Override
+    public void addScore() {
+        /** This procedure increase the score according to the current score. */
+        if(score >= 0 && score < BARRIER_ONE) {
+            score += 2;
+            gain = 2;
+        }
+
+        if(score >= BARRIER_ONE && score < BARRIER_TWO) {
+            score += 5;
+            gain = 5;
+        }
+
+        if(score >= BARRIER_TWO && score < BARRIER_THREE) {
+            score += 15;
+            gain = 15;
+        }
+
+        if(score >= BARRIER_THREE && score < BARRIER_FOUR) {
+            score += 30;
+            gain = 30;
+        }
+
+        if(score >= BARRIER_FOUR && score < BARRIER_FIVE) {
+            score += 60;
+            gain = 60;
+        }
+
+        if(score >= BARRIER_FIVE && score < BARRIER_SIX) {
+            score += 90;
+            gain = 90;
+        }
+
+        if(score >= BARRIER_SEVEN) {
+            score += 150;
+            gain = 150;
+        }
+
+        if(game_event == PARTY_TIME)
+            score += gain;
+
+        if(game_event == RUSH_HOUR)
+            score += gain*4;
+
+        if(game_event == FIRST_ENEMY)
+            score += gain*3;
+
+        /** Set score section */
+        txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
+    }
+
+    @Override
+    public void remScore() {
+        // do nothing
+    }
+
+    @Override
+    public void actionDownEvent() {
+        if(!pause) {
+            pauseGame();
+        }
+
+        if(pause && (System.currentTimeMillis() - tap > 500)){
+            restartGame();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        pauseGame();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getResources().getString(R.string.text_msg_oneplayer_dialog)).setTitle("").setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked YES button
+                finish();
+            }
+        }).setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                restartGame();
+            }
+        }).show();
+
+        AlertDialog dialog = builder.create();
+
+        super.onBackPressed();
+    }
+
+    private void pauseGame(){
+        old_event = (String) txtEvnt.getText();
+        txtEvnt.setText(getResources().getString(R.string.text_pause));
+        directions = getDirections();
+        old_x_speed = handler.getVelocityX();
+        old_y_speed = handler.getVelocityY();
+        old_game_speed = GAME_VELOCITY;
+        tap = System.currentTimeMillis();
+        handler.setVelocity(0);
+        GAME_VELOCITY = 0;
+        pause = true;
+    }
+
+    private void restartGame(){
+        txtEvnt.setText(old_event);
+        handler.setVelocity(old_x_speed,old_y_speed);
+        GAME_VELOCITY = old_game_speed;
+        pause = false;
+    }
+
+    private void randomEventsGenerator(){
+        if(new_event) {
+            Timer timer = new Timer();
+            Random random = new Random();
+            timer.schedule(new SetGameEvents(), 5000 + random.nextInt(5000));
+            new_event = false;
+        }
+    }
+
     private void rushHourLogic(){
         Random random = new Random();
 
@@ -482,7 +522,7 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(firstEnemy);
     }
 
-    private void clearFirstEnemyLogic(){
+    private void clearFirstEnemy(){
         first_enemy = false;
         scene.detachChild(firstEnemy);
     }
@@ -621,7 +661,7 @@ public class GamePongOnePlayer extends GamePong {
                 break;
 
             case FIRST_ENEMY:
-                clearFirstEnemyLogic();
+                clearFirstEnemy();
                 break;
 
             case BUBBLE_BONUS:
@@ -642,47 +682,7 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
-    @Override
-    protected void gameOver(){
-        game_over = true;
-        handler.setVelocity(0);
-        GAME_VELOCITY = 0;
-        touch.stop();
-        txtEvnt.setText(getApplicationContext().getString(R.string.text_gameover));
-        // TODO: Salvataggio in DB
-    }
 
-    @Override
-    protected void collidesBottom() {
-        Log.d(TAG, "Bottom. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = BOTTOM;
-
-        /**  The ballSprite is detached */
-        scene.detachChild(ballSprite);
-        /** The lifeSprite is detached */
-        scene.detachChild(lifeSprites.get(life));
-        /** Life count is decremented */
-        life--;
-        /** If the life count is less equal than 0, the game is over */
-        if(life < 0){
-            gameOver();
-        }
-        /** Else replace the ball */
-        else{
-            /** Setting the position on centre of screen */
-            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
-            /** Set the direction upward */
-            handler.setVelocityY(-handler.getVelocityY());
-            /** The ballSprite is attached */
-            scene.attachChild(ballSprite);
-        }
-    }
-
-    @Override
-    protected void collidesBar() {
-        super.collidesBar();
-        addScore();
-    }
 
     class SetGameEvents extends TimerTask {
 

@@ -18,6 +18,11 @@ import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 
 public class GamePongTraining extends GamePong {
 
+    /**
+     * Debug
+     */
+    private final String TAG = "TrainingGame";
+
     // Settings button
     protected BitmapTextureAtlas settingsTexture;
     protected ITextureRegion settingsTextureRegion;
@@ -62,7 +67,7 @@ public class GamePongTraining extends GamePong {
                 if (enableModes) {
                     secondTap = System.currentTimeMillis();
                     if (secondTap - firstTap > 500) {
-                        Log.d("", "Easy mode");
+                        Log.d(TAG, "Easy mode");
                         setMode(EASY_MODE);
                     }
                 }
@@ -81,7 +86,7 @@ public class GamePongTraining extends GamePong {
                 if (enableModes) {
                     secondTap = System.currentTimeMillis();
                     if (secondTap - firstTap > 500) {
-                        Log.d("", "Normal mode");
+                        Log.d(TAG, "Normal mode");
                         setMode(NORMAL_MODE);
                     }
                 }
@@ -100,7 +105,7 @@ public class GamePongTraining extends GamePong {
                 if (enableModes) {
                     secondTap = System.currentTimeMillis();
                     if (secondTap - firstTap > 500) {
-                        Log.d("", "Insane mode");
+                        Log.d(TAG, "Insane mode");
                         setMode(INSANE_MODE);
                     }
                 }
@@ -153,6 +158,11 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
+    protected void gameOver() {
+        //do nothing
+    }
+
+    @Override
     protected void addScore() {
         //do nothing
     }
@@ -165,24 +175,18 @@ public class GamePongTraining extends GamePong {
     @Override
     protected void actionDownEvent() {
         if (!enableModes) {
-            Log.i("", "Game Paused");
+            Log.i(TAG, "Game Paused");
             showMenu();
         }
     }
 
-    @Override
-    protected void gameOver() {
-        
-    }
-
-
     /**
-     * Show the mode's menù
+     * Show the mode's menu
      */
     private void showMenu() {
         // Store directions data
         DIRECTIONS = getDirections();
-        Log.d("", "Directions:" + DIRECTIONS.x + " " + DIRECTIONS.y);
+        Log.d(TAG, "Directions:" + DIRECTIONS.x + " " + DIRECTIONS.y);
 
         // Stop the ball
         handler.setVelocity(0f);
@@ -204,7 +208,7 @@ public class GamePongTraining extends GamePong {
     }
 
     /**
-     * Hide the mode's menù
+     * Hide the mode's menu
      */
     private void hideMenu() {
         // Detach menu's children
