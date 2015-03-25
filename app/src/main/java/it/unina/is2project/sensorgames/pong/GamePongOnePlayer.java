@@ -278,6 +278,7 @@ public class GamePongOnePlayer extends GamePong {
                     /** Game events section */
                     gameEvents();
                 }
+                else gameOver();
             }
 
             @Override
@@ -302,7 +303,6 @@ public class GamePongOnePlayer extends GamePong {
         /** If the life count is less equal than 0, the game is over */
         if(life < 0){
             game_over = true;
-            txtLvl.setText("Game Over");
         }
         /** Else replace the ball */
         else{
@@ -395,28 +395,28 @@ public class GamePongOnePlayer extends GamePong {
         /** This procedure understand what modifier needs according to the score */
         if(score < BARRIER_ONE && level_one){
             level = LEVEL_ONE;
-            txtLvl.setText("Level one");
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv1));
         }
 
         if(score >= BARRIER_ONE && score < BARRIER_TWO && !level_two) {
             level = LEVEL_TWO;
             GAME_VELOCITY *= 2;
             level_two = true;
-            txtLvl.setText("Level two");
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv2));
         }
 
         if(score >= BARRIER_TWO && score < BARRIER_THREE && !level_three) {
             level = LEVEL_THREE;
             handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
             level_three = true;
-            txtLvl.setText("Level three");
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv3));
         }
 
         if(score >= BARRIER_THREE && score < BARRIER_FOUR && !level_four) {
             level = LEVEL_FOUR;
             barSprite.setWidth(0.2f * CAMERA_WIDTH);
             level_four = true;
-            txtLvl.setText("Level four");
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv4));
         }
 
         if(score >= BARRIER_FOUR && score < BARRIER_FIVE && !level_five) {
@@ -424,21 +424,21 @@ public class GamePongOnePlayer extends GamePong {
             handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
             barSprite.setWidth(0.3f * CAMERA_WIDTH);
             level_five = true;
-            txtLvl.setText("Level five");
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv5));
         }
 
         if(score >= BARRIER_FIVE && score < BARRIER_SIX && !level_six) {
             level = LEVEL_SIX;
             barSprite.setWidth(0.2f * CAMERA_WIDTH);
             level_six = true;
-            txtLvl.setText("Level six");
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv6));
         }
 
         if(score >= BARRIER_SEVEN && !level_seven) {
             level = LEVEL_SEVEN;
             handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
             level_seven = true;
-            txtLvl.setText("Level seven");
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv7));
         }
     }
 
@@ -471,7 +471,7 @@ public class GamePongOnePlayer extends GamePong {
 
             case RUSH_HOUR:
                 if(!rush_hour){
-                    txtEvnt.setText("Rush Hour");
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_rush));
                     rush_hour = true;
                     rushHourLogic();
                 }
@@ -479,7 +479,7 @@ public class GamePongOnePlayer extends GamePong {
 
             case PARTY_TIME:
                 if(!party_time){
-                    txtEvnt.setText("Party Time");
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_partytime));
                     party_time = true;
                     partyTimeLogic();
                 }
@@ -487,7 +487,7 @@ public class GamePongOnePlayer extends GamePong {
 
             case FIRST_ENEMY:
                 if(!first_enemy){
-                    txtEvnt.setText("First enemy");
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_enemy));
                     first_enemy = true;
                     firstEnemyLogic();
                 }
@@ -495,7 +495,7 @@ public class GamePongOnePlayer extends GamePong {
 
             case BUBBLE_BONUS:
                 if(!bubble_bonus){
-                    txtEvnt.setText("Bubble bonus");
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_bubble));
                     bubble_bonus = true;
                     bubbleBonusLogic();
                 }
@@ -503,7 +503,7 @@ public class GamePongOnePlayer extends GamePong {
 
             case FREEZE:
                 if(!freeze){
-                    txtEvnt.setText("Freeze");
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_freeze));
                     freeze = true;
                     freezeLogic();
                 }
@@ -511,7 +511,7 @@ public class GamePongOnePlayer extends GamePong {
 
             case LIFE_BONUS:
                 if(!life_bonus){
-                    txtEvnt.setText("Life Bonus");
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_lifebonus));
                     life_bonus = true;
                     lifeBonusLogic();
                 }
@@ -719,6 +719,14 @@ public class GamePongOnePlayer extends GamePong {
                 clearLifeBonus();
                 break;
         }
+    }
+
+    private void gameOver(){
+        handler.setVelocity(0);
+        GAME_VELOCITY = 0;
+        touch.stop();
+        txtLvl.setText(getApplicationContext().getString(R.string.text_gameover));
+        // TODO: Salvataggio in DB
     }
 
         class SetGameEvents extends TimerTask {

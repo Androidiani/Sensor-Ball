@@ -63,4 +63,20 @@
     <string name="text_no">No</string>
     <string name="text_opponent_left">Your opponent\nleft the game</string>
 
+    <!-- One Player -->
+    <string name="text_score">Score</string>
+    <string name="text_gameover">Game Over</string>
+    <string name="text_lv1">Level one</string>
+    <string name="text_lv2">Level two</string>
+    <string name="text_lv3">Level three</string>
+    <string name="text_lv4">Level four</string>
+    <string name="text_lv5">Level five</string>
+    <string name="text_lv6">Level six</string>
+    <string name="text_lv7">Level seven</string>
+    <string name="text_partytime">Party Time</string>
+    <string name="text_freeze">Freeze</string>
+    <string name="text_bubble">Bubble Bonus</string>
+    <string name="text_lifebonus">Life Bonus</string>
+    <string name="text_rush">Rush Hour</string>
+
 </resources>
