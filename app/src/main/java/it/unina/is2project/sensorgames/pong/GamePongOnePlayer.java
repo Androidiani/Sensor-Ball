@@ -80,22 +80,22 @@ public class GamePongOnePlayer extends GamePong {
     private static final int BARRIER_ONE = 10;
     private boolean level_two = false;
     private static final int LEVEL_TWO = 1;
-    private static final int BARRIER_TWO = 60;
+    private static final int BARRIER_TWO = 300;
     private boolean level_three = false;
     private static final int LEVEL_THREE = 2;
-    private static final int BARRIER_THREE = 400;
+    private static final int BARRIER_THREE = 3000;
     private boolean level_four = false;
     private static final int LEVEL_FOUR = 3;
-    private static final int BARRIER_FOUR = 1000;
+    private static final int BARRIER_FOUR = 9000;
     private boolean level_five = false;
     private static final int LEVEL_FIVE = 4;
-    private static final int BARRIER_FIVE = 3600;
+    private static final int BARRIER_FIVE = 18000;
     private boolean level_six = false;
     private static final int LEVEL_SIX = 5;
-    private static final int BARRIER_SIX = 5200;
+    private static final int BARRIER_SIX = 36000;
     private boolean level_seven = false;
     private static final int LEVEL_SEVEN = 6;
-    private static final int BARRIER_SEVEN = 9200;
+    private static final int BARRIER_SEVEN = 72000;
 
     /**
      * Events
@@ -108,16 +108,16 @@ public class GamePongOnePlayer extends GamePong {
     private boolean no_event = false;
     private boolean rush_hour = false;
     private boolean first_enemy = false;
-    private boolean party_time = false;
+    private boolean drunk_ball = false;
     private boolean freeze = false;
     private boolean bubble_bonus = false;
     private boolean life_bonus = false;
 
     // Events' number
     private static final int NO_EVENT = 0;
-    private static final int PARTY_TIME = 1;
-    private static final int FIRST_ENEMY = 2;
-    private static final int BUBBLE_BONUS = 3;
+    private static final int FIRST_ENEMY = 1;
+    private static final int BUBBLE_BONUS = 2;
+    private static final int DRUNK_BALL = 3;
     private static final int LIFE_BONUS = 4;
     private static final int RUSH_HOUR = 5;
     private static final int FREEZE = 6;
@@ -131,7 +131,8 @@ public class GamePongOnePlayer extends GamePong {
     private static int RUSH_HOUR_NUM;
     private boolean life_detached = false;
     private boolean allBonusDetached = false;
-    private static float OLD_RED;
+    private static float OLD_VEL_X;
+    private static float OLD_VEL_Y;
 
     // Pause utils
     private boolean pause = false;
@@ -208,21 +209,29 @@ public class GamePongOnePlayer extends GamePong {
         ballSprite.detachSelf();
         /** The lifeSprite is detached */
         lifeSprites.get(life).detachSelf();
-        /** Life count is decremented */
+        /** Life count is decremented if not drunk ball event */
         life--;
+
+        if(game_event == DRUNK_BALL) {
+            Log.i(TAG,"Drunk ball stopped");
+            new_event = true;
+            callEvent();
+        }
+
         /** If the life count is less equal than 0, the game is over */
-        if(life < 0){
+        if (life < 0) {
             gameOver();
         }
         /** Else replace the ball */
-        else{
+        else {
             /** Setting the position on centre of screen */
-            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
+            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
             /** Set the direction upward */
             handler.setVelocityY(-handler.getVelocityY());
             /** The ballSprite is attached */
             scene.attachChild(ballSprite);
         }
+
     }
 
     @Override
@@ -312,12 +321,13 @@ public class GamePongOnePlayer extends GamePong {
                 }
                 break;
 
-            case PARTY_TIME:
-                if(!party_time){
-                    txtEvnt.setText(getApplicationContext().getString(R.string.text_partytime));
-                    party_time = true;
-                    partyTimeLogic();
+            case DRUNK_BALL:
+                if(!drunk_ball){
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_drunkball));
+                    drunk_ball = true;
                 }
+                drunkBallLogic(); // Called every update
+
                 break;
 
             case FIRST_ENEMY:
@@ -390,13 +400,13 @@ public class GamePongOnePlayer extends GamePong {
         }
 
         if(score >= BARRIER_ONE && score < BARRIER_TWO) {
-            score += 5;
-            gain = 5;
+            score += 10;
+            gain = 10;
         }
 
         if(score >= BARRIER_TWO && score < BARRIER_THREE) {
-            score += 15;
-            gain = 15;
+            score += 20;
+            gain = 20;
         }
 
         if(score >= BARRIER_THREE && score < BARRIER_FOUR) {
@@ -419,8 +429,8 @@ public class GamePongOnePlayer extends GamePong {
             gain = 150;
         }
 
-        if(game_event == PARTY_TIME)
-            score += gain;
+        if(game_event == DRUNK_BALL)
+            score += 10000;
 
         if(game_event == RUSH_HOUR)
             score += gain*4;
@@ -484,7 +494,7 @@ public class GamePongOnePlayer extends GamePong {
 
     private void restartGame(){
         txtEvnt.setText(old_event);
-        handler.setVelocity(old_x_speed,old_y_speed);
+        handler.setVelocity(old_x_speed, old_y_speed);
         GAME_VELOCITY = old_game_speed;
         pause = false;
     }
@@ -522,14 +532,31 @@ public class GamePongOnePlayer extends GamePong {
         rush_hour = false;
     }
 
-    private void partyTimeLogic(){
-        //TODO: settare la logica per il party
-        OLD_RED = barSprite.getRed();
+    private void drunkBallLogic(){
+        if(ballSprite.getY() < CAMERA_HEIGHT/2){
+            if(ballSprite.getX() > ballSprite.getWidth() || ballSprite.getX() < CAMERA_WIDTH - ballSprite.getWidth())
+                handler.setVelocityX(-handler.getVelocityX());
+            else {
+                Random random = new Random();
+                handler.setVelocityX(random.nextFloat() * BALL_SPEED);
+            }
+        }
     }
 
-    private void clearPartyTime(){
-        //TODO: cancellare la logica per il party
-        party_time = false;
+    private void clearDrunkBall(){
+        if(level > LEVEL_ONE && level <= LEVEL_TWO)
+            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+
+        if(level >= LEVEL_THREE && level <= LEVEL_FOUR)
+            handler.setVelocity(BALL_SPEED * 2, -BALL_SPEED * 2);
+
+        if(level >= LEVEL_FIVE && level <= LEVEL_SIX)
+            handler.setVelocity(BALL_SPEED * 1.5f * 2, BALL_SPEED * 1.5f * 2);
+
+        if(level >= LEVEL_SEVEN)
+            handler.setVelocity(BALL_SPEED * 1.5f * 1.5f * 2, BALL_SPEED * 1.5f * 1.5f * 2);
+
+        drunk_ball = false;
     }
 
     private void firstEnemyLogic(){
@@ -674,7 +701,7 @@ public class GamePongOnePlayer extends GamePong {
             life++;
             scene.attachChild(lifeSprites.get(life));
             life_detached = true;
-            Log.i(TAG,"Collisione con Stella. Vite attuali: " + life);
+            Log.i(TAG,"Star collision. Life: " + life);
         }
     }
 
@@ -685,8 +712,8 @@ public class GamePongOnePlayer extends GamePong {
                 no_event = false;
                 break;
 
-            case PARTY_TIME:
-                clearPartyTime();
+            case DRUNK_BALL:
+                clearDrunkBall();
                 break;
 
             case FIRST_ENEMY:
