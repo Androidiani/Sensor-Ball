@@ -329,7 +329,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void collidesBar() {
         /** Condition variable who understand if the ball hit the bar side or front
          * - ya: is the relative position of the ball according to the CAMERA_HEIGHT
-         * - yb: is the relative position of the ball according to the CAMERA_HEIGHT
+         * - yb: is the relative position of the bar according to the CAMERA_HEIGHT
          */
         float ya = ballSprite.getY() - ballSprite.getHeight() / 2;
         float yb = barSprite.getY() - barSprite.getHeight() / 2;
@@ -338,6 +338,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         if (ya <= yb && previous_event != OVER && previous_event != SIDE) {
             Log.d("", "Over. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
             previous_event = OVER;
+            //TODO: rivedere la condizione di collisione laterale
+            if((barSprite.getX() - ballSprite.getX() >= barSprite.getWidth()/8) || (ballSprite.getX() - barSprite.getX() >= barSprite.getWidth()/8)){
+                handler.setVelocityX(-handler.getVelocityX());
+            }
             handler.setVelocityY(-handler.getVelocityY());
         }
         /** The ball hit the bar's side surface */
