@@ -1,8 +1,6 @@
 package it.unina.is2project.sensorgames.entity;
 
-/**
- * Created by Giovanni on 19/03/2015.
- */
+@Deprecated
 public class Giocatore {
     private int id;
     private String nome;
