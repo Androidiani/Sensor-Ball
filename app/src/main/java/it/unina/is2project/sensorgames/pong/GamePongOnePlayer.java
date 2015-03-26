@@ -5,9 +5,7 @@ import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.view.KeyEvent;
 
-import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
@@ -22,6 +20,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.database.dao.GiocatoreDAO;
+import it.unina.is2project.sensorgames.entity.Giocatore;
 
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
@@ -67,6 +67,10 @@ public class GamePongOnePlayer extends GamePong {
     private int gain;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
+    private int hit_count = 0;
+    private int reach_count = 5;
+    private static final int MIN_REACH_COUNT = 2;
+    private static final int MAX_REACH_COUNT = 6;
 
     // Levels
     private int level;
@@ -199,9 +203,9 @@ public class GamePongOnePlayer extends GamePong {
         previous_event = BOTTOM;
 
         /**  The ballSprite is detached */
-        scene.detachChild(ballSprite);
+        ballSprite.detachSelf();
         /** The lifeSprite is detached */
-        scene.detachChild(lifeSprites.get(life));
+        lifeSprites.get(life).detachSelf();
         /** Life count is decremented */
         life--;
         /** If the life count is less equal than 0, the game is over */
@@ -223,6 +227,12 @@ public class GamePongOnePlayer extends GamePong {
     protected void collidesBar() {
         super.collidesBar();
         addScore();
+        hit_count++;
+        Log.i(TAG,"Hit count " + hit_count);
+        if(hit_count == reach_count) {
+            new_event = true;
+            callEvent();
+        }
     }
 
     @Override
@@ -279,9 +289,6 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     protected void gameEvents(){
-
-        /** Setting up random events generator */
-        randomEventsGenerator();
 
         /** Handling game events collisions */
         gameEventsCollisionLogic();
@@ -353,6 +360,22 @@ public class GamePongOnePlayer extends GamePong {
         GAME_VELOCITY = 0;
         touch.stop();
         txtEvnt.setText(getApplicationContext().getString(R.string.text_gameover));
+        //TODO idGiocatore sarà un campo della classe e la variabile locale verrà rimossa
+        int idGiocatore = 1;
+
+
+        GiocatoreDAO giocatoreDAO = new GiocatoreDAO(getApplicationContext());
+        Giocatore g = giocatoreDAO.findById(idGiocatore);
+        if (g == null){
+            g = new Giocatore("Francesco",0,0,0);
+            giocatoreDAO.insert(g);
+        }
+        else {
+            g.setPartiteGiocateSingolo(g.getPartiteGiocateSingolo() + 1);
+            giocatoreDAO.update(g);
+        }
+        Log.i(TAG,"Partite giocate: "+g.getPartiteGiocateSingolo());
+
         // TODO: Salvataggio in DB
     }
 
@@ -425,7 +448,8 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     public void onBackPressed() {
-        pauseGame();
+        if(!pause)
+            pauseGame();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getResources().getString(R.string.text_msg_oneplayer_dialog)).setTitle("").setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
@@ -441,8 +465,6 @@ public class GamePongOnePlayer extends GamePong {
         }).show();
 
         AlertDialog dialog = builder.create();
-
-        super.onBackPressed();
     }
 
     private void pauseGame(){
@@ -465,14 +487,6 @@ public class GamePongOnePlayer extends GamePong {
         pause = false;
     }
 
-    private void randomEventsGenerator(){
-        if(new_event) {
-            Timer timer = new Timer();
-            Random random = new Random();
-            timer.schedule(new SetGameEvents(), 5000 + random.nextInt(5000));
-            new_event = false;
-        }
-    }
 
     private void rushHourLogic(){
         Random random = new Random();
@@ -498,7 +512,7 @@ public class GamePongOnePlayer extends GamePong {
 
     private void clearRushHour(){
         do {
-            scene.detachChild(rushHour.get(0));
+            rushHour.get(0).detachSelf();
             rushHour.remove(0);
             rushHourHandlers.remove(0);
         } while ( rushHour.size() > 0 );
@@ -507,12 +521,12 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void partyTimeLogic(){
-        barSprite.setRed(0.99f);
+        //TODO: settare la logica per il party
         OLD_RED = barSprite.getRed();
     }
 
     private void clearPartyTime(){
-        barSprite.setRed(OLD_RED);
+        //TODO: cancellare la logica per il party
         party_time = false;
     }
 
@@ -524,18 +538,23 @@ public class GamePongOnePlayer extends GamePong {
 
     private void clearFirstEnemy(){
         first_enemy = false;
-        scene.detachChild(firstEnemy);
+        firstEnemy.detachSelf();
     }
 
     private void bubbleBonusLogic(){
         Random random = new Random();
 
-        BONUS_BALL_NUM = BONUS_BALL_MIN_NUM + random.nextInt(BONUS_BALL_MAX_NUM - BONUS_BALL_MIN_NUM);
+        BONUS_BALL_NUM = BONUS_BALL_MIN_NUM + random.nextInt(BONUS_BALL_MAX_NUM - BONUS_BALL_MIN_NUM) + 1;
 
         /** Adding the bonus ball sprites to the scene */
         for ( int i = 0 ; i < BONUS_BALL_NUM ; i++ ){
+            random = new Random();
             Sprite bonusSprite = new Sprite(0, 0, bonusBallTextureRegion, getVertexBufferObjectManager());
-            bonusSprite.setPosition(random.nextInt(CAMERA_WIDTH), random.nextInt(CAMERA_HEIGHT) - ballSprite.getHeight()*2);
+            Log.i(TAG,"CW - Sp = " + (CAMERA_WIDTH - (int)bonusSprite.getWidth()));
+            int ballRadius = (int)bonusSprite.getHeight()/2;
+            int bonusSpriteX = ballRadius + random.nextInt(CAMERA_WIDTH - ballRadius);
+            int bonusSpriteY = ballRadius + random.nextInt(CAMERA_HEIGHT - 3*(int)barSprite.getHeight() - 2*ballRadius);
+            bonusSprite.setPosition(bonusSpriteX, bonusSpriteY - (int)bonusSprite.getHeight());
             bonusSprite.setWidth(CAMERA_WIDTH * 0.1f);
             bonusSprite.setHeight(CAMERA_WIDTH * 0.1f);
             bonusBalls.add(bonusSprite);
@@ -546,7 +565,7 @@ public class GamePongOnePlayer extends GamePong {
     private void clearBubbleBonus(){
         if(!allBonusDetached) {
             do {
-                scene.detachChild(bonusBalls.get(0));
+                bonusBalls.get(0).detachSelf();
                 bonusBalls.remove(0);
             } while (bonusBalls.size() > 0);
         }
@@ -565,8 +584,8 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void clearLifeBonus(){
-        if(!life_detached)
-            scene.detachChild(lifeBonus);
+        if(!life_detached && life < MAX_LIFE - 1)
+            lifeBonus.detachSelf();
         life_bonus = false;
         life_detached = false;
     }
@@ -611,7 +630,7 @@ public class GamePongOnePlayer extends GamePong {
     private void bubbleBonusCollisions(){
         for ( int i = 0 ; i < bonusBalls.size() ; i++ ){
             if(ballSprite.collidesWith(bonusBalls.get(i))){
-                scene.detachChild(bonusBalls.get(i));
+                bonusBalls.get(i).detachSelf();
                 bonusBalls.remove(i);
                 score += 20 * (level+1);
                 if(bonusBalls.size()==0)
@@ -642,10 +661,11 @@ public class GamePongOnePlayer extends GamePong {
 
     private void lifeBonusCollisions(){
         if(ballSprite.collidesWith(lifeBonus) && life < MAX_LIFE - 1){
+            lifeBonus.detachSelf();
             life++;
             scene.attachChild(lifeSprites.get(life));
-            scene.detachChild(lifeBonus);
             life_detached = true;
+            Log.i(TAG,"Collisione con Stella. Vite attuali: " + life);
         }
     }
 
@@ -682,21 +702,31 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
+    private void callEvent() {
+        if (new_event) {
+            clearEvents();
 
+            Random random = new Random();
 
-    class SetGameEvents extends TimerTask {
+            int randomInt = random.nextInt(level+1);
 
-            @Override
-            public void run() {
-                clearEvents();
+            if (level > LEVEL_ONE) {
+                if (game_event == randomInt) {
+                    game_event++;
+                    if (game_event > level)
+                        game_event = 0;
+                } else game_event = randomInt;
 
-                if (level > LEVEL_ONE && !pause) {
-                    Random random = new Random();
-                    game_event = random.nextInt(level * 1000) % (level+1);
-                    Log.d("","Evento " + game_event);
-                }
-
-                new_event = true;
+                if(game_event == LIFE_BONUS && life == MAX_LIFE-1)
+                    game_event++;
             }
+
+            reach_count = MIN_REACH_COUNT + random.nextInt(MAX_REACH_COUNT - MIN_REACH_COUNT) + 1;
+            Log.i(TAG, "Reach count " + reach_count);
+            hit_count = 0;
+
+            new_event = false;
         }
+    }
+
 }

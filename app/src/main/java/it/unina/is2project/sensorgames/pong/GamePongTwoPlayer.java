@@ -122,7 +122,8 @@ public class GamePongTwoPlayer extends GamePong {
             transferringBall = true;
         }
         if (ballSprite.getY() < -ballSprite.getWidth()){
-            scene.detachChild(ballSprite);
+            //scene.detachChild(ballSprite);
+            ballSprite.detachSelf();
             transferringBall = false;
         }
     }

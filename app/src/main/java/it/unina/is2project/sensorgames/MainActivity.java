@@ -1,5 +1,7 @@
 package it.unina.is2project.sensorgames;
 
+import it.unina.is2project.sensorgames.database.dao.GiocatoreDAO;
+import it.unina.is2project.sensorgames.entity.Giocatore;
 import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
 import it.unina.is2project.sensorgames.pong.GamePongTraining;
 
