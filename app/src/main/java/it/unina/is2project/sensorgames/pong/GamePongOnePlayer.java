@@ -67,6 +67,7 @@ public class GamePongOnePlayer extends GamePong {
     private int gain;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
+    private int old_life;
     private int hit_count = 0;
     private int reach_count = 5;
     private static final int MIN_REACH_COUNT = 2;
@@ -103,6 +104,7 @@ public class GamePongOnePlayer extends GamePong {
 
     // Events' enable
     private boolean new_event = true;
+    private boolean first_event = true;
     private boolean no_event = false;
     private boolean rush_hour = false;
     private boolean first_enemy = false;
@@ -176,7 +178,7 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(txtEvnt);
 
         /** Adding the life sprites to the scene */
-        for ( int i = 1 ; i <= MAX_LIFE ; i++ ){
+        for ( int i = 1 ; i <= life+1 ; i++ ){
             Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion,getVertexBufferObjectManager());
             lifeSprite.setX(CAMERA_WIDTH - i*lifeSprite.getWidth());
             lifeSprites.add(lifeSprite);
@@ -550,29 +552,33 @@ public class GamePongOnePlayer extends GamePong {
         for ( int i = 0 ; i < BONUS_BALL_NUM ; i++ ){
             random = new Random();
             Sprite bonusSprite = new Sprite(0, 0, bonusBallTextureRegion, getVertexBufferObjectManager());
-            Log.i(TAG,"CW - Sp = " + (CAMERA_WIDTH - (int)bonusSprite.getWidth()));
             int ballRadius = (int)bonusSprite.getHeight()/2;
-            int bonusSpriteX = ballRadius + random.nextInt(CAMERA_WIDTH - ballRadius);
-            int bonusSpriteY = ballRadius + random.nextInt(CAMERA_HEIGHT - 3*(int)barSprite.getHeight() - 2*ballRadius);
-            bonusSprite.setPosition(bonusSpriteX, bonusSpriteY - (int)bonusSprite.getHeight());
+            int bonusSpriteX = ballRadius + random.nextInt(CAMERA_WIDTH - ballRadius*2);
+            bonusSprite.setPosition(bonusSpriteX, (bonusSprite.getHeight()/2)*(i+1));
             bonusSprite.setWidth(CAMERA_WIDTH * 0.1f);
             bonusSprite.setHeight(CAMERA_WIDTH * 0.1f);
             bonusBalls.add(bonusSprite);
             scene.attachChild(bonusBalls.get(i));
         }
+        Log.i(TAG , "BONUS_BALL_NUM: " + BONUS_BALL_NUM + " bonusBalls.size(): " + bonusBalls.size());
+
     }
 
     private void clearBubbleBonus(){
         if(!allBonusDetached) {
+            Log.i(TAG,"Not all bonus ball detached");
             do {
                 bonusBalls.get(0).detachSelf();
                 bonusBalls.remove(0);
+                Log.i(TAG,"Bonus ball detached in clear");
             } while (bonusBalls.size() > 0);
         }
         bubble_bonus = false;
+        allBonusDetached = false;
 }
 
     private void lifeBonusLogic(){
+        old_life = life;
         if(life < MAX_LIFE - 1) {
             Random random = new Random();
             lifeBonus = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
@@ -630,11 +636,14 @@ public class GamePongOnePlayer extends GamePong {
     private void bubbleBonusCollisions(){
         for ( int i = 0 ; i < bonusBalls.size() ; i++ ){
             if(ballSprite.collidesWith(bonusBalls.get(i))){
+                Log.i(TAG,"Bonus Ball " + i + " removed");
                 bonusBalls.get(i).detachSelf();
                 bonusBalls.remove(i);
                 score += 20 * (level+1);
-                if(bonusBalls.size()==0)
+                if(bonusBalls.size()==0) {
                     allBonusDetached = true;
+                    Log.i(TAG, "All bonus ball detached by player");
+                }
             }
         }
     }
@@ -660,7 +669,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void lifeBonusCollisions(){
-        if(ballSprite.collidesWith(lifeBonus) && life < MAX_LIFE - 1){
+        if(ballSprite.collidesWith(lifeBonus) && life < MAX_LIFE - 1 && old_life == life){
             lifeBonus.detachSelf();
             life++;
             scene.attachChild(lifeSprites.get(life));
@@ -703,9 +712,11 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void callEvent() {
-        if (new_event) {
+        if(!first_event)
             clearEvents();
+        else first_event = false;
 
+        if (new_event) {
             Random random = new Random();
 
             int randomInt = random.nextInt(level+1);
