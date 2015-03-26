@@ -14,6 +14,8 @@ import it.unina.is2project.sensorgames.entity.Giocatore;
 /**
  * GiocatoreDAO Object
  */
+
+@Deprecated
 public class GiocatoreDAO implements IDAO<Giocatore> {
 
     // Giocatore table name
