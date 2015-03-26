@@ -103,6 +103,12 @@ public class TwoPlayerActivity extends ActionBarActivity {
     private final int GAME_START = 200;
 
     //----------------------------------------------
+    // FSM ELEMENTS
+    //----------------------------------------------
+
+    private FSMGame fsmGame = null;
+
+    //----------------------------------------------
     // LIFECYCLE METHODS
     //----------------------------------------------
 
@@ -113,11 +119,6 @@ public class TwoPlayerActivity extends ActionBarActivity {
         setContentView(R.layout.activity_2p);
 
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        // Set the fullscreen window
-/*        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();*/
 
         // Load the font
         typeFace = Typeface.createFromAsset(getAssets(),"font/secrcode.ttf");
@@ -165,6 +166,11 @@ public class TwoPlayerActivity extends ActionBarActivity {
             Log.d(TAG, "setupService()");
             mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
         }
+
+        // FSM STATE CHANGE
+        fsmGame = FSMGame.getFsmInstance(fsmHandler);
+        fsmGame.setState(FSMGame.STATE_READY);
+
         super.onStart();
     }
 
@@ -537,7 +543,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
                             Log.i(TAG, "Connected To " + mConnectedDeviceName);
-                            if(isMaster) btnPlay.setEnabled(true);
+                            // FSM STATE CHANGE
+                            fsmGame.setState(FSMGame.STATE_CONNECTED);
                             break;
                         case BluetoothService.STATE_CONNECTING:
                             Log.i(TAG, "Connecting...");
@@ -570,7 +577,6 @@ public class TwoPlayerActivity extends ActionBarActivity {
                                     break;
                                 default:
                                     Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
-
                             }
                         } else {
                             Log.e(TAG, "Ricevuto messaggio nullo.");
@@ -579,7 +585,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                     }
                     break;
                 case Constants.MESSAGE_DEVICE_NAME:
-                    // salvo il nome del dispositivo connesso
+                    // Salvo il nome del dispositivo connesso
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
                     txtEnemy.setText(mConnectedDeviceName);
                     break;
@@ -587,6 +593,34 @@ public class TwoPlayerActivity extends ActionBarActivity {
                     Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
                             Toast.LENGTH_LONG).show();
                     break;
+            }
+        }
+    };
+
+    private final Handler fsmHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case FSMGame.STATE_NOT_READY:
+                            break;
+                        case FSMGame.STATE_READY:
+                            break;
+                        case FSMGame.STATE_CONNECTED:
+                            if(isMaster) btnPlay.setEnabled(true);
+                            break;
+                        case FSMGame.STATE_IN_GAME:
+                            break;
+                        case FSMGame.STATE_IN_GAME_WAITING:
+                            break;
+                        case FSMGame.STATE_DISCONNECTED:
+                            break;
+                        case FSMGame.STATE_OPPONENT_LEFT:
+                            break;
+                        default:
+                    }
+                default:
             }
         }
     };

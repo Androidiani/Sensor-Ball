@@ -173,6 +173,11 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
+    protected void bluetoothExtra() {
+        // do nothing
+    }
+
+    @Override
     protected void actionDownEvent() {
         if (!enableModes) {
             Log.i(TAG, "Game Paused");

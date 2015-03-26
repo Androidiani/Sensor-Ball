@@ -729,4 +729,8 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
+    @Override
+    protected void bluetoothExtra() {
+        // do nothing
+    }
 }

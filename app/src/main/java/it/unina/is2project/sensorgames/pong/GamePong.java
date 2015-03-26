@@ -239,6 +239,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
                     if (topCondition()) {
                         collidesTop();
                     }
+                    bluetoothExtra();
                     if (bottomCondition()) {
                         collidesBottom();
                     }
@@ -381,5 +382,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected abstract void remScore();
 
     protected abstract void actionDownEvent();
+
+    protected abstract void bluetoothExtra();
 
 }

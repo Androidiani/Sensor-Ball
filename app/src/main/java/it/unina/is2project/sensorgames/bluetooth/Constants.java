@@ -15,7 +15,6 @@ public interface Constants {
     public static final int MSG_TYPE_SYNC = 8;
     public static final int MSG_TYPE_FAIL = 9;
 
-
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
