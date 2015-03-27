@@ -336,6 +336,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         /** The ball hit the bar's top surface */
         if (ya <= yb && previous_event != OVER && previous_event != SIDE) {
+            /** Necessarily in that order because getSceneCenterCoordinates return
+             * a shared float
+             */
             float [] bar_center_coords = barSprite.getSceneCenterCoordinates();
             float barX = bar_center_coords[0];
             float [] ball_center_coords = ballSprite.getSceneCenterCoordinates();

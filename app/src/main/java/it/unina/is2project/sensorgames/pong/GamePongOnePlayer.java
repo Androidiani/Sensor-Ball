@@ -63,7 +63,7 @@ public class GamePongOnePlayer extends GamePong {
     /*
         Game data
     */
-    private int score = 0;
+    private long score = 0;
     private int gain;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
@@ -363,6 +363,9 @@ public class GamePongOnePlayer extends GamePong {
                 break;
         }
 
+        /** Set score section */
+        txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
+
     }
 
     @Override
@@ -372,6 +375,7 @@ public class GamePongOnePlayer extends GamePong {
         GAME_VELOCITY = 0;
         touch.stop();
         txtEvnt.setText(getApplicationContext().getString(R.string.text_gameover));
+
         //TODO idGiocatore sarà un campo della classe e la variabile locale verrà rimossa
         int idGiocatore = 1;
 
@@ -438,8 +442,7 @@ public class GamePongOnePlayer extends GamePong {
         if(game_event == FIRST_ENEMY)
             score += gain*3;
 
-        /** Set score section */
-        txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
+        Log.i("addScore()","Score: " + score);
     }
 
     @Override
@@ -464,7 +467,7 @@ public class GamePongOnePlayer extends GamePong {
             pauseGame();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getResources().getString(R.string.text_msg_oneplayer_dialog)).setTitle("").setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+        builder.setMessage(getResources().getString(R.string.text_msg_oneplayer_dialog)).setTitle(getResources().getString(R.string.text_msg_oneplayer_leavegame)).setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked YES button
                 finish();
