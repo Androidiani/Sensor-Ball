@@ -8,4 +8,10 @@
         android:title="@string/text_discoverable"
         android:orderInCategory="100"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/option_disconnect"
+        android:title="@string/text_disconnect"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

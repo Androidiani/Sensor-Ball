@@ -11,13 +11,14 @@ public class FSMGame implements Cloneable {
     private final String TAG = "FSMGame";
 
     // States
-    public final static int STATE_NOT_READY = 500;
-    public final static int STATE_READY = 501;
-    public final static int STATE_CONNECTED = 502;
-    public final static int STATE_IN_GAME_WAITING = 503;
-    public final static int STATE_IN_GAME = 504;
-    public final static int STATE_OPPONENT_LEFT = 505;
-    public final static int STATE_DISCONNECTED = 506;
+    public final static int STATE_NOT_READY = 111;
+    public final static int STATE_CONNECTED = 222;
+    public final static int STATE_IN_GAME_WAITING = 333;
+    public final static int STATE_IN_GAME = 444;
+    public final static int STATE_OPPONENT_LEFT = 555;
+    public final static int STATE_DISCONNECTED = 666;
+    public final static int STATE_GAME_ABORTED = 777;
+
 
     // Private fields
     private static FSMGame fsmInstance = null;

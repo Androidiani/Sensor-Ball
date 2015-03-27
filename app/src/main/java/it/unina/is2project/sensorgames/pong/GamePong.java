@@ -342,12 +342,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             float ballX = ball_center_coords[0];
             float barXpos = barSprite.getWidth()/4;
             Log.i("collidesBar()","Previous speed: " + handler.getVelocityX() + "," + handler.getVelocityY() + " previous event: " + previous_event);
-            /** The ball hit the left bar side */
+            // The ball hit the left bar side
             if((barX - ballX >= barXpos) && !(previous_event == RIGHT)){
                 handler.setVelocityX(-handler.getVelocityX());
                 Log.i("collidesBar()","Hit Left. barSprite.X = " + barX + " ballSprite.X = " + ballX);
             }
-            /** The ball hit the right bar side */
+            // The ball hit the right bar side
             if((ballX - barX >= barXpos) && !(previous_event == LEFT)){
                 handler.setVelocityX(-handler.getVelocityX());
                 Log.i("collidesBar()","Hit Right. barSprite.X = " + barX + " ballSprite.X = " + ballX);
@@ -357,6 +357,13 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
             Log.d("", "Over. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
             previous_event = OVER;
+
+            /**
+             * PER CALCOLARE LE COMPONENTI
+             * Vx = Rad(2)*BallSpeed * cos(angolo)
+             * Vy = Rad(2)*BallSpeed * sin(angolo)
+             * Buon divertimento.
+             */
         }
         /** The ball hit the bar's side surface */
         if (previous_event != SIDE && previous_event != OVER) {

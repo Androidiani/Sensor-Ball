@@ -43,7 +43,13 @@
     <string name="text_play">Play</string>
     <string name="text_paired">Paired</string>
     <string name="text_scan">Scan</string>
+    <string name="text_disconnect">Disconnect</string>
     <string name="none_found">No discoverable device found</string>
+
+    <!-- 2 Player Game -->
+    <string name="text_disconnected">Disconnected</string>
+    <string name="text_opponent_left">Your opponent\nleft the game</string>
+    <string name="text_waiting">Waiting for\nyour opponent</string>
 
     <!-- Toasts -->
     <string name="toast_bluetoothNotSupported">Bluetooth not supported on your device</string>
@@ -65,7 +71,6 @@
     <string name="alert_bluetooth_activator">Bluetooth is disabled, please active bluetooth and retry. Do you want to activate bluetooth now?</string>
     <string name="text_yes">Yes</string>
     <string name="text_no">No</string>
-    <string name="text_opponent_left">Your opponent\nleft the game</string>
 
     <!-- One Player -->
     <string name="text_score">Score</string>

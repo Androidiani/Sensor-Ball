@@ -33,10 +33,16 @@ public class GamePongTwoPlayer extends GamePong {
     private BluetoothService mBluetoothService = null;
     // Finite State Machine
     private FSMGame fsmGame = null;
+    // Text information
+    Text textInfo;
+    // Return intent extra
+    public static String EXTRA_MASTER = "isMaster_boolean";
 
     @Override
     protected Scene onCreateScene() {
         fsmGame = FSMGame.getFsmInstance(fsmHandler);
+        mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
+
         // Retrieve intent message
         Intent i = getIntent();
 
@@ -56,8 +62,6 @@ public class GamePongTwoPlayer extends GamePong {
         /** Setting up the physics of the game */
         settingPhysics();
 
-        mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
-
         game_over = false;
         previous_event = 0;
 
@@ -70,6 +74,16 @@ public class GamePongTwoPlayer extends GamePong {
         }
 
         Log.d(TAG, "Sono master : " + isMaster);
+
+        textInfo = new Text(
+                10,
+                10,
+                font,
+                "",
+                30,
+                getVertexBufferObjectManager());
+
+        scene.attachChild(textInfo);
 
         return scene;
 
@@ -162,17 +176,47 @@ public class GamePongTwoPlayer extends GamePong {
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
         }
-        setResult(Activity.RESULT_CANCELED);
-        fsmGame.setState(FSMGame.STATE_NOT_READY);
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_MASTER, isMaster);
+        setResult(Activity.RESULT_CANCELED, intent);
         super.onBackPressed();
     }
 
+    //----------------------------------------------
+    // MISCELLANEA
+    //----------------------------------------------
+    private void sendBluetoothMessage(AppMessage message){
+        if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
+            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        byte[] send = Serializer.serializeObject(message);
+        mBluetoothService.write(send);
+    }
+
+    //----------------------------------------------
+    // HANDLERS
+    //----------------------------------------------
     private final Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             Log.i(TAG, "Handler Called");
             switch (msg.what) {
                 case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothService.STATE_CONNECTED:
+                            break;
+                        case BluetoothService.STATE_CONNECTING:
+                            break;
+                        case BluetoothService.STATE_LISTEN:
+                            break;
+                        case BluetoothService.STATE_NONE:
+                            fsmGame.setState(FSMGame.STATE_DISCONNECTED);
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 case Constants.MESSAGE_WRITE:
                     Log.i(TAG, "Message Write");
@@ -196,16 +240,17 @@ public class GamePongTwoPlayer extends GamePong {
                                 break;
 
                             case Constants.MSG_TYPE_SYNC:
-                                //if(!synchronizedGame){
                                 if(fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING){
                                     fsmGame.setState(FSMGame.STATE_IN_GAME);
                                 }
                                 break;
                             case Constants.MSG_TYPE_FAIL:
-                                //if(synchronizedGame){
                                 if(fsmGame.getState() == FSMGame.STATE_IN_GAME){
                                     fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
                                 }
+                                break;
+                            case Constants.MSG_TYPE_INTEGER:
+                                //TODO
                                 break;
                             default:
                                 Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
@@ -230,36 +275,38 @@ public class GamePongTwoPlayer extends GamePong {
                     switch (msg.arg1) {
                         case FSMGame.STATE_NOT_READY:
                             break;
-                        case FSMGame.STATE_READY:
-                            break;
                         case FSMGame.STATE_CONNECTED:
                             break;
                         case FSMGame.STATE_IN_GAME:
                             handler.setVelocity(BALL_SPEED, -BALL_SPEED);
                             GAME_VELOCITY = 2;
+                            textInfo.setText("");
                             AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
                             sendBluetoothMessage(messageSync);
                             break;
                         case FSMGame.STATE_IN_GAME_WAITING:
                             handler.setVelocity(0, 0);
                             GAME_VELOCITY = 0;
+                            textInfo.setText(getApplicationContext().getString(R.string.text_waiting));
+                            //TODO Piazzare al centro la scritta.
+                            //textLeft.setX(CAMERA_WIDTH-textLeft.getWidth()/2);
+                            //textLeft.setY(CAMERA_HEIGHT-textLeft.getHeight()/2);
                             break;
                         case FSMGame.STATE_DISCONNECTED:
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            textInfo.setText(getApplicationContext().getString(R.string.text_disconnected));
+                            //TODO Piazzare al centro la scritta.
+                            //textLeft.setX(CAMERA_WIDTH-textLeft.getWidth()/2);
+                            //textLeft.setY(CAMERA_HEIGHT-textLeft.getHeight()/2);
                             break;
                         case FSMGame.STATE_OPPONENT_LEFT:
                             handler.setVelocity(0, 0);
                             GAME_VELOCITY = 0;
-                            Text textLeft = new Text(
-                                    10,
-                                    10,
-                                    font,
-                                    getApplicationContext().getString(R.string.text_opponent_left),
-                                    30,
-                                    getVertexBufferObjectManager());
+                            textInfo.setText( getApplicationContext().getString(R.string.text_opponent_left));
                             //TODO Piazzare al centro la scritta.
                             //textLeft.setX(CAMERA_WIDTH-textLeft.getWidth()/2);
                             //textLeft.setY(CAMERA_HEIGHT-textLeft.getHeight()/2);
-                            scene.attachChild(textLeft);
                             break;
                         default:
                     }
@@ -267,15 +314,5 @@ public class GamePongTwoPlayer extends GamePong {
             }
         }
     };
-
-    private void sendBluetoothMessage(AppMessage message){
-        if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        byte[] send = Serializer.serializeObject(message);
-        mBluetoothService.write(send);
-    }
 
 }
