@@ -92,6 +92,18 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
      */
     protected AccelerationSensorOptions mAccelerationOptions;
 
+    /**
+     * Bounce contraint
+     */
+    private final float COS_30 = 0.866f;
+    private final float SIN_30 = 0.5f;
+    private final float COS_45 = 0.707f;
+    private final float SIN_45 = 0.707f;
+    private final float COS_90 = 0;
+    private final float SIN_90 = 1;
+    private final float RAD_2 = 1.41421f;
+
+
     @Override
     protected void onCreateResources() {
         loadGraphics();
@@ -343,20 +355,35 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             float barX = bar_center_coords[0];
             float [] ball_center_coords = ballSprite.getSceneCenterCoordinates();
             float ballX = ball_center_coords[0];
-            float barXpos = barSprite.getWidth()/4;
-            Log.i("collidesBar()","Previous speed: " + handler.getVelocityX() + "," + handler.getVelocityY() + " previous event: " + previous_event);
+            float barXpos = barSprite.getWidth()/5;
+            float module = (float) Math.sqrt(Math.pow(handler.getVelocityX(),2) + Math.pow(handler.getVelocityY(),2));
+
             // The ball hit the left bar side
-            if((barX - ballX >= barXpos) && !(previous_event == RIGHT)){
-                handler.setVelocityX(-handler.getVelocityX());
-                Log.i("collidesBar()","Hit Left. barSprite.X = " + barX + " ballSprite.X = " + ballX);
+            if(barX - ballX > barXpos) {
+                if(previous_event == RIGHT){
+                    handler.setVelocity(module * COS_30, -module * SIN_30);
+                } else handler.setVelocity(-module * COS_30, -module * SIN_30);
             }
+
+            // The ball hit the center-left bar side
+            if((barX - ballX >= barX - (3/10)*barSprite.getWidth()) && (barX - ballX <= barX - barSprite.getWidth()/10)){
+                    handler.setVelocity(module * COS_45, -module * SIN_45);
+            }
+
+            // The ball hit the center bar side
+            if((ballX - barX > -barSprite.getWidth()/10) && (ballX - barX < barSprite.getWidth()/10))
+                handler.setVelocity(module * COS_90, -module * SIN_90);
+
+            // The ball hit the center-right bar side
+            if((ballX - barX >= barSprite.getWidth()/10) && (ballX - barX <= 3*barSprite.getWidth()/10))
+                handler.setVelocity(module * COS_45, -module * SIN_45);
+
             // The ball hit the right bar side
-            if((ballX - barX >= barXpos) && !(previous_event == LEFT)){
-                handler.setVelocityX(-handler.getVelocityX());
-                Log.i("collidesBar()","Hit Right. barSprite.X = " + barX + " ballSprite.X = " + ballX);
+            if((ballX - barX > barXpos)){
+                if(previous_event == LEFT)
+                    handler.setVelocity(module * COS_30, -module * SIN_30);
+                else handler.setVelocity(-module * COS_30, -module * SIN_30);
             }
-            handler.setVelocityY(-handler.getVelocityY());
-            Log.i("collidesBar()","New speed: " + handler.getVelocityX() + "," + handler.getVelocityY());
 
             Log.d("", "Over. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
             previous_event = OVER;
