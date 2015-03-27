@@ -88,5 +88,9 @@
     <string name="text_rush">Rush Hour</string>
     <string name="text_first_enemy">First Enemy</string>
     <string name="text_msg_oneplayer_dialog">You\'ll lose the game. Are you sure?</string>
+    <string name="text_msg_oneplayer_leavegame">Leave the game</string>
+    <string name="text_ttl_oneplayer_savegame">Save the game score</string>
+    <string name="text_msg_oneplayer_savegame">Do you want to save this score?</string>
+
 
 </resources>
