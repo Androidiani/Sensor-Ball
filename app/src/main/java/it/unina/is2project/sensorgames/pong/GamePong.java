@@ -336,13 +336,27 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         /** The ball hit the bar's top surface */
         if (ya <= yb && previous_event != OVER && previous_event != SIDE) {
-            Log.d("", "Over. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-            previous_event = OVER;
-            //TODO: rivedere la condizione di collisione laterale
-            if((barSprite.getX() - ballSprite.getX() >= barSprite.getWidth()/8) || (ballSprite.getX() - barSprite.getX() >= barSprite.getWidth()/8)){
+            float [] bar_center_coords = barSprite.getSceneCenterCoordinates();
+            float barX = bar_center_coords[0];
+            float [] ball_center_coords = ballSprite.getSceneCenterCoordinates();
+            float ballX = ball_center_coords[0];
+            float barXpos = barSprite.getWidth()/4;
+            Log.i("collidesBar()","Previous speed: " + handler.getVelocityX() + "," + handler.getVelocityY() + " previous event: " + previous_event);
+            /** The ball hit the left bar side */
+            if((barX - ballX >= barXpos) && !(previous_event == RIGHT)){
                 handler.setVelocityX(-handler.getVelocityX());
+                Log.i("collidesBar()","Hit Left. barSprite.X = " + barX + " ballSprite.X = " + ballX);
+            }
+            /** The ball hit the right bar side */
+            if((ballX - barX >= barXpos) && !(previous_event == LEFT)){
+                handler.setVelocityX(-handler.getVelocityX());
+                Log.i("collidesBar()","Hit Right. barSprite.X = " + barX + " ballSprite.X = " + ballX);
             }
             handler.setVelocityY(-handler.getVelocityY());
+            Log.i("collidesBar()","New speed: " + handler.getVelocityX() + "," + handler.getVelocityY());
+
+            Log.d("", "Over. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+            previous_event = OVER;
         }
         /** The ball hit the bar's side surface */
         if (previous_event != SIDE && previous_event != OVER) {
