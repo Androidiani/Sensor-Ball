@@ -215,7 +215,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void loadSounds() {
         /** Setting the Asset Base Path for sounds */
         SoundFactory.setAssetBasePath("mfx/");
-
         /** "paddlehit.ogg" sound loading */
         try {
             touch = SoundFactory.createSoundFromAsset(getEngine().getSoundManager(), this, "paddlehit.ogg");
@@ -251,7 +250,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
                     if (topCondition()) {
                         collidesTop();
                     }
+
                     bluetoothExtra();
+
                     if (bottomCondition()) {
                         collidesBottom();
                     }
@@ -309,28 +310,28 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void collidesLeft() {
-        //Log.d("", "Left. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        //Log.d("Collision", "Left. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = LEFT;
         handler.setVelocityX(-handler.getVelocityX());
         touch.play();
     }
 
     protected void collidesRight() {
-        //Log.d("", "Right. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        //Log.d("Collision", "Right. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = RIGHT;
         handler.setVelocityX(-handler.getVelocityX());
         touch.play();
     }
 
     protected void collidesTop() {
-        //Log.d("", "Top. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        //Log.d("Collision", "Top. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = TOP;
         handler.setVelocityY(-handler.getVelocityY());
         touch.play();
     }
 
     protected void collidesBottom() {
-        //Log.d("", "Bottom. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        //Log.d("Collision", "Bottom. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
         scene.detachChild(ballSprite);
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
@@ -348,7 +349,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         /** The ball hit the bar's top surface */
         if (ya <= yb && previous_event != OVER && previous_event != SIDE) {
-            Log.d("Collision", "Bar - OVER. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+            Log.d("collidesBar()", "OVER. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
             previous_event = OVER;
 
             /** Necessarily in that order because getSceneCenterCoordinates return a shared float */
@@ -357,16 +358,28 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             float [] ball_center_coords = ballSprite.getSceneCenterCoordinates();
             float ballX = ball_center_coords[0];
             float module = (float) Math.sqrt(Math.pow(handler.getVelocityX(),2) + Math.pow(handler.getVelocityY(),2));
+
             Point pnt = getDirections();
+
+            Log.d("collidesBar()", "Direction: (" + pnt.x + "," + pnt.y + ")");
+            Log.d("collidesBar()", "ballX = " + ballX);
+            Log.d("collidesBar()", "barX = " + barX);
+            Log.d("collidesBar()", "ballX - barX = " + (ballX - barX));
+            Log.d("collidesBar()", "bar.width = " + (int)barSprite.getWidth());
+            Log.d("collidesBar()", "-(3/10)*bar.width = " + (int)(-(3*barSprite.getWidth())/10));
+            Log.d("collidesBar()", "-(1/10)*bar.width = " + (int)(-(barSprite.getWidth())/10));
+            Log.d("collidesBar()", "+(1/10)*bar.width = " + (int)((barSprite.getWidth())/10));
+            Log.d("collidesBar()", "+(3/10)*bar.width = " + (int)((3*barSprite.getWidth())/10));
+
             // The ball hit the left bar side
-            if(ballX - ballX < -(3/10)*barSprite.getWidth()) {
-                Log.d("collsidesBar()", "Left bar side. Direction: (" + pnt.x + ", " + pnt.y + ")");
+            if(ballX - barX < (-(3*barSprite.getWidth())/10)) {
+                Log.d("collidesBar()", "LEFT --> " + (ballX - barX) + " < " + (int)(-(3*barSprite.getWidth())/10));
                 handler.setVelocity(-module * COS_30, -module * SIN_30);
             }
 
             // The ball hit the center-left bar side
-            if((ballX - barX >= -(3/10)*barSprite.getWidth()) && (ballX - barX <= barSprite.getWidth()/10)){
-                Log.d("collsidesBar()", "Center-Left bar side. Direction: (" + pnt.x + ", " + pnt.y + ")");
+            if((ballX - barX >= (-(3*barSprite.getWidth())/10)) && (ballX - barX <= (-(barSprite.getWidth())/10))){
+                Log.d("collidesBar()", "CENTER-LEFT --> " + (int)(-(3*barSprite.getWidth())/10) + " <= " + (ballX - barX) + " <= " + (int)(-(barSprite.getWidth())/10));
                 if(pnt.x == 1){
                     handler.setVelocity(module * COS_45, -module * SIN_45);
                 }else{
@@ -375,14 +388,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             }
 
             // The ball hit the center bar side
-            if((ballX - barX > -barSprite.getWidth()/10) && (ballX - barX < barSprite.getWidth()/10)) {
-                Log.d("collsidesBar()", "Center side. Direction: (" + pnt.x + ", " + pnt.y + ")");
+            if((ballX - barX > (-(barSprite.getWidth())/10)) && (ballX - barX < ((barSprite.getWidth())/10))) {
+                Log.d("collidesBar()", "CENTER --> " + (int)(-(barSprite.getWidth())/10) + " < " + (ballX - barX) + " < " + (int)((barSprite.getWidth())/10));
                 handler.setVelocity(module * COS_90, -module * SIN_90);
             }
 
             // The ball hit the center-right bar side
-            if((ballX - barX >= barSprite.getWidth()/10) && (ballX - barX <= 3*barSprite.getWidth()/10)) {
-                Log.d("collsidesBar()", "Center Right side. Direction: (" + pnt.x + ", " + pnt.y + ")");
+            if((ballX - barX >= ((barSprite.getWidth())/10)) && (ballX - barX <= ((3*barSprite.getWidth())/10))) {
+                Log.d("collidesBar()", "CENTER-RIGHT --> " + (int)((barSprite.getWidth())/10) + " <= " + (ballX - barX) + " <= " + (int)((3*barSprite.getWidth())/10));
                 if (pnt.x == -1) {
                     handler.setVelocity(-module * COS_45, -module * SIN_45);
                 } else {
@@ -391,23 +404,17 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             }
 
             // The ball hit the right bar side
-            if((ballX - barX > (3/10)*barSprite.getWidth())){
-                Log.d("collsidesBar()", "Right bar side. Direction: (" + pnt.x + ", " + pnt.y + ")");
+            if(ballX - barX > ((3*barSprite.getWidth())/10)){
+                Log.d("collidesBar()", "RIGHT --> " + (ballX - barX) + " > " + (int)((3*barSprite.getWidth())/10));
                 handler.setVelocity(module * COS_30, -module * SIN_30);
             }
 
-            Log.d("Collision", "New Velocity V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+            Log.d("collidesBar()", "New Velocity V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
 
-            /**
-             * PER CALCOLARE LE COMPONENTI
-             * Vx = Rad(2)*BallSpeed * cos(angolo)
-             * Vy = Rad(2)*BallSpeed * sin(angolo)
-             * Buon divertimento.
-             */
         }
         /** The ball hit the bar's side surface */
         if (previous_event != SIDE && previous_event != OVER) {
-            Log.d("", "Side. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+            Log.d("collidesBar()", "SIDE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
             previous_event = SIDE;
             handler.setVelocityX(-handler.getVelocityX());
         }
@@ -448,6 +455,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         return mPoint;
     }
 
+    protected abstract void bluetoothExtra();
+
     protected abstract void gameLevels();
 
     protected abstract void gameEvents();
@@ -459,7 +468,5 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected abstract void remScore();
 
     protected abstract void actionDownEvent();
-
-    protected abstract void bluetoothExtra();
 
 }
