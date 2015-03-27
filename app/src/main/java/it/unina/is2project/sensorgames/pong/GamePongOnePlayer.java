@@ -1,10 +1,13 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.util.Log;
+import android.widget.EditText;
 
 import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
@@ -141,7 +144,10 @@ public class GamePongOnePlayer extends GamePong {
     private float old_y_speed;
     private int old_game_speed;
     private long tap;
-    private String old_event;
+    private String old_event = "";
+
+    // Game over utils
+    private boolean restart_game = false;
 
 
     @Override
@@ -179,12 +185,7 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(txtEvnt);
 
         /** Adding the life sprites to the scene */
-        for ( int i = 1 ; i <= life+1 ; i++ ){
-            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion,getVertexBufferObjectManager());
-            lifeSprite.setX(CAMERA_WIDTH - i*lifeSprite.getWidth());
-            lifeSprites.add(lifeSprite);
-            scene.attachChild(lifeSprites.get(i-1));
-        }
+        addLifeSpritesToScene();
 
         txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
 
@@ -194,10 +195,39 @@ public class GamePongOnePlayer extends GamePong {
         return scene;
     }
 
+    private void addLifeSpritesToScene(){
+        for ( int i = 1 ; i <= life+1 ; i++ ){
+            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion,getVertexBufferObjectManager());
+            lifeSprite.setX(CAMERA_WIDTH - i*lifeSprite.getWidth());
+            lifeSprites.add(lifeSprite);
+            scene.attachChild(lifeSprites.get(i-1));
+        }
+    }
+
     @Override
     protected void setBallVeloctity() {
         super.setBallVeloctity();
         GAME_VELOCITY = 2;
+    }
+
+    @Override
+    protected void clearGame() {
+        super.clearGame();
+        clearEvents();
+        life = MAX_LIFE - 1;
+        pause = false;
+        game_event = NO_EVENT;
+        score = 0;
+        addLifeSpritesToScene();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        clearGame();
+        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
+        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+        scene.attachChild(ballSprite);
     }
 
     @Override
@@ -366,6 +396,13 @@ public class GamePongOnePlayer extends GamePong {
         /** Set score section */
         txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
 
+        /** Handling game restarting */
+        if(restart_game) {
+            Log.i(TAG,"Game restarted");
+            onRestart();
+            restart_game = false;
+        }
+
     }
 
     @Override
@@ -376,23 +413,53 @@ public class GamePongOnePlayer extends GamePong {
         touch.stop();
         txtEvnt.setText(getApplicationContext().getString(R.string.text_gameover));
 
-        //TODO idGiocatore sarà un campo della classe e la variabile locale verrà rimossa
-        int idGiocatore = 1;
+        runOnUiThread( new Runnable() {
+            @Override
+            public void run() {
+                /** Game over dialog */
+                AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
 
+                alert.setTitle(getApplicationContext().getResources().getString(R.string.text_ttl_oneplayer_savegame));
+                alert.setMessage(getApplicationContext().getResources().getString(R.string.text_msg_oneplayer_savegame));
 
-        GiocatoreDAO giocatoreDAO = new GiocatoreDAO(getApplicationContext());
-        Giocatore g = giocatoreDAO.findById(idGiocatore);
-        if (g == null){
-            g = new Giocatore("Francesco",0,0,0);
-            giocatoreDAO.insert(g);
-        }
-        else {
-            g.setPartiteGiocateSingolo(g.getPartiteGiocateSingolo() + 1);
-            giocatoreDAO.update(g);
-        }
-        Log.i(TAG,"Partite giocate: "+g.getPartiteGiocateSingolo());
+                // Set an EditText view to get user input
+                final EditText input = new EditText(GamePongOnePlayer.this);
+                alert.setView(input);
 
-        // TODO: Salvataggio in DB
+                alert.setPositiveButton(getApplicationContext().getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String value = input.getText().toString();
+
+                        //TODO idGiocatore sarà un campo della classe e la variabile locale verrà rimossa
+                        int idGiocatore = 1;
+                        // TODO: Salvataggio in DB
+                        GiocatoreDAO giocatoreDAO = new GiocatoreDAO(getApplicationContext());
+                        Giocatore g = giocatoreDAO.findById(idGiocatore);
+                        if (g == null){
+                            g = new Giocatore("Francesco",0,0,0);
+                            giocatoreDAO.insert(g);
+                        }
+                        else {
+                            g.setPartiteGiocateSingolo(g.getPartiteGiocateSingolo() + 1);
+                            giocatoreDAO.update(g);
+                        }
+                        Log.i(TAG,"Partite giocate: "+g.getPartiteGiocateSingolo());
+
+                        restart_game = true;
+                        game_over = false;
+                    }
+                });
+
+                alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        restart_game = true;
+                        game_over = false;
+                    }
+                });
+
+                alert.show();
+            }
+        });
     }
 
     @Override

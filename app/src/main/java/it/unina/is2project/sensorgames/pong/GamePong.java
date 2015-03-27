@@ -370,6 +370,13 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         touch.play();
     }
 
+    protected void clearGame(){
+        GAME_VELOCITY = 2;
+        BALL_SPEED = 350;
+        previous_event = NO_EVENT;
+        game_over = false;
+    }
+
     /**
      * Get the directions of the ball
      *
