@@ -356,17 +356,16 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             float barX = bar_center_coords[0];
             float [] ball_center_coords = ballSprite.getSceneCenterCoordinates();
             float ballX = ball_center_coords[0];
-            float barXpos = barSprite.getWidth()/5;
             float module = (float) Math.sqrt(Math.pow(handler.getVelocityX(),2) + Math.pow(handler.getVelocityY(),2));
             Point pnt = getDirections();
             // The ball hit the left bar side
-            if(barX - ballX > barXpos) {
+            if(ballX - ballX < -(3/10)*barSprite.getWidth()) {
                 Log.d("collsidesBar()", "Left bar side. Direction: (" + pnt.x + ", " + pnt.y + ")");
                 handler.setVelocity(-module * COS_30, -module * SIN_30);
             }
 
             // The ball hit the center-left bar side
-            if((barX - ballX >= barX - (3/10)*barSprite.getWidth()) && (barX - ballX <= barX - barSprite.getWidth()/10)){
+            if((ballX - barX >= -(3/10)*barSprite.getWidth()) && (ballX - barX <= barSprite.getWidth()/10)){
                 Log.d("collsidesBar()", "Center-Left bar side. Direction: (" + pnt.x + ", " + pnt.y + ")");
                 if(pnt.x == 1){
                     handler.setVelocity(module * COS_45, -module * SIN_45);
@@ -392,7 +391,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             }
 
             // The ball hit the right bar side
-            if((ballX - barX > barXpos)){
+            if((ballX - barX > (3/10)*barSprite.getWidth())){
                 Log.d("collsidesBar()", "Right bar side. Direction: (" + pnt.x + ", " + pnt.y + ")");
                 handler.setVelocity(module * COS_30, -module * SIN_30);
             }
