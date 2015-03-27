@@ -255,7 +255,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                     mStatus = false;
                     switchBluetooth.setChecked(false);
                 }
-
+                break;
             case GAME_START:
                 mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
                 fsmGame = FSMGame.getFsmInstance(fsmHandler);
@@ -264,6 +264,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                     Log.d(TAG, "2 Players Game Was Canceled");
                     fsmGame.setState(FSMGame.STATE_GAME_ABORTED);
                 }
+                break;
         }
     }
 
@@ -562,12 +563,6 @@ public class TwoPlayerActivity extends ActionBarActivity {
                             break;
                         case BluetoothService.STATE_NONE:
                             Log.i(TAG, "State None");
-                            /*btnPlay.setEnabled(false);
-                            mConnectedDeviceName = null;
-                            privateNumber = null;
-                            txtEnemy.setText("");
-                            stringArrayAdapter.clear();
-                            stringArrayAdapter.notifyDataSetChanged();*/
                             fsmGame.setState(FSMGame.STATE_DISCONNECTED);
                             break;
                     }
@@ -634,6 +629,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                             break;
                         case FSMGame.STATE_GAME_ABORTED:
                             privateNumber = null;
+                            txtEnemy.setText("");
                             if(!isMaster){
                                 btnPlay.setEnabled(false);
                             }

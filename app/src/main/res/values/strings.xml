@@ -43,11 +43,11 @@
     <string name="text_play">Play</string>
     <string name="text_paired">Paired</string>
     <string name="text_scan">Scan</string>
-    <string name="text_disconnect">Disconnect</string>
     <string name="none_found">No discoverable device found</string>
 
     <!-- 2 Player Game -->
     <string name="text_disconnected">Disconnected</string>
+    <string name="text_disconnect">Disconnect</string>
     <string name="text_opponent_left">Your opponent\nleft the game</string>
     <string name="text_waiting">Waiting for\nyour opponent</string>
 

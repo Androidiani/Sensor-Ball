@@ -360,10 +360,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             Point pnt = getDirections();
             // The ball hit the left bar side
             if(barX - ballX > barXpos) {
-                //if(previous_event == RIGHT){
-                if(pnt.x == -1){
-                    handler.setVelocity(-module * COS_30, -module * SIN_30);
-                } else handler.setVelocity(module * COS_30, -module * SIN_30);
+                handler.setVelocity(-module * COS_30, -module * SIN_30);
             }
 
             // The ball hit the center-left bar side
@@ -381,18 +378,15 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
             // The ball hit the center-right bar side
             if((ballX - barX >= barSprite.getWidth()/10) && (ballX - barX <= 3*barSprite.getWidth()/10))
-                if(pnt.x == 1){
-                    handler.setVelocity(module * COS_45, -module * SIN_45);
-                }else{
+                if(pnt.x == -1){
                     handler.setVelocity(-module * COS_45, -module * SIN_45);
+                }else{
+                    handler.setVelocity(module * COS_45, -module * SIN_45);
                 }
 
             // The ball hit the right bar side
             if((ballX - barX > barXpos)){
-                //if(previous_event == LEFT)
-                if(pnt.x == 1)
-                    handler.setVelocity(module * COS_30, -module * SIN_30);
-                else handler.setVelocity(-module * COS_30, -module * SIN_30);
+                handler.setVelocity(module * COS_30, -module * SIN_30);
             }
 
             Log.d("", "Over. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
