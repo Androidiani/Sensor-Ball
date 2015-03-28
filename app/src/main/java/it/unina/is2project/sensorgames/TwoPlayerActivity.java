@@ -629,7 +629,6 @@ public class TwoPlayerActivity extends ActionBarActivity {
                             break;
                         case FSMGame.STATE_GAME_ABORTED:
                             privateNumber = null;
-                            txtEnemy.setText("");
                             if(!isMaster){
                                 btnPlay.setEnabled(false);
                             }

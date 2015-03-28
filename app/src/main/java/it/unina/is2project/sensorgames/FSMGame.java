@@ -16,8 +16,12 @@ public class FSMGame implements Cloneable {
     public final static int STATE_IN_GAME_WAITING = 333;
     public final static int STATE_IN_GAME = 444;
     public final static int STATE_OPPONENT_LEFT = 555;
+    public final static int STATE_OPPONENT_NOT_READY = 505;
     public final static int STATE_DISCONNECTED = 666;
     public final static int STATE_GAME_ABORTED = 777;
+    public final static int STATE_GAME_PAUSED = 800;
+    public final static int STATE_GAME_OPPONENT_PAUSED = 880;
+    public final static int STATE_GAME_EXIT_PAUSE = 888;
 
 
     // Private fields
@@ -28,6 +32,47 @@ public class FSMGame implements Cloneable {
     private FSMGame(Handler handler) {
         this.handler = handler;
         this.state = STATE_NOT_READY;
+    }
+
+    @Override
+    public String toString() {
+        String result;
+        switch (state){
+            case STATE_CONNECTED:
+                result = "Connesso";
+                break;
+            case STATE_DISCONNECTED:
+                result = "Disconnesso";
+                break;
+            case STATE_GAME_ABORTED:
+                result = "Gioco abortito";
+                break;
+            case STATE_GAME_EXIT_PAUSE:
+                result = "Uscita da pausa";
+                break;
+            case STATE_GAME_OPPONENT_PAUSED:
+                result = "Pausa avversario";
+                break;
+            case STATE_GAME_PAUSED:
+                result = "Pausa";
+                break;
+            case STATE_IN_GAME:
+                result = "In gioco";
+                break;
+            case STATE_IN_GAME_WAITING:
+                result = "In attesa di gioco";
+                break;
+            case STATE_OPPONENT_LEFT:
+                result = "Avversario ritirato";
+                break;
+            case STATE_NOT_READY:
+                result = "Non pronto";
+                break;
+            default:
+                result = "default";
+                break;
+        }
+        return result;
     }
 
     public static FSMGame getFsmInstance(Handler handler){
@@ -43,8 +88,8 @@ public class FSMGame implements Cloneable {
     }
 
     public void setState(int state) {
-        Log.d(TAG, "Set State From " + this.state + " to " + state);
         this.state = state;
+        Log.d(TAG, "Set State From " + this.state + " to " + this.toString());
         handler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
 

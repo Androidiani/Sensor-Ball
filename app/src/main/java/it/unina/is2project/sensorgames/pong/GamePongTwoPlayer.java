@@ -37,6 +37,11 @@ public class GamePongTwoPlayer extends GamePong {
     Text textInfo;
     // Return intent extra
     public static String EXTRA_MASTER = "isMaster_boolean";
+    // Pause Utils
+    private float old_x_speed;
+    private float old_y_speed;
+    private int old_game_speed;
+    private long tap;
 
     @Override
     protected Scene onCreateScene() {
@@ -66,6 +71,8 @@ public class GamePongTwoPlayer extends GamePong {
         previous_event = 0;
 
         if(i.getIntExtra("master", 0) == 1){
+            AppMessage alertMessage = new AppMessage(Constants.MSG_TYPE_ALERT);
+            sendBluetoothMessage(alertMessage);
             isMaster = true;
             fsmGame.setState(FSMGame.STATE_IN_GAME_WAITING);
         }else{
@@ -97,7 +104,9 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected void setBallVeloctity() {
-        // do nothing
+        old_game_speed = 2;
+        old_x_speed = BALL_SPEED;
+        old_y_speed = -BALL_SPEED;
     }
 
     @Override
@@ -129,13 +138,11 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected void bluetoothExtra() {
         if (ballSprite.getY() < -ballSprite.getWidth()/2){
-            Log.d(TAG, "getY < getwidth/2");
             scene.detachChild(ballSprite);
             //ballSprite.detachSelf();
             transferringBall = false;
         }
         if (ballSprite.getY() > ballSprite.getWidth()/2){
-            Log.d(TAG, "getY > getwidth/2");
             transferringBall = false;
         }
     }
@@ -167,12 +174,25 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     public void actionDownEvent() {
-        //do nothing
+        if( fsmGame.getState() == FSMGame.STATE_IN_GAME ) {
+            tap = System.currentTimeMillis();
+            fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
+            AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
+            sendBluetoothMessage(pauseMessage);
+        }
+
+        if(fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)){
+            fsmGame.setState(FSMGame.STATE_IN_GAME);
+            AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
+            sendBluetoothMessage(resumeMessage);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
+        if(fsmGame.getState() == FSMGame.STATE_IN_GAME ||
+                fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
+                fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ) {
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
         }
@@ -249,8 +269,32 @@ public class GamePongTwoPlayer extends GamePong {
                                     fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
                                 }
                                 break;
+                            case Constants.MSG_TYPE_PAUSE:
+                                if(fsmGame.getState() == FSMGame.STATE_IN_GAME){
+                                    fsmGame.setState(FSMGame.STATE_GAME_OPPONENT_PAUSED);
+                                }
+                                break;
+                            case Constants.MSG_TYPE_RESUME:
+                                if(fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED){
+                                  fsmGame.setState(FSMGame.STATE_IN_GAME);
+                                }
+                                break;
                             case Constants.MSG_TYPE_INTEGER:
                                 //TODO
+                                break;
+                            case Constants.MSG_TYPE_ALERT:
+                                if(fsmGame.getState() == FSMGame.STATE_DISCONNECTED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_OPPONENT_LEFT){
+                                    AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
+                                    sendBluetoothMessage(notReadyMessage);
+                                }
+                                break;
+                            case Constants.MSG_TYPE_NOREADY:
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING){
+                                    fsmGame.setState(FSMGame.STATE_OPPONENT_NOT_READY);
+                                }
                                 break;
                             default:
                                 Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
@@ -278,8 +322,8 @@ public class GamePongTwoPlayer extends GamePong {
                         case FSMGame.STATE_CONNECTED:
                             break;
                         case FSMGame.STATE_IN_GAME:
-                            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
-                            GAME_VELOCITY = 2;
+                            handler.setVelocity(old_x_speed, old_y_speed);
+                            GAME_VELOCITY = old_game_speed;
                             textInfo.setText("");
                             AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
                             sendBluetoothMessage(messageSync);
@@ -288,25 +332,37 @@ public class GamePongTwoPlayer extends GamePong {
                             handler.setVelocity(0, 0);
                             GAME_VELOCITY = 0;
                             textInfo.setText(getApplicationContext().getString(R.string.text_waiting));
-                            //TODO Piazzare al centro la scritta.
-                            //textLeft.setX(CAMERA_WIDTH-textLeft.getWidth()/2);
-                            //textLeft.setY(CAMERA_HEIGHT-textLeft.getHeight()/2);
+                            break;
+                        case FSMGame.STATE_GAME_PAUSED:
+                            textInfo.setText(getResources().getString(R.string.text_pause));
+                            old_x_speed = handler.getVelocityX();
+                            old_y_speed = handler.getVelocityY();
+                            old_game_speed = GAME_VELOCITY;
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            break;
+                        case FSMGame.STATE_GAME_EXIT_PAUSE:
+                            break;
+                        case FSMGame.STATE_GAME_OPPONENT_PAUSED:
+                            textInfo.setText(getResources().getString(R.string.text_opponent_pause));
+                            old_x_speed = handler.getVelocityX();
+                            old_y_speed = handler.getVelocityY();
+                            old_game_speed = GAME_VELOCITY;
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            break;
+                        case FSMGame.STATE_OPPONENT_NOT_READY:
+                            textInfo.setText(getResources().getString(R.string.text_opponent_not_ready));
                             break;
                         case FSMGame.STATE_DISCONNECTED:
                             handler.setVelocity(0, 0);
                             GAME_VELOCITY = 0;
                             textInfo.setText(getApplicationContext().getString(R.string.text_disconnected));
-                            //TODO Piazzare al centro la scritta.
-                            //textLeft.setX(CAMERA_WIDTH-textLeft.getWidth()/2);
-                            //textLeft.setY(CAMERA_HEIGHT-textLeft.getHeight()/2);
                             break;
                         case FSMGame.STATE_OPPONENT_LEFT:
                             handler.setVelocity(0, 0);
                             GAME_VELOCITY = 0;
                             textInfo.setText( getApplicationContext().getString(R.string.text_opponent_left));
-                            //TODO Piazzare al centro la scritta.
-                            //textLeft.setX(CAMERA_WIDTH-textLeft.getWidth()/2);
-                            //textLeft.setY(CAMERA_HEIGHT-textLeft.getHeight()/2);
                             break;
                         default:
                     }

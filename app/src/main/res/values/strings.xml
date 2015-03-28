@@ -49,6 +49,8 @@
     <string name="text_disconnected">Disconnected</string>
     <string name="text_disconnect">Disconnect</string>
     <string name="text_opponent_left">Your opponent\nleft the game</string>
+    <string name="text_opponent_pause">Your opponent\npaused the game</string>
+    <string name="text_opponent_not_ready">Your opponent\nis not ready</string>
     <string name="text_waiting">Waiting for\nyour opponent</string>
 
     <!-- Toasts -->
@@ -91,6 +93,5 @@
     <string name="text_msg_oneplayer_leavegame">Leave the game</string>
     <string name="text_ttl_oneplayer_savegame">Save the game score</string>
     <string name="text_msg_oneplayer_savegame">Do you want to save this score?</string>
-
 
 </resources>
