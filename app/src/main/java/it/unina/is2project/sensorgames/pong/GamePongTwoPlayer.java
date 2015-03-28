@@ -265,7 +265,9 @@ public class GamePongTwoPlayer extends GamePong {
                                 }
                                 break;
                             case Constants.MSG_TYPE_FAIL:
-                                if(fsmGame.getState() == FSMGame.STATE_IN_GAME){
+                                if(fsmGame.getState() == FSMGame.STATE_IN_GAME ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED){
                                     fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
                                 }
                                 break;
