@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.entity;
+package it.unina.is2project.sensorgames.stats.entity;
 
 public class Player {
     private int id;

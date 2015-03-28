@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.database.dao;
+package it.unina.is2project.sensorgames.stats.database.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unina.is2project.sensorgames.database.DatabaseHandler;
-import it.unina.is2project.sensorgames.entity.StatOnePlayer;
+import it.unina.is2project.sensorgames.stats.database.DatabaseHandler;
+import it.unina.is2project.sensorgames.stats.entity.StatOnePlayer;
 
 /**
  * StatOnePlayerDAO Object
@@ -17,7 +17,7 @@ import it.unina.is2project.sensorgames.entity.StatOnePlayer;
 public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
 
     // StatOnePlayer table name
-    public static final String TABLE_NAME = "statOnePlayer";
+    public static final String TABLE_NAME = "stat_one_player";
     public static final String KEY_ID = "id";
     private static final String COL_SCORE = "score";
     private static final String COL_DATA = "data";
@@ -105,9 +105,10 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
     }
 
     /**
-     * Get all TODOs.
+     * Restituisce tutti i risultati one player.
+     * La lista è ordinata per punteggio decrescente.
      *
-     * @return
+     * @return List<StatOnePlayer>
      */
     public List<StatOnePlayer> findAll() {
         List<StatOnePlayer> list = new ArrayList<StatOnePlayer>();
@@ -115,7 +116,7 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
         // Name of the columns we want to select
 
         // Query the database
-        Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, null);
+        Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, COL_SCORE + " DESC");
         cursor.moveToFirst();
 
         // Iterate the results

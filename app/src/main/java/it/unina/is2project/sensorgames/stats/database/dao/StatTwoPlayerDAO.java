@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.database.dao;
+package it.unina.is2project.sensorgames.stats.database.dao;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unina.is2project.sensorgames.database.DatabaseHandler;
-import it.unina.is2project.sensorgames.entity.StatTwoPlayer;
+import it.unina.is2project.sensorgames.stats.database.DatabaseHandler;
+import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
 
 /**
  * StatTwoPlayerDAO Object

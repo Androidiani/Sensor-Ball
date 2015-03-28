@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.database.dao;
+package it.unina.is2project.sensorgames.stats.database.dao;
 
 import java.util.List;
 

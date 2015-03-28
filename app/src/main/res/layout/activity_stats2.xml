@@ -1,0 +1,67 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="it.unina.is2project.sensorgames.stats.activity.StatsActivity"
+    android:background="#ff000000"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/stats"
+        android:id="@+id/txt_stat"
+        android:layout_gravity="center_horizontal"
+        android:textSize="@dimen/home_font"
+        android:textColor="#ffffffff" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/one_player"
+        android:id="@+id/txt_single"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#ffffffff"
+        android:textStyle="italic"
+        android:textSize="@dimen/medium_font" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.2" />
+
+    <ListView
+        android:id="@+id/listViewDemo"
+        android:layout_width="fill_parent"
+        android:layout_height="164dp"
+        android:layout_weight="0.31"></ListView>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.2" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/two_player"
+        android:id="@+id/txt_multi"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="italic"
+        android:textSize="@dimen/medium_font"
+        android:textColor="#ffffffff" />
+
+    <ListView
+        android:id="@+id/listViewDemo2"
+        android:layout_width="fill_parent"
+        android:layout_height="226dp"></ListView>
+
+</LinearLayout>

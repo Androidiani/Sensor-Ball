@@ -1,14 +1,14 @@
-package it.unina.is2project.sensorgames.database;
+package it.unina.is2project.sensorgames.stats.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import it.unina.is2project.sensorgames.database.dao.GiocatoreDAO;
-import it.unina.is2project.sensorgames.database.dao.PlayerDAO;
-import it.unina.is2project.sensorgames.database.dao.StatOnePlayerDAO;
-import it.unina.is2project.sensorgames.database.dao.StatTwoPlayerDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
 
 /**
  * DatabaseHandler Object
@@ -48,6 +48,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         Log.d("DBHandler", "SQL command: " + StatOnePlayerDAO.CREATE_TABLE);
         db.execSQL(StatOnePlayerDAO.CREATE_TABLE);
+
+        db.execSQL("INSERT INTO player VALUES(1,'Giovanni')");
+        db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-26',1)");
+
+        db.execSQL("INSERT INTO player VALUES(2,'Alessandro')");
+        db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-27',2)");
+
+        db.execSQL("INSERT INTO player VALUES(3,'Francesco')");
+        db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-27',3)");
+
+        db.execSQL("INSERT INTO player VALUES(4,'Gabriele')");
+        db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-27',4)");
+
+        db.execSQL("INSERT INTO player VALUES(5,'Tim Cook')");
+        db.execSQL("INSERT INTO stat_one_player VALUES(NULL,0,'2015-03-27',5)");
+
+        db.execSQL("INSERT INTO player VALUES(6,'Anonymous')");
+        db.execSQL("INSERT INTO stat_one_player VALUES(NULL,1300000,'2015-03-29',6)");
 
         Log.d("DBHandler", "SQL command: " + StatTwoPlayerDAO.CREATE_TABLE);
         db.execSQL(StatTwoPlayerDAO.CREATE_TABLE);

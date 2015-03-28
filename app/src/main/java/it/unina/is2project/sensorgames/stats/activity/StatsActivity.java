@@ -1,13 +1,18 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.stats.activity;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.stats.service.StatService;
+import it.unina.is2project.sensorgames.stats.StatAdapter;
 
 
 public class StatsActivity extends ActionBarActivity {
@@ -23,7 +28,7 @@ public class StatsActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stats);
+        setContentView(R.layout.activity_stats2);
 
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         /** Set the fullscreen window */
@@ -39,6 +44,16 @@ public class StatsActivity extends ActionBarActivity {
 
         // Set Font Typeface
         setFont();
+
+        ListView listView = (ListView) findViewById(R.id.listViewDemo);
+        //String [] array = {"Antonio","Giovanni","Michele","Giuseppe", "Leonardo", "Alessandro"};
+        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.stat_one_player_row, R.id.textViewList, array);
+        //listView.setAdapter(arrayAdapter);
+
+        StatService statService = new StatService(getApplicationContext());
+
+        StatAdapter adapter = new StatAdapter(this, R.layout.stat_one_player_row, statService.getStatOnePlayerList());
+        listView.setAdapter(adapter);
     }
 
 

@@ -1,11 +1,5 @@
 package it.unina.is2project.sensorgames;
 
-import it.unina.is2project.sensorgames.database.dao.GiocatoreDAO;
-import it.unina.is2project.sensorgames.entity.Giocatore;
-import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
-import it.unina.is2project.sensorgames.pong.GamePongTraining;
-
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,8 +9,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,7 +23,10 @@ import android.widget.LinearLayout;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import android.os.Handler;
+
+import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
+import it.unina.is2project.sensorgames.pong.GamePongTraining;
+import it.unina.is2project.sensorgames.stats.activity.StatsActivity;
 
 public class MainActivity extends ActionBarActivity {
 
