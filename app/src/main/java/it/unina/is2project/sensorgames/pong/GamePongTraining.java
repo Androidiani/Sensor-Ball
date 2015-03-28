@@ -4,8 +4,6 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
-import org.andengine.engine.handler.IUpdateHandler;
-import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.input.touch.TouchEvent;
@@ -18,15 +16,7 @@ import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 
 public class GamePongTraining extends GamePong {
 
-    /**
-     * Debug
-     */
     private final String TAG = "TrainingGame";
-
-    // Settings button
-    protected BitmapTextureAtlas settingsTexture;
-    protected ITextureRegion settingsTextureRegion;
-    protected Sprite settingsSprite;
 
     // Easy mode button
     protected BitmapTextureAtlas easyTexture;
@@ -60,7 +50,7 @@ public class GamePongTraining extends GamePong {
     protected Scene onCreateScene() {
         super.onCreateScene();
 
-        /** Adding the easySprite to the scene */
+        // Adding the easySprite to the scene
         easySprite = new Sprite(0, 0, easyTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -79,7 +69,7 @@ public class GamePongTraining extends GamePong {
         easySprite.setX((CAMERA_WIDTH - easySprite.getWidth()) / 2); // Position set after scaling
         easySprite.setY(((CAMERA_HEIGHT - easySprite.getHeight()) / 2) - easySprite.getHeight());
 
-        /** Adding the normalSprite to the scene */
+        // Adding the normalSprite to the scene
         normalSprite = new Sprite(0, 0, normalTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -98,7 +88,7 @@ public class GamePongTraining extends GamePong {
         normalSprite.setX((CAMERA_WIDTH - normalSprite.getWidth()) / 2); // Position set after scaling
         normalSprite.setY((CAMERA_HEIGHT - normalSprite.getHeight()) / 2);
 
-        /** Adding the insaneSprite to the scene */
+        // Adding the insaneSprite to the scene
         insaneSprite = new Sprite(0, 0, insaneTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -117,7 +107,7 @@ public class GamePongTraining extends GamePong {
         insaneSprite.setX((CAMERA_WIDTH - insaneSprite.getWidth()) / 2); // Position set after scaling
         insaneSprite.setY(((CAMERA_HEIGHT - insaneSprite.getHeight()) / 2) + insaneSprite.getHeight());
 
-        /** Setting up the physics of the game */
+        // Setting up the physics of the game
         settingPhysics();
 
         return scene;
@@ -128,23 +118,28 @@ public class GamePongTraining extends GamePong {
     protected void loadGraphics() {
         super.loadGraphics();
 
-        /** Easy mode */
+        // Easy mode
         Drawable easyDrawable = getResources().getDrawable(R.drawable.training_setting_easy);
         easyTexture = new BitmapTextureAtlas(getTextureManager(), easyDrawable.getIntrinsicWidth(), easyDrawable.getIntrinsicHeight());
         easyTextureRegion = createFromResource(easyTexture, this, R.drawable.training_setting_easy, 0, 0);
         easyTexture.load();
 
-        /** Normal mode */
+        // Normal mode
         Drawable normalDrawable = getResources().getDrawable(R.drawable.training_setting_normal);
         normalTexture = new BitmapTextureAtlas(getTextureManager(), normalDrawable.getIntrinsicWidth(), normalDrawable.getIntrinsicHeight());
         normalTextureRegion = createFromResource(normalTexture, this, R.drawable.training_setting_normal, 0, 0);
         normalTexture.load();
 
-        /** Insane mode */
+        // Insane mode
         Drawable insaneDrawable = getResources().getDrawable(R.drawable.training_setting_insane);
         insaneTexture = new BitmapTextureAtlas(getTextureManager(), insaneDrawable.getIntrinsicWidth(), insaneDrawable.getIntrinsicHeight());
         insaneTextureRegion = createFromResource(insaneTexture, this, R.drawable.training_setting_insane, 0, 0);
         insaneTexture.load();
+    }
+
+    @Override
+    protected void bluetoothExtra() {
+        // do nothing
     }
 
     @Override
@@ -170,11 +165,6 @@ public class GamePongTraining extends GamePong {
     @Override
     protected void remScore() {
         //do nothing
-    }
-
-    @Override
-    protected void bluetoothExtra() {
-        // do nothing
     }
 
     @Override
@@ -208,7 +198,6 @@ public class GamePongTraining extends GamePong {
         scene.attachChild(insaneSprite);
 
         firstTap = System.currentTimeMillis();
-
         enableModes = true;
     }
 
