@@ -23,8 +23,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import it.unina.is2project.sensorgames.R;
-import it.unina.is2project.sensorgames.database.dao.GiocatoreDAO;
-import it.unina.is2project.sensorgames.entity.Giocatore;
+import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
+import it.unina.is2project.sensorgames.stats.entity.Giocatore;
 
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
