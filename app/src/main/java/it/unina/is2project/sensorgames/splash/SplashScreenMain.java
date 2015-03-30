@@ -5,17 +5,29 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import it.unina.is2project.sensorgames.MainActivity;
 import it.unina.is2project.sensorgames.R;
 
 public class SplashScreenMain extends SplashScreen {
 
+    Animation animMove;
+    ImageView ball;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen_main);
+
+        animMove = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
+
+        ball = (ImageView) findViewById(R.id.ballSplashView);
+
+        ball.startAnimation(animMove);
 
         Thread mythread = new Thread() {
             public void run() {
