@@ -1,11 +1,9 @@
 package it.unina.is2project.sensorgames.pong;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.text.Editable;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -19,8 +17,6 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
@@ -129,8 +125,8 @@ public class GamePongOnePlayer extends GamePong {
     private static final int BONUS_BALL_MAX_NUM = 5;
     private static final int BONUS_BALL_MIN_NUM = 3;
     private static int BONUS_BALL_NUM;
-    private static final int RUSH_HOUR_MAX_NUM = 30;
     private static final int RUSH_HOUR_MIN_NUM = 15;
+    private static final int RUSH_HOUR_MAX_NUM = 30;
     private static int RUSH_HOUR_NUM;
     private boolean life_detached = false;
     private boolean allBonusDetached = false;
@@ -582,11 +578,10 @@ public class GamePongOnePlayer extends GamePong {
         pause = false;
     }
 
-
     private void rushHourLogic() {
         Random random = new Random();
 
-        RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM);
+        RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
 
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
             Sprite rush = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
@@ -656,7 +651,7 @@ public class GamePongOnePlayer extends GamePong {
     private void bubbleBonusLogic() {
         Random random = new Random();
 
-        BONUS_BALL_NUM = BONUS_BALL_MIN_NUM + random.nextInt(BONUS_BALL_MAX_NUM - BONUS_BALL_MIN_NUM) + 1;
+        BONUS_BALL_NUM = BONUS_BALL_MIN_NUM + random.nextInt(BONUS_BALL_MAX_NUM - BONUS_BALL_MIN_NUM + 1);
 
         /** Adding the bonus ball sprites to the scene */
         for (int i = 0; i < BONUS_BALL_NUM; i++) {
@@ -829,7 +824,6 @@ public class GamePongOnePlayer extends GamePong {
 
         if (new_event) {
             Random random = new Random();
-
             int randomInt = random.nextInt(level + 1);
 
             if (level > LEVEL_ONE) {
