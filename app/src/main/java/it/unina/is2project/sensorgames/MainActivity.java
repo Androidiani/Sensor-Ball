@@ -1,6 +1,8 @@
 package it.unina.is2project.sensorgames;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -12,6 +14,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import java.util.Timer;
@@ -27,6 +31,8 @@ import java.util.TimerTask;
 import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
 import it.unina.is2project.sensorgames.pong.GamePongTraining;
 import it.unina.is2project.sensorgames.stats.activity.StatsActivity;
+import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
+import it.unina.is2project.sensorgames.stats.entity.Giocatore;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -295,4 +301,24 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
     }
 
+    @Override
+    public void onBackPressed() {AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+
+        alert.setTitle(getApplicationContext().getResources().getString(R.string.ttl_main_adv));
+        alert.setMessage(getApplicationContext().getResources().getString(R.string.txt_main_adv));
+
+        alert.setPositiveButton(getApplicationContext().getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+
+        alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // do nothing
+            }
+        });
+
+        alert.show();
+    }
 }

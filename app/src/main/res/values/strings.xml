@@ -20,6 +20,8 @@
     <string name="training">Training</string>
     <string name="stats">Stats</string>
     <string name="about">About Us</string>
+    <string name="ttl_main_adv">Exit Game</string>
+    <string name="txt_main_adv">Do you really want to exit game?</string>
 
     <!-- About Activity Strings -->
     <string name="text_app_about_description">\nThis app has been developed by students of University "Federico II", Naples.\n\n
