@@ -218,6 +218,15 @@ public class GamePongOnePlayer extends GamePong {
         pause = false;
         game_event = NO_EVENT;
         score = 0;
+        new_event = true;
+        first_event = true;
+        no_event = false;
+        rush_hour = false;
+        first_enemy = false;
+        drunk_ball = false;
+        freeze = false;
+        bubble_bonus = false;
+        life_bonus = false;
         addLifeSpritesToScene();
     }
 
