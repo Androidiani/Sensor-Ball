@@ -738,6 +738,7 @@ public class GamePongOnePlayer extends GamePong {
 
     private void firstEnemyCollisions() {
         if (ballSprite.collidesWith(firstEnemy) && first_enemy && ballSprite.getY() < CAMERA_HEIGHT / 2) {
+            previous_event = TOP;
             handler.setVelocityY(-handler.getVelocityY());
             touch.play();
         }

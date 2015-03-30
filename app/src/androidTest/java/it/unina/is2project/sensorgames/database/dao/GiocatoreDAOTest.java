@@ -6,7 +6,8 @@ import android.util.Log;
 
 import java.util.List;
 
-import it.unina.is2project.sensorgames.entity.Giocatore;
+import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
+import it.unina.is2project.sensorgames.stats.entity.Giocatore;
 
 public class GiocatoreDAOTest extends AndroidTestCase {
 

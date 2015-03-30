@@ -6,8 +6,10 @@ import android.util.Log;
 
 import java.util.List;
 
-import it.unina.is2project.sensorgames.entity.Player;
-import it.unina.is2project.sensorgames.entity.StatTwoPlayer;
+import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
+import it.unina.is2project.sensorgames.stats.entity.Player;
+import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
 
 public class StatTwoPlayerDAOTest extends AndroidTestCase {
 
