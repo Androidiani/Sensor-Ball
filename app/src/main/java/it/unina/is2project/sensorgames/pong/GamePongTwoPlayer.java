@@ -117,7 +117,8 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected boolean topCondition() {
-        if (ballSprite.getY() < ballSprite.getWidth()/2 && previous_event != TOP && haveBall && !transferringBall){
+        //if (ballSprite.getY() < ballSprite.getWidth()/2 && previous_event != TOP && haveBall && !transferringBall){
+        if (ballSprite.getY() < 0 && previous_event != TOP && haveBall && !transferringBall){
             Log.d(TAG, "topCondition TRUE");
             return true;
         }
@@ -136,19 +137,22 @@ public class GamePongTwoPlayer extends GamePong {
         sendBluetoothMessage(messageCoords);
         Log.d(TAG, "End Top. TransBall: " + transferringBall);
         Log.d(TAG, "End Top. HaveBall: " + haveBall);
-        haveBall = false;
+        //haveBall = false;
         transferringBall = true;
         previous_event = TOP;
     }
 
     @Override
     protected void bluetoothExtra() {
-        if (ballSprite.getY() < -ballSprite.getWidth()/2){
+        //if (ballSprite.getY() < -ballSprite.getWidth()/2){
+        if (ballSprite.getY() < -ballSprite.getWidth()){
             scene.detachChild(ballSprite);
+            haveBall = false;
             //ballSprite.detachSelf();
             transferringBall = false;
         }
-        if (ballSprite.getY() > ballSprite.getWidth()/2){
+        //if (ballSprite.getY() > ballSprite.getWidth()/2){
+        if (ballSprite.getY() > 0){
             transferringBall = false;
         }
     }
@@ -226,175 +230,172 @@ public class GamePongTwoPlayer extends GamePong {
     //----------------------------------------------
     // HANDLERS
     //----------------------------------------------
-    private final Handler mHandler = new Handler(){
+    private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Log.i(TAG, "Handler Called");
-            synchronized (this) {
-                switch (msg.what) {
-                    case Constants.MESSAGE_STATE_CHANGE:
-                        switch (msg.arg1) {
-                            case BluetoothService.STATE_CONNECTED:
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothService.STATE_CONNECTED:
+                            break;
+                        case BluetoothService.STATE_CONNECTING:
+                            break;
+                        case BluetoothService.STATE_LISTEN:
+                            break;
+                        case BluetoothService.STATE_NONE:
+                            fsmGame.setState(FSMGame.STATE_DISCONNECTED);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case Constants.MESSAGE_WRITE:
+                    Log.i(TAG, "Message Write");
+                    break;
+                case Constants.MESSAGE_READ:
+                    Log.i(TAG, "Message Read");
+                    byte[] readBuf = (byte[]) msg.obj;
+                    AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
+                    Log.d("ReceivedType", Integer.toString(recMsg.TYPE));
+                    if (recMsg != null) {
+                        switch (recMsg.TYPE) {
+                            case Constants.MSG_TYPE_COORDS:
+                                if (!haveBall) {
+                                    float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
+                                    //ballSprite.setPosition(xPos, -ballSprite.getWidth() / 2);
+                                    ballSprite.setPosition(xPos, -ballSprite.getWidth());
+                                    handler.setVelocity(-recMsg.OP2, -recMsg.OP3);
+                                    scene.attachChild(ballSprite);
+                                    transferringBall = true;
+                                    haveBall = true;
+                                    Log.i(TAG, "x = " + recMsg.OP2 + " y = " + recMsg.OP3);
+                                }
                                 break;
-                            case BluetoothService.STATE_CONNECTING:
+                            case Constants.MSG_TYPE_SYNC:
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
+                                    fsmGame.setState(FSMGame.STATE_IN_GAME);
+                                }
                                 break;
-                            case BluetoothService.STATE_LISTEN:
+                            case Constants.MSG_TYPE_FAIL:
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                                    fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
+                                }
                                 break;
-                            case BluetoothService.STATE_NONE:
-                                fsmGame.setState(FSMGame.STATE_DISCONNECTED);
+                            case Constants.MSG_TYPE_PAUSE:
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
+                                    fsmGame.setState(FSMGame.STATE_GAME_OPPONENT_PAUSED);
+                                }
+                                break;
+                            case Constants.MSG_TYPE_RESUME:
+                                if (fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_EXIT_PAUSE) {
+                                    fsmGame.setState(FSMGame.STATE_IN_GAME);
+                                } else if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED) {
+                                    AppMessage resumeNotReadyMessage = new AppMessage(Constants.MSG_TYPE_RESUME_NOREADY);
+                                    sendBluetoothMessage(resumeNotReadyMessage);
+                                }
+                                break;
+                            case Constants.MSG_TYPE_RESUME_NOREADY:
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
+                                    fsmGame.setState(FSMGame.STATE_GAME_EXIT_PAUSE);
+                                }
+                                break;
+                            case Constants.MSG_TYPE_INTEGER:
+                                //TODO
+                                break;
+                            case Constants.MSG_TYPE_ALERT:
+                                if (fsmGame.getState() == FSMGame.STATE_DISCONNECTED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_OPPONENT_LEFT) {
+                                    AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
+                                    sendBluetoothMessage(notReadyMessage);
+                                }
+                                break;
+                            case Constants.MSG_TYPE_NOREADY:
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
+                                    fsmGame.setState(FSMGame.STATE_OPPONENT_NOT_READY);
+                                }
                                 break;
                             default:
-                                break;
+                                Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                         }
-                        break;
-                    case Constants.MESSAGE_WRITE:
-                        Log.i(TAG, "Message Write");
-                        break;
-                    case Constants.MESSAGE_READ:
-                        Log.i(TAG, "Message Read");
-                        byte[] readBuf = (byte[]) msg.obj;
-                        AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
-                        Log.d("ReceivedType", Integer.toString(recMsg.TYPE));
-                        if (recMsg != null) {
-                            switch (recMsg.TYPE) {
-                                case Constants.MSG_TYPE_COORDS:
-                                    if (!haveBall) {
-                                        float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
-                                        ballSprite.setPosition(xPos, -ballSprite.getWidth() / 2);
-                                        handler.setVelocity(-recMsg.OP2, -recMsg.OP3);
-                                        scene.attachChild(ballSprite);
-                                        transferringBall = true;
-                                        haveBall = true;
-                                        Log.i(TAG, "x = " + recMsg.OP2 + " y = " + recMsg.OP3);
-                                    }
-                                    break;
-                                case Constants.MSG_TYPE_SYNC:
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
-                                        fsmGame.setState(FSMGame.STATE_IN_GAME);
-                                    }
-                                    break;
-                                case Constants.MSG_TYPE_FAIL:
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED) {
-                                        fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
-                                    }
-                                    break;
-                                case Constants.MSG_TYPE_PAUSE:
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                                        fsmGame.setState(FSMGame.STATE_GAME_OPPONENT_PAUSED);
-                                    }
-                                    break;
-                                case Constants.MSG_TYPE_RESUME:
-                                    if (fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_EXIT_PAUSE) {
-                                        fsmGame.setState(FSMGame.STATE_IN_GAME);
-                                    } else if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED) {
-                                        AppMessage resumeNotReadyMessage = new AppMessage(Constants.MSG_TYPE_RESUME_NOREADY);
-                                        sendBluetoothMessage(resumeNotReadyMessage);
-                                    }
-                                    break;
-                                case Constants.MSG_TYPE_RESUME_NOREADY:
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                                        fsmGame.setState(FSMGame.STATE_GAME_EXIT_PAUSE);
-                                    }
-                                    break;
-                                case Constants.MSG_TYPE_INTEGER:
-                                    //TODO
-                                    break;
-                                case Constants.MSG_TYPE_ALERT:
-                                    if (fsmGame.getState() == FSMGame.STATE_DISCONNECTED ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_OPPONENT_LEFT) {
-                                        AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
-                                        sendBluetoothMessage(notReadyMessage);
-                                    }
-                                    break;
-                                case Constants.MSG_TYPE_NOREADY:
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
-                                        fsmGame.setState(FSMGame.STATE_OPPONENT_NOT_READY);
-                                    }
-                                    break;
-                                default:
-                                    Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
-                            }
-                        } else {
-                            Log.e(TAG, "Ricevuto messaggio nullo.");
-                        }
-                        break;
-                    case Constants.MESSAGE_DEVICE_NAME:
-                        break;
-                    case Constants.MESSAGE_TOAST:
-                        break;
-                }
+                    } else {
+                        Log.e(TAG, "Ricevuto messaggio nullo.");
+                    }
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    break;
+                case Constants.MESSAGE_TOAST:
+                    break;
             }
         }
     };
 
-    private final Handler fsmHandler = new Handler(){
+    private final Handler fsmHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            synchronized (this) {
-                switch (msg.what) {
-                    case Constants.MESSAGE_STATE_CHANGE:
-                        switch (msg.arg1) {
-                            case FSMGame.STATE_NOT_READY:
-                                break;
-                            case FSMGame.STATE_CONNECTED:
-                                break;
-                            case FSMGame.STATE_IN_GAME:
-                                handler.setVelocity(old_x_speed, old_y_speed);
-                                GAME_VELOCITY = old_game_speed;
-                                textInfo.setText("");
-                                break;
-                            case FSMGame.STATE_IN_GAME_WAITING:
-                                handler.setVelocity(0, 0);
-                                GAME_VELOCITY = 0;
-                                textInfo.setText(getApplicationContext().getString(R.string.text_waiting));
-                                break;
-                            case FSMGame.STATE_GAME_PAUSED:
-                                textInfo.setText(getResources().getString(R.string.text_pause));
-                                old_x_speed = handler.getVelocityX();
-                                old_y_speed = handler.getVelocityY();
-                                old_game_speed = GAME_VELOCITY;
-                                handler.setVelocity(0, 0);
-                                GAME_VELOCITY = 0;
-                                break;
-                            case FSMGame.STATE_GAME_EXIT_PAUSE:
-                                textInfo.setText(getResources().getString(R.string.text_exit_pause));
-                                old_x_speed = handler.getVelocityX();
-                                old_y_speed = handler.getVelocityY();
-                                old_game_speed = GAME_VELOCITY;
-                                handler.setVelocity(0, 0);
-                                GAME_VELOCITY = 0;
-                                break;
-                            case FSMGame.STATE_GAME_OPPONENT_PAUSED:
-                                textInfo.setText(getResources().getString(R.string.text_opponent_pause));
-                                old_x_speed = handler.getVelocityX();
-                                old_y_speed = handler.getVelocityY();
-                                old_game_speed = GAME_VELOCITY;
-                                handler.setVelocity(0, 0);
-                                GAME_VELOCITY = 0;
-                                break;
-                            case FSMGame.STATE_OPPONENT_NOT_READY:
-                                textInfo.setText(getResources().getString(R.string.text_opponent_not_ready));
-                                break;
-                            case FSMGame.STATE_DISCONNECTED:
-                                isConnected = false;
-                                handler.setVelocity(0, 0);
-                                GAME_VELOCITY = 0;
-                                textInfo.setText(getApplicationContext().getString(R.string.text_disconnected));
-                                break;
-                            case FSMGame.STATE_OPPONENT_LEFT:
-                                handler.setVelocity(0, 0);
-                                GAME_VELOCITY = 0;
-                                textInfo.setText(getApplicationContext().getString(R.string.text_opponent_left));
-                                break;
-                            default:
-                        }
-                    default:
-                }
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case FSMGame.STATE_NOT_READY:
+                            break;
+                        case FSMGame.STATE_CONNECTED:
+                            break;
+                        case FSMGame.STATE_IN_GAME:
+                            handler.setVelocity(old_x_speed, old_y_speed);
+                            GAME_VELOCITY = old_game_speed;
+                            textInfo.setText("");
+                            break;
+                        case FSMGame.STATE_IN_GAME_WAITING:
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            textInfo.setText(getApplicationContext().getString(R.string.text_waiting));
+                            break;
+                        case FSMGame.STATE_GAME_PAUSED:
+                            textInfo.setText(getResources().getString(R.string.text_pause));
+                            old_x_speed = handler.getVelocityX();
+                            old_y_speed = handler.getVelocityY();
+                            old_game_speed = GAME_VELOCITY;
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            break;
+                        case FSMGame.STATE_GAME_EXIT_PAUSE:
+                            textInfo.setText(getResources().getString(R.string.text_exit_pause));
+                            old_x_speed = handler.getVelocityX();
+                            old_y_speed = handler.getVelocityY();
+                            old_game_speed = GAME_VELOCITY;
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            break;
+                        case FSMGame.STATE_GAME_OPPONENT_PAUSED:
+                            textInfo.setText(getResources().getString(R.string.text_opponent_pause));
+                            old_x_speed = handler.getVelocityX();
+                            old_y_speed = handler.getVelocityY();
+                            old_game_speed = GAME_VELOCITY;
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            break;
+                        case FSMGame.STATE_OPPONENT_NOT_READY:
+                            textInfo.setText(getResources().getString(R.string.text_opponent_not_ready));
+                            break;
+                        case FSMGame.STATE_DISCONNECTED:
+                            isConnected = false;
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            textInfo.setText(getApplicationContext().getString(R.string.text_disconnected));
+                            break;
+                        case FSMGame.STATE_OPPONENT_LEFT:
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
+                            textInfo.setText(getApplicationContext().getString(R.string.text_opponent_left));
+                            break;
+                        default:
+                    }
+                default:
             }
         }
     };

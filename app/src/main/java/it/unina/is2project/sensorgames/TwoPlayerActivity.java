@@ -404,7 +404,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
             privateNumber = rand.nextInt(1000);
             privateNumber = privateNumber % 2;
             AppMessage ballChoise = new AppMessage(Constants.MSG_TYPE_INTEGER, privateNumber);
-            sendMessage(ballChoise);
+            sendBluetoothMessage(ballChoise);
         }
         Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
         mIntent.putExtra("ball", privateNumber);
@@ -512,7 +512,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
         mBluetoothService.start();
     }
 
-    private void sendMessage(AppMessage ballChoise) {
+    private void sendBluetoothMessage(AppMessage ballChoise) {
         if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
             return;
@@ -583,8 +583,14 @@ public class TwoPlayerActivity extends ActionBarActivity {
                                     privateNumber = recMsg.OP1 == 0 ? new Integer(1) : new Integer(0);
                                     btnPlay.setEnabled(true);
                                     break;
+                                case Constants.MSG_TYPE_SYNC:
+                                    //TODO C'è qualcosa di sbagliato qui
+                                    //TODO Quando il master esce e rientra, l'altro ha il bottone abilitato
+                                    AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
+                                    sendBluetoothMessage(notReadyMessage);
                                 default:
                                     Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
+                                    break;
                             }
                         } else {
                             Log.e(TAG, "Ricevuto messaggio nullo.");

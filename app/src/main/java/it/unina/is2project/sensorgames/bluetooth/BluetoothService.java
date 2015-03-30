@@ -541,9 +541,16 @@ public class BluetoothService implements Cloneable{
                 try{
                     // Lettura dall'imput stream
                     bytes = mmInStream.read(buffer);
-
+                    //TODO Riportare le cose come stavano
                     // Mando il messaggio alla UI
-                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                    //mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                    Message msg = mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer);
+                    if(mHandler.hasMessages(Constants.MESSAGE_READ)){
+                        mHandler.sendMessageDelayed(msg, 500);
+                    }else{
+                        msg.sendToTarget();
+                    }
+
                 }catch (IOException e){
                     Log.e(TAG, "disconnected while reading", e);
                     connectionLost();
@@ -571,7 +578,8 @@ public class BluetoothService implements Cloneable{
         public void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
+                //TODO Da valutare l'utilità di questa notifica.
+                //mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, " Exception during write", e);
             }
