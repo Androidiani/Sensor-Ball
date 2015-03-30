@@ -54,6 +54,7 @@
     <string name="text_opponent_pause">Your opponent\npaused the game</string>
     <string name="text_opponent_not_ready">Your opponent\nis not ready</string>
     <string name="text_waiting">Waiting for\nyour opponent</string>
+    <string name="text_exit_pause">Your opponent\nis in pause</string>
 
     <!-- Toasts -->
     <string name="toast_bluetoothNotSupported">Bluetooth not supported on your device</string>
@@ -97,6 +98,5 @@
     <string name="text_msg_oneplayer_savegame">Do you want to save this score?</string>
     <string name="title_activity_splash_screen_main">SplashScreenMain</string>
 
-    <string name="hello_world">Hello world!</string>
 
 </resources>

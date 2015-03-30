@@ -37,11 +37,14 @@ public class GamePongTwoPlayer extends GamePong {
     Text textInfo;
     // Return intent extra
     public static String EXTRA_MASTER = "isMaster_boolean";
+    public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
     // Pause Utils
     private float old_x_speed;
     private float old_y_speed;
     private int old_game_speed;
     private long tap;
+    // Connections Utils
+    private boolean isConnected;
 
     @Override
     protected Scene onCreateScene() {
@@ -67,6 +70,7 @@ public class GamePongTwoPlayer extends GamePong {
         /** Setting up the physics of the game */
         settingPhysics();
 
+        isConnected = true;
         game_over = false;
         previous_event = 0;
 
@@ -196,7 +200,9 @@ public class GamePongTwoPlayer extends GamePong {
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
         }
+
         Intent intent = new Intent();
+        intent.putExtra(EXTRA_CONNECTION_STATE, isConnected);
         intent.putExtra(EXTRA_MASTER, isMaster);
         setResult(Activity.RESULT_CANCELED, intent);
         super.onBackPressed();
@@ -276,8 +282,17 @@ public class GamePongTwoPlayer extends GamePong {
                                 }
                                 break;
                             case Constants.MSG_TYPE_RESUME:
-                                if(fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED){
+                                if(fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_EXIT_PAUSE){
                                   fsmGame.setState(FSMGame.STATE_IN_GAME);
+                                }else if(fsmGame.getState() == FSMGame.STATE_GAME_PAUSED){
+                                    AppMessage resumeNotReadyMessage = new AppMessage(Constants.MSG_TYPE_RESUME_NOREADY);
+                                    sendBluetoothMessage(resumeNotReadyMessage);
+                                }
+                                break;
+                            case Constants.MSG_TYPE_RESUME_NOREADY:
+                                if(fsmGame.getState() == FSMGame.STATE_IN_GAME){
+                                    fsmGame.setState(FSMGame.STATE_GAME_EXIT_PAUSE);
                                 }
                                 break;
                             case Constants.MSG_TYPE_INTEGER:
@@ -343,6 +358,12 @@ public class GamePongTwoPlayer extends GamePong {
                             GAME_VELOCITY = 0;
                             break;
                         case FSMGame.STATE_GAME_EXIT_PAUSE:
+                            textInfo.setText(getResources().getString(R.string.text_exit_pause));
+                            old_x_speed = handler.getVelocityX();
+                            old_y_speed = handler.getVelocityY();
+                            old_game_speed = GAME_VELOCITY;
+                            handler.setVelocity(0, 0);
+                            GAME_VELOCITY = 0;
                             break;
                         case FSMGame.STATE_GAME_OPPONENT_PAUSED:
                             textInfo.setText(getResources().getString(R.string.text_opponent_pause));
@@ -356,6 +377,7 @@ public class GamePongTwoPlayer extends GamePong {
                             textInfo.setText(getResources().getString(R.string.text_opponent_not_ready));
                             break;
                         case FSMGame.STATE_DISCONNECTED:
+                            isConnected = false;
                             handler.setVelocity(0, 0);
                             GAME_VELOCITY = 0;
                             textInfo.setText(getApplicationContext().getString(R.string.text_disconnected));
@@ -368,6 +390,22 @@ public class GamePongTwoPlayer extends GamePong {
                         default:
                     }
                 default:
+            }
+        }
+    };
+
+    private final Handler bonusHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case Bonus.BONUS_CREATED:
+                    //TODO
+                    break;
+                case Bonus.BONUS_EXPIRED:
+                    //TODO
+                    break;
+                default:
+                    break;
             }
         }
     };

@@ -16,6 +16,7 @@ public class Bonus {
     public static final int DEFAULT_BONUS_COUNT = 3;
 
     public static final int BONUS_EXPIRED = 725;
+    public static final int BONUS_CREATED = 825;
 
     private Bonus(Handler handler) {
         this.handler = handler;
@@ -41,6 +42,7 @@ public class Bonus {
     void addBonus(int bonusID, int reachCount){
         if (reachCount <= 0) reachCount = DEFAULT_BONUS_COUNT;
         bonusMap.put(bonusID, reachCount);
+        handler.obtainMessage(BONUS_CREATED, bonusID, -1).sendToTarget();
     }
 
     void decrementCount(){
@@ -57,5 +59,9 @@ public class Bonus {
                 bonusMap.put((Integer)pair.getKey(), value);
             }
         }
+    }
+
+    boolean alreadyExist(int bonusID){
+        return bonusMap.containsKey(bonusID);
     }
 }

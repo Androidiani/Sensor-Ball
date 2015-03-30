@@ -260,9 +260,13 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
                 fsmGame = FSMGame.getFsmInstance(fsmHandler);
                 isMaster = data.getExtras().getBoolean(GamePongTwoPlayer.EXTRA_MASTER);
+                boolean isConnected = data.getExtras().getBoolean(GamePongTwoPlayer.EXTRA_CONNECTION_STATE);
                 if(resultCode == Activity.RESULT_CANCELED){
                     Log.d(TAG, "2 Players Game Was Canceled");
-                    fsmGame.setState(FSMGame.STATE_GAME_ABORTED);
+                    if(isConnected)
+                        fsmGame.setState(FSMGame.STATE_GAME_ABORTED);
+                    else
+                        fsmGame.setState(FSMGame.STATE_DISCONNECTED);
                 }
                 break;
         }
