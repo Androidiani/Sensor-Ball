@@ -1,6 +1,6 @@
 <resources>
     <!-- General -->
-    <string name="app_name">SensorPong</string>
+    <string name="app_name">SensorTuttoTrannePong</string>
 
     <!-- Menu Entries -->
     <string name="action_settings">Settings</string>
@@ -96,7 +96,5 @@
     <string name="text_msg_oneplayer_leavegame">Leave the game</string>
     <string name="text_ttl_oneplayer_savegame">Save the game score</string>
     <string name="text_msg_oneplayer_savegame">Do you want to save this score?</string>
-    <string name="title_activity_splash_screen_main">SplashScreenMain</string>
-
 
 </resources>

@@ -54,9 +54,9 @@ public class GamePongTwoPlayer extends GamePong {
         // Retrieve intent message
         Intent i = getIntent();
 
-        if(i.getIntExtra("ball", 0) == 1){
+        if (i.getIntExtra("ball", 0) == 1) {
             haveBall = true;
-        }else{
+        } else {
             haveBall = false;
         }
 
@@ -67,19 +67,19 @@ public class GamePongTwoPlayer extends GamePong {
         // Set result in failure case
         setResult(Activity.RESULT_CANCELED);
 
-        /** Setting up the physics of the game */
+        // Setting up the physics of the game
         settingPhysics();
 
         isConnected = true;
         game_over = false;
         previous_event = 0;
 
-        if(i.getIntExtra("master", 0) == 1){
+        if (i.getIntExtra("master", 0) == 1) {
             AppMessage alertMessage = new AppMessage(Constants.MSG_TYPE_ALERT);
             sendBluetoothMessage(alertMessage);
             isMaster = true;
             fsmGame.setState(FSMGame.STATE_IN_GAME_WAITING);
-        }else{
+        } else {
             AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
             sendBluetoothMessage(messageSync);
             isMaster = false;
@@ -88,24 +88,16 @@ public class GamePongTwoPlayer extends GamePong {
 
         Log.d(TAG, "Sono master : " + isMaster);
 
-        textInfo = new Text(
-                10,
-                10,
-                font,
-                "",
-                30,
-                getVertexBufferObjectManager());
-
+        textInfo = new Text(10, 10, font, "", 30, getVertexBufferObjectManager());
         scene.attachChild(textInfo);
 
         return scene;
-
     }
 
     @Override
     protected void attachBall() {
         Log.i(TAG, "Call drawBall() with haveBall = " + haveBall);
-        if(haveBall) super.attachBall();
+        if (haveBall) super.attachBall();
     }
 
     @Override
@@ -121,8 +113,7 @@ public class GamePongTwoPlayer extends GamePong {
         if (ballSprite.getY() < 0 && previous_event != TOP && haveBall && !transferringBall){
             Log.d(TAG, "topCondition TRUE");
             return true;
-        }
-        else return false;
+        } else return false;
         //return super.topCondition() && haveBall;
     }
 
@@ -151,6 +142,7 @@ public class GamePongTwoPlayer extends GamePong {
             //ballSprite.detachSelf();
             transferringBall = false;
         }
+        if (ballSprite.getY() > ballSprite.getWidth() / 2) {
         //if (ballSprite.getY() > ballSprite.getWidth()/2){
         if (ballSprite.getY() > 0){
             transferringBall = false;
@@ -184,14 +176,14 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     public void actionDownEvent() {
-        if( fsmGame.getState() == FSMGame.STATE_IN_GAME ) {
+        if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
             tap = System.currentTimeMillis();
             fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
             AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
             sendBluetoothMessage(pauseMessage);
         }
 
-        if(fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)){
+        if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)) {
             fsmGame.setState(FSMGame.STATE_IN_GAME);
             AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
             sendBluetoothMessage(resumeMessage);
@@ -200,9 +192,9 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     public void onBackPressed() {
-        if(fsmGame.getState() == FSMGame.STATE_IN_GAME ||
+        if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
                 fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
-                fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ) {
+                fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED) {
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
         }
@@ -217,7 +209,7 @@ public class GamePongTwoPlayer extends GamePong {
     //----------------------------------------------
     // MISCELLANEA
     //----------------------------------------------
-    private synchronized void sendBluetoothMessage(AppMessage message){
+    private synchronized void sendBluetoothMessage(AppMessage message) {
         if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
             return;
@@ -400,10 +392,10 @@ public class GamePongTwoPlayer extends GamePong {
         }
     };
 
-    private final Handler bonusHandler = new Handler(){
+    private final Handler bonusHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case Bonus.BONUS_CREATED:
                     //TODO
                     break;
