@@ -258,7 +258,6 @@ public class GamePongTwoPlayer extends GamePong {
                                     Log.i(TAG, "x = " + recMsg.OP2 + " y = " + recMsg.OP3);
                                 }
                                 break;
-
                             case Constants.MSG_TYPE_SYNC:
                                 if(fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING){
                                     fsmGame.setState(FSMGame.STATE_IN_GAME);

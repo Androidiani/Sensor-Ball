@@ -329,6 +329,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         // The ball hit the bar's top surface
         if (yBall < yBar && previous_event != OVER && previous_event != SIDE) {
+
             Log.d("Collision", "OVER BAR. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
             previous_event = OVER;
 
