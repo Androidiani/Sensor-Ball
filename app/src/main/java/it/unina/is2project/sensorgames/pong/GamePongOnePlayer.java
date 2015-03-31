@@ -252,6 +252,7 @@ public class GamePongOnePlayer extends GamePong {
         score = 0;
         game_event = NO_EVENT;
         reach_count = 5;
+        level = LEVEL_ONE;
         // Setting false all events
         no_event = false;
         first_enemy = false;
@@ -260,6 +261,15 @@ public class GamePongOnePlayer extends GamePong {
         life_bonus = false;
         rush_hour = false;
         freeze = false;
+        // Setting true level_one
+        level_one = true;
+        // Setting false other levels
+        level_two = false;
+        level_three = false;
+        level_four = false;
+        level_five = false;
+        level_six = false;
+        level_seven = false;
         //Adding life sprites to the scene
         addLifeSpritesToScene();
     }
