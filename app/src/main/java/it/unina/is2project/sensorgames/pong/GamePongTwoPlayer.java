@@ -120,14 +120,15 @@ public class GamePongTwoPlayer extends GamePong {
     protected void collidesTop() {
         Log.d(TAG, "collidesTop");
         float xRatio = ballSprite.getX() / CAMERA_WIDTH;
-        AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
-                handler.getVelocityX(),
-                handler.getVelocityY(),
-                xRatio);
-        sendBluetoothMessage(messageCoords);
+        while(haveBall) {
+            AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
+                    handler.getVelocityX(),
+                    handler.getVelocityY(),
+                    xRatio);
+            sendBluetoothMessage(messageCoords);
+        }
         Log.d(TAG, "End Top. TransBall: " + transferringBall);
         Log.d(TAG, "End Top. HaveBall: " + haveBall);
-        haveBall = false;
         transferringBall = true;
         previous_event = TOP;
     }
@@ -240,19 +241,22 @@ public class GamePongTwoPlayer extends GamePong {
                         Log.i(TAG, "Message Read");
                         byte[] readBuf = (byte[]) msg.obj;
                         AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
-                        Log.d("ReceivedType", Integer.toString(recMsg.TYPE));
                         if (recMsg != null) {
                             switch (recMsg.TYPE) {
                                 case Constants.MSG_TYPE_COORDS:
                                     if (!haveBall) {
+                                        transferringBall = true;
                                         float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
                                         ballSprite.setPosition(xPos, -ballSprite.getWidth() / 2);
                                         handler.setVelocity(-recMsg.OP2, -recMsg.OP3);
                                         scene.attachChild(ballSprite);
-                                        transferringBall = true;
                                         haveBall = true;
-                                        Log.i(TAG, "x = " + recMsg.OP2 + " y = " + recMsg.OP3);
+                                        AppMessage ackBallMessage = new AppMessage(Constants.MSG_TYPE_BALL_ACK);
+                                        sendBluetoothMessage(ackBallMessage);
                                     }
+                                    break;
+                                case Constants.MSG_TYPE_BALL_ACK:
+                                    haveBall = false;
                                     break;
                                 case Constants.MSG_TYPE_SYNC:
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
@@ -305,6 +309,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 default:
                                     Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                             }
+                            Log.d("ReceivedType", Integer.toString(recMsg.TYPE));
                         } else {
                             Log.e(TAG, "Ricevuto messaggio nullo.");
                         }
