@@ -109,7 +109,8 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected boolean topCondition() {
-        if (ballSprite.getY() < ballSprite.getWidth() / 2 && previous_event != TOP && haveBall && !transferringBall) {
+        //if (ballSprite.getY() < ballSprite.getWidth() / 2 && previous_event != TOP && haveBall && !transferringBall) {
+        if (ballSprite.getY() < 0 && previous_event != TOP && haveBall && !transferringBall) {
             Log.d(TAG, "topCondition TRUE");
             return true;
         } else return false;
@@ -134,12 +135,14 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected void bluetoothExtra() {
-        if (ballSprite.getY() < -ballSprite.getWidth() / 2) {
+        //if (ballSprite.getY() < -ballSprite.getWidth() / 2) {
+        if (ballSprite.getY() < -ballSprite.getHeight()){
             scene.detachChild(ballSprite);
             //ballSprite.detachSelf();
             transferringBall = false;
         }
-        if (ballSprite.getY() > ballSprite.getWidth() / 2) {
+        //if (ballSprite.getY() > ballSprite.getWidth() / 2) {
+        if (ballSprite.getY() > 0) {
             transferringBall = false;
         }
     }
