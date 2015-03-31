@@ -100,7 +100,7 @@ public class GiocatoreDAOTest extends AndroidTestCase {
             giocatoreDAO.insert(g);
         }
 
-        List<Giocatore> lista = giocatoreDAO.findAll();
+        List<Giocatore> lista = giocatoreDAO.findAll(false);
         assertNotNull("Lista non creata", lista);
         assertTrue("Lista vuota", lista.size() > 0);
         int i = 0;
