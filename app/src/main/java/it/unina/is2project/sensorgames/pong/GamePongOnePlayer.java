@@ -264,12 +264,27 @@ public class GamePongOnePlayer extends GamePong {
         addLifeSpritesToScene();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //Remove Life Sprites from Scene
+        remLifeSpritesToScene();
+        //Remove Ball Sprite from Scene
+        ballSprite.detachSelf();
+    }
+
     private void addLifeSpritesToScene() {
         for (int i = 1; i <= life + 1; i++) {
             Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
             lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
             lifeSprites.add(lifeSprite);
             scene.attachChild(lifeSprites.get(i - 1));
+        }
+    }
+
+    private void remLifeSpritesToScene() {
+        for (int i = 1; i <= life + 1; i++) {
+            lifeSprites.get(i - 1).detachSelf();
         }
     }
 
@@ -783,7 +798,7 @@ public class GamePongOnePlayer extends GamePong {
         // Generating a new event different from current event
         Random random = new Random();
         int random_int = random.nextInt(level + 1);
-        while (random_int == game_event || (random_int == LIFE_BONUS && life == MAX_LIFE - 1)) {
+        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1)) {
             random_int = random.nextInt(level + 1);
         }
         game_event = random_int;
