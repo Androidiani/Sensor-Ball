@@ -110,13 +110,14 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
      *
      * @return List<StatOnePlayer>
      */
-    public List<StatOnePlayer> findAll() {
+    @Override
+    public List<StatOnePlayer> findAll(boolean ordered) {
         List<StatOnePlayer> list = new ArrayList<StatOnePlayer>();
 
         // Name of the columns we want to select
 
         // Query the database
-        Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, COL_SCORE + " DESC");
+        Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, (ordered ? COL_SCORE + " DESC" : null));
         cursor.moveToFirst();
 
         // Iterate the results

@@ -7,27 +7,27 @@ import android.util.Log;
 import java.util.List;
 
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
-import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.entity.Player;
-import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
+import it.unina.is2project.sensorgames.stats.entity.StatOnePlayer;
 
-public class StatTwoPlayerDAOTest extends AndroidTestCase {
+public class StatOnePlayerDAOTest extends AndroidTestCase {
 
-    private StatTwoPlayerDAO statTwoPlayerDAO;
+    private StatOnePlayerDAO statOnePlayerDAO;
     private PlayerDAO playerDAO;
 
     public void setUp() throws Exception {
-        Log.d("StatTwoPlayerDAOTest", "setup()");
+        Log.d("StatOnePlayerDAOTest", "setup()");
         super.setUp();
         RenamingDelegatingContext context = new RenamingDelegatingContext(getContext(), "test_");
 
-        statTwoPlayerDAO = new StatTwoPlayerDAO(context);
+        statOnePlayerDAO = new StatOnePlayerDAO(context);
         playerDAO = new PlayerDAO(context);
     }
 
     public void tearDown() throws Exception {
-        Log.d("StatTwoPlayerDAOTest", "tearDown()");
-        statTwoPlayerDAO.close();
+        Log.d("StatOnePlayerDAOTest", "tearDown()");
+        statOnePlayerDAO.close();
         super.tearDown();
     }
 
@@ -36,60 +36,59 @@ public class StatTwoPlayerDAOTest extends AndroidTestCase {
     }
 
     public void testInsert() throws Exception {
-        //Inserisco un statTwoPlayer nel database
+        //Inserisco un statOnePlayer nel database
         Player p1 = new Player("Giovanni");
         long idPlayer = playerDAO.insert(p1);
-        StatTwoPlayer statTwoPlayer = new StatTwoPlayer((int) idPlayer, 0, 0);
-        //Salvo l'id del record appena inserito
-        long id = statTwoPlayerDAO.insert(statTwoPlayer);
-        //Carico il statTwoPlayer con l'id indicato
-        StatTwoPlayer statTwoPlayer1 = statTwoPlayerDAO.findById((int) id);
-        assertFalse("StatTwoPlayer1 e StatTwoPlayer2 sono diversi", statTwoPlayer.equals(statTwoPlayer1));
+        StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, "2015-03-26", 0);
+        //Salvo l'id del recordappena inserito
+        long id = statOnePlayerDAO.insert(statOnePlayer);
+        //Carico il statOnePlayer con l'id indicato
+        StatOnePlayer statOnePlayer1 = statOnePlayerDAO.findById((int) id);
+        assertFalse("StatOnePlayer1 e StatOnePlayer2 sono diversi", statOnePlayer.equals(statOnePlayer1));
     }
 
     public void testUpdate() throws Exception {
         Player p1 = new Player("Giovanni");
         long idPlayer = playerDAO.insert(p1);
-        StatTwoPlayer statTwoPlayer = new StatTwoPlayer((int) idPlayer, 0, 0);
+        StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, "2015-03-26", 0);
         //Salvo l'id del recordappena inserito
-        long id = statTwoPlayerDAO.insert(statTwoPlayer);
+        long id = statOnePlayerDAO.insert(statOnePlayer);
 
         //findById per aggiornare
-        StatTwoPlayer stat2 = statTwoPlayerDAO.findById((int) id);
+        StatOnePlayer stat2 = statOnePlayerDAO.findById((int) id);
         assertNotNull("Record con id " + id + " non trovato.", stat2);
         String nome = "Gianluca";
-        int partiteGiocate = stat2.getPartiteGiocate();
-        int partiteVinte = stat2.getPartiteVinte();
+        int score = stat2.getScore();
+        String data = stat2.getData();
         int player = stat2.getIdPlayer();
 
         //Update
+        stat2.setScore(++score);
+        stat2.setData("2015-03-20");
         stat2.setIdPlayer(player);
-        stat2.setPartiteGiocate(++partiteGiocate);
-        stat2.setPartiteVinte(++partiteVinte);
-
-        int rows = statTwoPlayerDAO.update(stat2);
+        int rows = statOnePlayerDAO.update(stat2);
         assertTrue("Nessun record aggiornato.", rows > 0);
 
         //Verifica
-        StatTwoPlayer g3 = statTwoPlayerDAO.findById((int) id);
+        StatOnePlayer g3 = statOnePlayerDAO.findById((int) id);
         assertNotNull("Record con id " + id + " non trovato.", g3);
+        assertTrue(score == g3.getScore());
+        assertTrue(g3.getData().equals("2015-03-20"));
         assertTrue(player == g3.getIdPlayer());
-        assertTrue(partiteGiocate == g3.getPartiteGiocate());
-        assertTrue(partiteVinte == g3.getPartiteVinte());
     }
 
     public void testDelete() throws Exception {
         Player p1 = new Player("Giovanni");
         long idPlayer = playerDAO.insert(p1);
-        StatTwoPlayer statTwoPlayer = new StatTwoPlayer((int) idPlayer, 0, 0);
-        //Salvo l'id del record appena inserito
-        long id = statTwoPlayerDAO.insert(statTwoPlayer);
+        StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, "2015-03-26", 0);
+        //Salvo l'id del recordappena inserito
+        long id = statOnePlayerDAO.insert(statOnePlayer);
 
         //Rimuovo dal database
-        statTwoPlayerDAO.delete((int) id);
+        statOnePlayerDAO.delete((int) id);
 
         //Sul db non lo troverò più
-        StatTwoPlayer stat2 = statTwoPlayerDAO.findById((int) id);
+        StatOnePlayer stat2 = statOnePlayerDAO.findById((int) id);
         assertNull(stat2);
     }
 
@@ -98,7 +97,7 @@ public class StatTwoPlayerDAOTest extends AndroidTestCase {
     }
 
     public void testFindById_1() throws Exception {
-        StatTwoPlayer g = statTwoPlayerDAO.findById(0);
+        StatOnePlayer g = statOnePlayerDAO.findById(0);
         assertNull(g);
     }
 
@@ -107,17 +106,17 @@ public class StatTwoPlayerDAOTest extends AndroidTestCase {
         for (int i = 0; i < n; i++) {
             Player p1 = new Player("Player " + i);
             long idPlayer = playerDAO.insert(p1);
-            StatTwoPlayer g = new StatTwoPlayer((int) idPlayer, i * i, i + i);
-            statTwoPlayerDAO.insert(g);
+            StatOnePlayer g = new StatOnePlayer((int) idPlayer, "2015-02-12", i * i);
+            statOnePlayerDAO.insert(g);
         }
 
-        List<StatTwoPlayer> lista = statTwoPlayerDAO.findAll();
+        List<StatOnePlayer> lista = statOnePlayerDAO.findAll(false);
         assertNotNull("Lista non creata", lista);
         assertTrue("Lista vuota", lista.size() > 0);
         int i = 0;
-        for (StatTwoPlayer g : lista) {
-            assertEquals(i * i, g.getPartiteGiocate());
-            assertEquals(i + i, g.getPartiteVinte());
+        for (StatOnePlayer g : lista) {
+            assertEquals(i * i, g.getScore());
+            assertEquals("2015-02-12", g.getData());
             //assertEquals(i, g.getIdPlayer());
             i++;
         }
@@ -128,9 +127,9 @@ public class StatTwoPlayerDAOTest extends AndroidTestCase {
         for (int i = 0; i < n; i++) {
             Player p1 = new Player("Player " + i);
             long idPlayer = playerDAO.insert(p1);
-            StatTwoPlayer g = new StatTwoPlayer((int) idPlayer, 20 + i, 10 + i);
-            statTwoPlayerDAO.insert(g);
+            StatOnePlayer g = new StatOnePlayer((int) idPlayer, "2014-02-01", 10 + i);
+            statOnePlayerDAO.insert(g);
         }
-        assertEquals(n, statTwoPlayerDAO.count());
+        assertEquals(n, statOnePlayerDAO.count());
     }
 }

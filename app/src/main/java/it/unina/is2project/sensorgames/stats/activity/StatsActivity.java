@@ -6,13 +6,19 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import it.unina.is2project.sensorgames.R;
-import it.unina.is2project.sensorgames.stats.service.StatService;
 import it.unina.is2project.sensorgames.stats.StatAdapter;
+import it.unina.is2project.sensorgames.stats.entity.Player;
+import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
+import it.unina.is2project.sensorgames.stats.service.StatService;
 
 
 public class StatsActivity extends ActionBarActivity {
@@ -46,6 +52,11 @@ public class StatsActivity extends ActionBarActivity {
         setFont();
 
         ListView listView = (ListView) findViewById(R.id.listViewDemo);
+
+        final TextView textViewVinte = (TextView) findViewById(R.id.textViewVinte);
+        final TextView textViewGiocate = (TextView) findViewById(R.id.textViewGiocate);
+        final TextView textViewWinningRate = (TextView) findViewById(R.id.textViewWinningRate);
+
         //String [] array = {"Antonio","Giovanni","Michele","Giuseppe", "Leonardo", "Alessandro"};
         //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.stat_one_player_row, R.id.textViewList, array);
         //listView.setAdapter(arrayAdapter);
@@ -54,6 +65,41 @@ public class StatsActivity extends ActionBarActivity {
 
         StatAdapter adapter = new StatAdapter(this, R.layout.stat_one_player_row, statService.getStatOnePlayerList());
         listView.setAdapter(adapter);
+
+        Spinner spinner = (Spinner) findViewById(R.id.spinnerTwoPlayer);
+        ArrayAdapter<Player> adapterSpinner = new ArrayAdapter<Player>(this, android.R.layout.simple_spinner_item, statService.getPlayers());
+        spinner.setAdapter(adapterSpinner);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            StatService statService;
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapter, View view, int pos, long id) {
+                Player selected = (Player) adapter.getItemAtPosition(pos);
+                //Toast.makeText( getApplicationContext(), "hai selezionato " + selected.getId(), Toast.LENGTH_LONG).show();
+                statService = new StatService(getApplicationContext());
+                StatTwoPlayer s = statService.getStatTwoPlayer(selected.getId());
+                if (s != null) {
+                    textViewGiocate.setText("" + s.getPartiteGiocate());
+                    textViewVinte.setText("" + s.getPartiteVinte());
+                    textViewWinningRate.setText("" + (float) s.getPartiteGiocate() / s.getPartiteVinte() * 100 + "%");
+                } else {
+                    textViewGiocate.setText("0");
+                    textViewVinte.setText("0");
+                    textViewWinningRate.setText("0");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        StatTwoPlayer s = statService.getStatTwoPlayer(1);
+        if (s != null) {
+            textViewGiocate.setText("" + s.getPartiteGiocate());
+            textViewVinte.setText("" + s.getPartiteVinte());
+        }
     }
 
 

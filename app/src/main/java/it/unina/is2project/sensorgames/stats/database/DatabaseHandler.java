@@ -49,17 +49,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Log.d("DBHandler", "SQL command: " + StatOnePlayerDAO.CREATE_TABLE);
         db.execSQL(StatOnePlayerDAO.CREATE_TABLE);
 
+        Log.d("DBHandler", "SQL command: " + StatTwoPlayerDAO.CREATE_TABLE);
+        db.execSQL(StatTwoPlayerDAO.CREATE_TABLE);
+
         db.execSQL("INSERT INTO player VALUES(1,'Giovanni')");
         db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-26',1)");
+        db.execSQL("INSERT INTO stat_two_player VALUES(1,1,2)");
 
         db.execSQL("INSERT INTO player VALUES(2,'Alessandro')");
         db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-27',2)");
+        db.execSQL("INSERT INTO stat_two_player VALUES(2,1,2)");
 
         db.execSQL("INSERT INTO player VALUES(3,'Francesco')");
         db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-27',3)");
 
         db.execSQL("INSERT INTO player VALUES(4,'Gabriele')");
         db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-27',4)");
+        db.execSQL("INSERT INTO stat_two_player VALUES(4,2,3)");
 
         db.execSQL("INSERT INTO player VALUES(5,'Tim Cook')");
         db.execSQL("INSERT INTO stat_one_player VALUES(NULL,0,'2015-03-27',5)");
@@ -67,8 +73,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO player VALUES(6,'Anonymous')");
         db.execSQL("INSERT INTO stat_one_player VALUES(NULL,1300000,'2015-03-29',6)");
 
-        Log.d("DBHandler", "SQL command: " + StatTwoPlayerDAO.CREATE_TABLE);
-        db.execSQL(StatTwoPlayerDAO.CREATE_TABLE);
     }
 
     /**

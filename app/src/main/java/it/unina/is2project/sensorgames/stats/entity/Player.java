@@ -7,6 +7,12 @@ public class Player {
     public Player() {
     }
 
+    //TODO da rimuovere. Usato per lo spinner
+    public Player(int id, String nome) {
+        this.id = id;
+        this.nome = nome;
+    }
+
     public Player(String nome) {
         this.nome = nome;
     }
@@ -45,5 +51,10 @@ public class Player {
         int result = id;
         result = 31 * result + nome.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.nome;
     }
 }

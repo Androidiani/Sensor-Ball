@@ -101,13 +101,13 @@ public class PlayerDAO implements IDAO<Player> {
      *
      * @return
      */
-    public List<Player> findAll() {
+    public List<Player> findAll(boolean ordered) {
         List<Player> list = new ArrayList<Player>();
 
         // Name of the columns we want to select
 
         // Query the database
-        Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, null);
+        Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, (ordered ? COL_NOME + " ASC" : null));
         cursor.moveToFirst();
 
         // Iterate the results
