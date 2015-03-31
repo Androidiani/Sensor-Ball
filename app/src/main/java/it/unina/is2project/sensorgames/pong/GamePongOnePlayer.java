@@ -99,8 +99,6 @@ public class GamePongOnePlayer extends GamePong {
     private int game_event;
 
     // Events' enable
-    private boolean new_event = true;
-    private boolean first_event = true;
     private boolean no_event = false;
     private boolean rush_hour = false;
     private boolean first_enemy = false;
@@ -176,12 +174,7 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(txtEvnt);
 
         /** Adding the life sprites to the scene */
-        for (int i = 1; i <= life + 1; i++) {
-            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
-            lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
-            lifeSprites.add(lifeSprite);
-            scene.attachChild(lifeSprites.get(i - 1));
-        }
+        addLifeSpritesToScene();
 
         txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
 
@@ -239,7 +232,7 @@ public class GamePongOnePlayer extends GamePong {
         Log.d(TAG, "Hit count " + hit_count);
         Log.d(TAG, "Reach count " + reach_count);
         Log.d(TAG, "Level " + level);
-        if (hit_count == reach_count && level > 0) {
+        if (hit_count == reach_count) {
             clearEvent();
             callEvent();
             // Generating a new reach count and reset the hit count
@@ -258,6 +251,7 @@ public class GamePongOnePlayer extends GamePong {
         life = MAX_LIFE - 1;
         score = 0;
         game_event = NO_EVENT;
+        reach_count = 5;
         // Setting false all events
         no_event = false;
         first_enemy = false;
@@ -267,6 +261,10 @@ public class GamePongOnePlayer extends GamePong {
         rush_hour = false;
         freeze = false;
         //Adding life sprites to the scene
+        addLifeSpritesToScene();
+    }
+
+    private void addLifeSpritesToScene() {
         for (int i = 1; i <= life + 1; i++) {
             Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
             lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
