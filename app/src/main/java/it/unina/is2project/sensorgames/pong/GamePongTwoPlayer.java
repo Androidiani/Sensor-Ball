@@ -166,7 +166,7 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     public void actionDownEvent() {
-        if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
+        if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !transferringBall) {
             tap = System.currentTimeMillis();
             fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
             AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
