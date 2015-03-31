@@ -9,7 +9,7 @@ public class StatOnePlayer {
     public StatOnePlayer() {
     }
 
-    public StatOnePlayer(int idPlayer, String data, int score) {
+    public StatOnePlayer(int idPlayer, String data, long score) {
         this.idPlayer = idPlayer;
         this.data = data;
         this.score = score;
