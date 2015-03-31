@@ -21,6 +21,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     // Database Name
     private static final String DATABASE_NAME = "statistics_db";
+    public static final String TAG = "DatabaseHandler";
 
     public DatabaseHandler(Context context) {
         // Databse: todos_db, Version: 1
@@ -40,16 +41,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Execute create table SQL
-        Log.d("DBHandler", "SQL command: " + GiocatoreDAO.CREATE_TABLE);
+        Log.d(TAG, "SQL command: " + GiocatoreDAO.CREATE_TABLE);
         db.execSQL(GiocatoreDAO.CREATE_TABLE);
 
-        Log.d("DBHandler", "SQL command: " + PlayerDAO.CREATE_TABLE);
+        Log.d(TAG, "SQL command: " + PlayerDAO.CREATE_TABLE);
         db.execSQL(PlayerDAO.CREATE_TABLE);
 
-        Log.d("DBHandler", "SQL command: " + StatOnePlayerDAO.CREATE_TABLE);
+        Log.d(TAG, "SQL command: " + StatOnePlayerDAO.CREATE_TABLE);
         db.execSQL(StatOnePlayerDAO.CREATE_TABLE);
 
-        Log.d("DBHandler", "SQL command: " + StatTwoPlayerDAO.CREATE_TABLE);
+        Log.d(TAG, "SQL command: " + StatTwoPlayerDAO.CREATE_TABLE);
         db.execSQL(StatTwoPlayerDAO.CREATE_TABLE);
 
         db.execSQL("INSERT INTO player VALUES(1,'Giovanni')");
@@ -81,16 +82,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVer, int newVer) {
         // DROP table
-        Log.d("DBHandler", "SQL command: " + GiocatoreDAO.UPGRADE_TABLE);
+        Log.d(TAG, "SQL command: " + GiocatoreDAO.UPGRADE_TABLE);
         db.execSQL(GiocatoreDAO.UPGRADE_TABLE);
 
-        Log.d("DBHandler", "SQL command: " + PlayerDAO.UPGRADE_TABLE);
+        Log.d(TAG, "SQL command: " + PlayerDAO.UPGRADE_TABLE);
         db.execSQL(PlayerDAO.UPGRADE_TABLE);
 
-        Log.d("DBHandler", "SQL command: " + StatOnePlayerDAO.UPGRADE_TABLE);
+        Log.d(TAG, "SQL command: " + StatOnePlayerDAO.UPGRADE_TABLE);
         db.execSQL(StatOnePlayerDAO.UPGRADE_TABLE);
 
-        Log.d("DBHandler", "SQL command: " + StatTwoPlayerDAO.UPGRADE_TABLE);
+        Log.d(TAG, "SQL command: " + StatTwoPlayerDAO.UPGRADE_TABLE);
         db.execSQL(StatTwoPlayerDAO.UPGRADE_TABLE);
 
         // Recreate table
