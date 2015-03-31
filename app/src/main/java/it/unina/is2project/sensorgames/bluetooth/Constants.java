@@ -18,6 +18,7 @@ public interface Constants {
     public static final int MSG_TYPE_RESUME = 11;
     public static final int MSG_TYPE_ALERT = 12;
     public static final int MSG_TYPE_NOREADY = 13;
+    @Deprecated
     public static final int MSG_TYPE_RESUME_NOREADY = 14;
 
     // Key names received from the BluetoothService Handler

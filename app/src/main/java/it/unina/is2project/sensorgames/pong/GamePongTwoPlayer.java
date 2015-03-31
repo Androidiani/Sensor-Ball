@@ -170,10 +170,14 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     public void actionDownEvent() {
         if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !transferringBall) {
-            tap = System.currentTimeMillis();
-            fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
-            AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
-            sendBluetoothMessage(pauseMessage);
+            if(haveBall) {
+                tap = System.currentTimeMillis();
+                fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
+                AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
+                sendBluetoothMessage(pauseMessage);
+            }else{
+                // Codice pausa senza palla
+            }
         }
 
         if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)) {
@@ -260,6 +264,7 @@ public class GamePongTwoPlayer extends GamePong {
                                         handler.setVelocity(-recMsg.OP2, -recMsg.OP3);
                                         scene.attachChild(ballSprite);
                                         haveBall = true;
+                                        previous_event = TOP;
                                     }
                                     break;
                                 case Constants.MSG_TYPE_SYNC:

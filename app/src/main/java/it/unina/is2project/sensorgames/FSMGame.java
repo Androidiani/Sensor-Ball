@@ -21,6 +21,7 @@ public class FSMGame implements Cloneable {
     public final static int STATE_GAME_ABORTED = 777;
     public final static int STATE_GAME_PAUSED = 800;
     public final static int STATE_GAME_OPPONENT_PAUSED = 880;
+    @Deprecated
     public final static int STATE_GAME_EXIT_PAUSE = 888;
 
 
