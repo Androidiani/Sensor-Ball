@@ -5,7 +5,9 @@ import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
@@ -15,12 +17,17 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.entity.Giocatore;
+import it.unina.is2project.sensorgames.stats.entity.Player;
+import it.unina.is2project.sensorgames.stats.entity.StatOnePlayer;
 
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
@@ -430,46 +437,53 @@ public class GamePongOnePlayer extends GamePong {
             @Override
             public void run() {
                 /** Game over dialog */
-                AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
 
-                alert.setTitle(getApplicationContext().getResources().getString(R.string.text_ttl_oneplayer_savegame));
-                alert.setMessage(getApplicationContext().getResources().getString(R.string.text_msg_oneplayer_savegame));
+                    AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
 
-                // Set an EditText view to get user input
-                final EditText input = new EditText(GamePongOnePlayer.this);
-                alert.setView(input);
+                    alert.setTitle(getApplicationContext().getResources().getString(R.string.text_ttl_oneplayer_savegame));
+                    alert.setMessage(getApplicationContext().getResources().getString(R.string.text_msg_oneplayer_savegame));
 
-                alert.setPositiveButton(getApplicationContext().getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String value = input.getText().toString();
+                    // Set an EditText view to get user input
+                    final EditText input = new EditText(GamePongOnePlayer.this);
+                    alert.setView(input);
 
-                        //TODO idGiocatore sarà un campo della classe e la variabile locale verrà rimossa
-                        int idGiocatore = 1;
-                        // TODO: Salvataggio in DB
-                        GiocatoreDAO giocatoreDAO = new GiocatoreDAO(getApplicationContext());
-                        Giocatore g = giocatoreDAO.findById(idGiocatore);
-                        if (g == null) {
-                            g = new Giocatore("Francesco", 0, 0, 0);
-                            giocatoreDAO.insert(g);
-                        } else {
-                            g.setPartiteGiocateSingolo(g.getPartiteGiocateSingolo() + 1);
-                            giocatoreDAO.update(g);
+                    alert.setPositiveButton(getApplicationContext().getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+
+                            String user_input_name = input.getText().toString();
+
+                            if(!user_input_name.equals("")) {
+                                Player player = new Player(user_input_name);
+                                PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
+                                //TODO: Find by Name
+                                long idPlayer = playerDAO.insert(player);
+
+                                //TODO: Score nel DB deve essere cambiato in LONG
+                                StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, new Date().toString(), (int) score);
+                                StatOnePlayerDAO statOnePlayerDAO = new StatOnePlayerDAO(getApplicationContext());
+
+                                statOnePlayerDAO.insert(statOnePlayer);
+
+                                restart_game = true;
+                                game_over = false;
+                            }
+                            else{
+                                Toast toast = Toast.makeText(getApplication(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.TOP,0,0);
+                                toast.show();
+                                run();
+                            }
                         }
-                        Log.d(TAG, "Partite giocate: " + g.getPartiteGiocateSingolo());
+                    });
 
-                        restart_game = true;
-                        game_over = false;
-                    }
-                });
+                    alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            restart_game = true;
+                            game_over = false;
+                        }
+                    });
 
-                alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        restart_game = true;
-                        game_over = false;
-                    }
-                });
-
-                alert.show();
+                    alert.show();
             }
         });
     }

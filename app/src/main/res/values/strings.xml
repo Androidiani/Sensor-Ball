@@ -95,6 +95,7 @@
     <string name="text_msg_oneplayer_dialog">You\'ll lose the game. Are you sure?</string>
     <string name="text_msg_oneplayer_leavegame">Leave the game</string>
     <string name="text_ttl_oneplayer_savegame">Save the game score</string>
-    <string name="text_msg_oneplayer_savegame">Do you want to save this score?</string>
+    <string name="text_msg_oneplayer_savegame">Do you want to save this score?\nInsert name:</string>
+    <string name="text_no_user_input">Insert not null char sequence</string>
 
 </resources>
