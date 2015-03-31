@@ -96,6 +96,25 @@ public class PlayerDAO implements IDAO<Player> {
         return player;
     }
 
+    public Player findByNome(String nome) {
+        Cursor cursor = db.query(TABLE_NAME, columns, COL_NOME + "=?", new String[]{nome}, null, null, null, null);
+        Player player = null;
+        if (cursor != null) {
+            cursor.moveToFirst();
+            if (cursor.getCount() > 0) {
+                player = new Player();
+                //In ordine per come sono definite nell'array columns
+                player.setId(cursor.getInt(0));
+                player.setNome(cursor.getString(1));
+
+                cursor.close();
+            }
+        }
+        //db.close();
+
+        return player;
+    }
+
     /**
      * Get all TODOs.
      *
