@@ -182,6 +182,11 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
+    protected void saveGame(String s) {
+
+    }
+
+    @Override
     public void onBackPressed() {
         if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
                 fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||

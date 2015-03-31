@@ -5,7 +5,7 @@ import it.unina.is2project.sensorgames.stats.entity.Player;
 public class StatOnePlayerRow {
     private Player player;
     private String data;
-    private int score;
+    private long score;
 
     public Player getPlayer() {
         return player;
@@ -23,11 +23,11 @@ public class StatOnePlayerRow {
         this.data = data;
     }
 
-    public int getScore() {
+    public long getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(long score) {
         this.score = score;
     }
 }

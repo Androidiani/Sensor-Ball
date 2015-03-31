@@ -459,4 +459,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     protected abstract void actionDownEvent();
 
+    protected abstract void saveGame(String s);
+
 }

@@ -453,16 +453,7 @@ public class GamePongOnePlayer extends GamePong {
                             String user_input_name = input.getText().toString();
 
                             if(!user_input_name.equals("")) {
-                                Player player = new Player(user_input_name);
-                                PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
-                                //TODO: Find by Name
-                                long idPlayer = playerDAO.insert(player);
-
-                                //TODO: Score nel DB deve essere cambiato in LONG
-                                StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, new Date().toString(), (int) score);
-                                StatOnePlayerDAO statOnePlayerDAO = new StatOnePlayerDAO(getApplicationContext());
-
-                                statOnePlayerDAO.insert(statOnePlayer);
+                                saveGame(user_input_name);
 
                                 restart_game = true;
                                 game_over = false;
@@ -486,6 +477,27 @@ public class GamePongOnePlayer extends GamePong {
                     alert.show();
             }
         });
+    }
+
+    @Override
+    protected void saveGame(String user_input_name) {
+        PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
+        Player player = playerDAO.findByNome(user_input_name);
+        long idPlayer = 0;
+
+        if(player == null) {
+            player = new Player(user_input_name);
+            idPlayer = playerDAO.insert(player);
+        }
+        else idPlayer = player.getId();
+
+        StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, new Date().toString(), score);
+        StatOnePlayerDAO statOnePlayerDAO = new StatOnePlayerDAO(getApplicationContext());
+
+        statOnePlayerDAO.insert(statOnePlayer);
+
+        playerDAO.close();
+        statOnePlayerDAO.close();
     }
 
     @Override

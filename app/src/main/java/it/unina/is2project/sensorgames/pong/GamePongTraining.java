@@ -170,6 +170,11 @@ public class GamePongTraining extends GamePong {
         }
     }
 
+    @Override
+    protected void saveGame(String s) {
+        //do nothing
+    }
+
     /**
      * Show the mode's menu
      */
