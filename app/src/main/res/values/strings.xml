@@ -1,6 +1,6 @@
 <resources>
     <!-- General -->
-    <string name="app_name">SensorTuttoTrannePong</string>
+    <string name="app_name">Sensor Pong</string>
 
     <!-- Menu Entries -->
     <string name="action_settings">Settings</string>
