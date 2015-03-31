@@ -30,20 +30,28 @@ public class StatsActivity extends ActionBarActivity {
     private TextView top;
     private TextView single;
     private TextView multi;
+    private ListView listView;
+
+    private TextView textViewColVinte;
+    private TextView textViewColGiocate;
+    private TextView textViewColWinningRate;
+
+    private TextView textViewVinte;
+    private TextView textViewGiocate;
+    private TextView textViewWinningRate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats2);
 
-        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         /** Set the fullscreen window */
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
         /** Load the font */
-        typeFace = Typeface.createFromAsset(getAssets(),"font/secrcode.ttf");
+        typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
 
         // Find View by ID
         findView();
@@ -51,15 +59,6 @@ public class StatsActivity extends ActionBarActivity {
         // Set Font Typeface
         setFont();
 
-        ListView listView = (ListView) findViewById(R.id.listViewDemo);
-
-        final TextView textViewVinte = (TextView) findViewById(R.id.textViewVinte);
-        final TextView textViewGiocate = (TextView) findViewById(R.id.textViewGiocate);
-        final TextView textViewWinningRate = (TextView) findViewById(R.id.textViewWinningRate);
-
-        //String [] array = {"Antonio","Giovanni","Michele","Giuseppe", "Leonardo", "Alessandro"};
-        //ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.stat_one_player_row, R.id.textViewList, array);
-        //listView.setAdapter(arrayAdapter);
 
         StatService statService = new StatService(getApplicationContext());
 
@@ -88,18 +87,14 @@ public class StatsActivity extends ActionBarActivity {
                     textViewVinte.setText("0");
                     textViewWinningRate.setText("0");
                 }
+                statService.close();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
-        StatTwoPlayer s = statService.getStatTwoPlayer(1);
-        if (s != null) {
-            textViewGiocate.setText("" + s.getPartiteGiocate());
-            textViewVinte.setText("" + s.getPartiteVinte());
-        }
+        statService.close();
     }
 
 
@@ -110,16 +105,33 @@ public class StatsActivity extends ActionBarActivity {
         return true;
     }
 
-    public void findView(){
+    public void findView() {
         top = (TextView) findViewById(R.id.txt_stat);
         single = (TextView) findViewById(R.id.txt_single);
         multi = (TextView) findViewById(R.id.txt_multi);
+
+        textViewColVinte = (TextView) findViewById(R.id.textViewColVinte);
+        textViewColGiocate = (TextView) findViewById(R.id.textViewColGiocate);
+        textViewColWinningRate = (TextView) findViewById(R.id.textViewColWinningRate);
+
+        listView = (ListView) findViewById(R.id.listViewDemo);
+        textViewVinte = (TextView) findViewById(R.id.textViewVinte);
+        textViewGiocate = (TextView) findViewById(R.id.textViewGiocate);
+        textViewWinningRate = (TextView) findViewById(R.id.textViewWinningRate);
     }
 
-    public void setFont(){
+    public void setFont() {
         top.setTypeface(typeFace);
         single.setTypeface(typeFace);
         multi.setTypeface(typeFace);
+
+        textViewColVinte.setTypeface(typeFace);
+        textViewColGiocate.setTypeface(typeFace);
+        textViewColWinningRate.setTypeface(typeFace);
+
+        textViewVinte.setTypeface(typeFace);
+        textViewGiocate.setTypeface(typeFace);
+        textViewWinningRate.setTypeface(typeFace);
     }
 
     @Override
