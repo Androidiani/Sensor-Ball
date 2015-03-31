@@ -127,7 +127,7 @@ public class GamePongOnePlayer extends GamePong {
     private boolean allBonusDetached = false;
 
     // Pause utils
-    private boolean pause = false;
+    private static final int PAUSE = 8;
     private Point directions;
     private float old_x_speed;
     private float old_y_speed;
@@ -547,6 +547,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void pauseGame() {
+        Log.d(TAG, "pauseGame");
         old_event = (String) txtEvnt.getText();
         txtEvnt.setText(getResources().getString(R.string.text_pause));
         directions = getDirections();
@@ -557,6 +558,8 @@ public class GamePongOnePlayer extends GamePong {
         handler.setVelocity(0);
         GAME_VELOCITY = 0;
         pause = true;
+        touch.stop();
+        previous_event = PAUSE;
     }
 
     private void restartGame() {
