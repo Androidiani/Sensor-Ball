@@ -14,7 +14,7 @@
 
     <translate
 
-        android:fromXDelta="0%p"
+        android:fromXDelta="-30%p"
 
         android:toXDelta="100%p"
 

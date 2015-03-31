@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/ballSplashView"
         android:src="@drawable/ball_white"
-        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_centerVertical="true" />
 </RelativeLayout>
