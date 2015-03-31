@@ -274,15 +274,6 @@ public class GamePongOnePlayer extends GamePong {
         addLifeSpritesToScene();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        //Remove Life Sprites from Scene
-        remLifeSpritesToScene();
-        //Remove Ball Sprite from Scene
-        ballSprite.detachSelf();
-    }
-
     private void addLifeSpritesToScene() {
         for (int i = 1; i <= life + 1; i++) {
             Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
@@ -292,15 +283,7 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
-    private void remLifeSpritesToScene() {
-        for (int i = 1; i <= life + 1; i++) {
-            lifeSprites.get(i - 1).detachSelf();
-        }
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
+    void restartAfterGameOver(){
         clearGame();
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
         handler.setVelocity(BALL_SPEED, -BALL_SPEED);
@@ -423,7 +406,7 @@ public class GamePongOnePlayer extends GamePong {
         /** Handling game restarting */
         if (restart_game) {
             Log.d(TAG, "Game restarted");
-            onRestart();
+            restartAfterGameOver();
             restart_game = false;
         }
 
