@@ -5,9 +5,6 @@ public interface Constants {
     // Message types sent from the BluetoothService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
-    //public static final int MESSAGE_READ_COORDS = 2;
-    //public static final int MESSAGE_READ_CONTROL = 16;
-    //public static final int MESSAGE_READ_BONUS = 17;
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
@@ -22,7 +19,6 @@ public interface Constants {
     public static final int MSG_TYPE_ALERT = 12;
     public static final int MSG_TYPE_NOREADY = 13;
     public static final int MSG_TYPE_RESUME_NOREADY = 14;
-    public static final int MSG_TYPE_BALL_ACK = 15;
 
     // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";
