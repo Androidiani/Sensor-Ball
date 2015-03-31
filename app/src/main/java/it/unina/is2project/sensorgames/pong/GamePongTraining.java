@@ -221,7 +221,7 @@ public class GamePongTraining extends GamePong {
             case EASY_MODE: {
                 handler.setVelocityX(BALL_SPEED * DIRECTIONS.x);
                 handler.setVelocityY(BALL_SPEED * DIRECTIONS.y);
-                GAME_VELOCITY = 2;
+                GAME_VELOCITY = 2 * DEVICE_RATIO;
                 barSprite.setWidth(CAMERA_WIDTH * 0.3f);
                 break;
             }
@@ -229,7 +229,7 @@ public class GamePongTraining extends GamePong {
             case NORMAL_MODE: {
                 handler.setVelocityX(BALL_SPEED * 2 * DIRECTIONS.x);
                 handler.setVelocityY(BALL_SPEED * 2 * DIRECTIONS.y);
-                GAME_VELOCITY = 4;
+                GAME_VELOCITY = 4 * DEVICE_RATIO;
                 barSprite.setWidth(CAMERA_WIDTH * 0.2f);
                 break;
             }
@@ -237,7 +237,7 @@ public class GamePongTraining extends GamePong {
             case INSANE_MODE: {
                 handler.setVelocityX(BALL_SPEED * 4 * DIRECTIONS.x);
                 handler.setVelocityY(BALL_SPEED * 4 * DIRECTIONS.y);
-                GAME_VELOCITY = 4;
+                GAME_VELOCITY = 4 * DEVICE_RATIO;
                 barSprite.setWidth(CAMERA_WIDTH * 0.15f);
                 break;
             }

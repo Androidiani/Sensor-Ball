@@ -52,8 +52,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected PhysicsHandler handler;
     protected boolean game_over = false;
     protected int previous_event = 0;
-    protected static int GAME_VELOCITY = 2;
-    protected static int BALL_SPEED = 350;
+    protected static int GAME_VELOCITY;
+    protected static int BALL_SPEED;
+    protected static int DEVICE_RATIO;
     protected static final int NO_EVENT = 0;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
@@ -110,8 +111,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         display.getSize(size);
         CAMERA_WIDTH = size.x;
         CAMERA_HEIGHT = size.y;
+        DEVICE_RATIO  = CAMERA_WIDTH/420;
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+        Log.d("Camera settings","Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT);
         // Setting up the andEngine options
         EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.PORTRAIT_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
         // Enable the sound option
@@ -158,6 +161,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
          * - Option: SensorDelay.GAME */
         this.enableAccelerationSensor(this);
         mAccelerationOptions = new AccelerationSensorOptions(SensorDelay.GAME);
+
+        //Set game velocity
+        GAME_VELOCITY = 2 * DEVICE_RATIO;
+        BALL_SPEED = 350 * DEVICE_RATIO;
 
         return scene;
     }
@@ -409,8 +416,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void clearGame() {
-        GAME_VELOCITY = 2;
-        BALL_SPEED = 350;
+        GAME_VELOCITY = 2*DEVICE_RATIO;
+        BALL_SPEED = 350*DEVICE_RATIO;
         previous_event = NO_EVENT;
         game_over = false;
     }

@@ -187,7 +187,13 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     protected void setBallVeloctity() {
         super.setBallVeloctity();
-        GAME_VELOCITY = 2;
+        GAME_VELOCITY = 2*DEVICE_RATIO;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        pauseGame();
     }
 
     @Override
