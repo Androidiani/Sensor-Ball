@@ -15,7 +15,7 @@ import it.unina.is2project.sensorgames.R;
 public class SplashScreenMain extends SplashScreen {
 
     Animation animMove;
-    ImageView ball;
+    ImageView splashAnim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +25,9 @@ public class SplashScreenMain extends SplashScreen {
 
         animMove = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
 
-        ball = (ImageView) findViewById(R.id.ballSplashView);
+        splashAnim = (ImageView) findViewById(R.id.splashAnim);
 
-        ball.startAnimation(animMove);
+        splashAnim.startAnimation(animMove);
 
         Thread mythread = new Thread() {
             public void run() {
