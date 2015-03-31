@@ -2,14 +2,14 @@ package it.unina.is2project.sensorgames.stats.entity;
 
 public class StatOnePlayer {
     private int id;
-    private int score;
+    private long score;
     private String data;
     private int idPlayer;
 
     public StatOnePlayer() {
     }
 
-    public StatOnePlayer(int idPlayer, String data, int score) {
+    public StatOnePlayer(int idPlayer, String data, long score) {
         this.idPlayer = idPlayer;
         this.data = data;
         this.score = score;
@@ -31,11 +31,11 @@ public class StatOnePlayer {
         this.data = data;
     }
 
-    public int getScore() {
+    public long getScore() {
         return score;
     }
 
-    public void setScore(int score) {
+    public void setScore(long score) {
         this.score = score;
     }
 
@@ -65,7 +65,7 @@ public class StatOnePlayer {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + score;
+        result = 31 * result + (int) (score ^ (score >>> 32));
         result = 31 * result + data.hashCode();
         result = 31 * result + idPlayer;
         return result;

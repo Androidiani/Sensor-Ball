@@ -17,6 +17,7 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.sensor.SensorDelay;
 import org.andengine.input.sensor.acceleration.AccelerationData;
 import org.andengine.input.sensor.acceleration.AccelerationSensorOptions;
@@ -52,8 +53,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected PhysicsHandler handler;
     protected boolean game_over = false;
     protected int previous_event = 0;
-    protected static int GAME_VELOCITY = 2;
-    protected static int BALL_SPEED = 350;
+    protected static int GAME_VELOCITY;
+    protected static int BALL_SPEED;
+    protected static int DEVICE_RATIO;
     protected static final int NO_EVENT = 0;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
@@ -102,6 +104,11 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected float COS_90 = 0;
     protected float SIN_90 = 1;
 
+    /**
+     * Pause data
+     */
+    protected boolean pause = false;
+
     @Override
     public EngineOptions onCreateEngineOptions() {
         // Understanding the device display's dimensions
@@ -110,8 +117,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         display.getSize(size);
         CAMERA_WIDTH = size.x;
         CAMERA_HEIGHT = size.y;
+        DEVICE_RATIO  = CAMERA_WIDTH/420;
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+        Log.d("Camera settings","Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT);
         // Setting up the andEngine options
         EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.PORTRAIT_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
         // Enable the sound option
@@ -160,6 +169,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
          * - Option: SensorDelay.GAME */
         this.enableAccelerationSensor(this);
         mAccelerationOptions = new AccelerationSensorOptions(SensorDelay.GAME);
+
+        //Set game velocity
+        GAME_VELOCITY = 2 * DEVICE_RATIO;
+        BALL_SPEED = 350 * DEVICE_RATIO;
+
+        this.mEngine.registerUpdateHandler(new FPSLogger());
 
         return scene;
     }
@@ -230,7 +245,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             @Override
             public void onUpdate(float pSecondsElapsed) {
                 // Edge's condition - The direction of the ball changes depending on the affected side
-                if (!game_over) {
+                if (!game_over && !pause) {
                     if (leftCondition()) {
                         collidesLeft();
                     }
@@ -330,13 +345,15 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     protected boolean overBarCondition() {
         /** Condition variable who understand if the ball hit the bar side or the over side
-         * - ya: is the relative position of the ball according to the CAMERA_HEIGHT
-         * - yb: is the relative position of the bar according to the CAMERA_HEIGHT
+         * - yBall: is the relative position of the ball according to the CAMERA_HEIGHT
+         * - yBar: is the relative position of the bar according to the CAMERA_HEIGHT
          */
-        float yBall = ballSprite.getY() + ballSprite.getHeight() / 2;
-        float yBar = barSprite.getY() - barSprite.getHeight() / 2;
+        float yBall = ballSprite.getY() + ballSprite.getHeight();
+        float yBar = barSprite.getY();
 
-        return yBall < yBar && previous_event != OVER && previous_event != SIDE;
+        Log.d("overBarCondition()", "yBall: " + yBall + ", yBar: " + yBar);
+
+        return yBall < yBar + barSprite.getHeight()/2 && previous_event != OVER && previous_event != SIDE;
     }
 
     protected boolean sideBarCondition() {
@@ -411,8 +428,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void clearGame() {
-        GAME_VELOCITY = 2;
-        BALL_SPEED = 350;
+        GAME_VELOCITY = 2 * DEVICE_RATIO;
+        BALL_SPEED = 350 * DEVICE_RATIO;
         previous_event = NO_EVENT;
         game_over = false;
     }
@@ -443,5 +460,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected abstract void addScore();
 
     protected abstract void actionDownEvent();
+
+    protected abstract void saveGame(String s);
 
 }

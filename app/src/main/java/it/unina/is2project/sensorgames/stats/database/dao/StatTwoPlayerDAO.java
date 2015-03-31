@@ -17,7 +17,7 @@ import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
 public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
 
     // StatTwoPlayer table name
-    private static final String TABLE_NAME = "statTwoPlayer";
+    private static final String TABLE_NAME = "stat_two_player";
     private static final String KEY_ID_FK = "id_player";
     private static final String COL_PARTITE_GIOCATE = "partite_giocate";
     private static final String COL_PARTITE_VINTE = "partite_vinte";
@@ -109,13 +109,13 @@ public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
      *
      * @return
      */
-    public List<StatTwoPlayer> findAll() {
+    public List<StatTwoPlayer> findAll(boolean ordered) {
         List<StatTwoPlayer> list = new ArrayList<StatTwoPlayer>();
 
         // Name of the columns we want to select
 
         // Query the database
-        Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, null);
+        Cursor cursor = db.query(TABLE_NAME, columns, null, null, null, null, (ordered ? COL_PARTITE_VINTE + " DESC" : null));
         cursor.moveToFirst();
 
         // Iterate the results

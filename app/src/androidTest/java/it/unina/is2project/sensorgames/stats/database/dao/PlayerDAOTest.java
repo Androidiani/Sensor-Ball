@@ -89,7 +89,7 @@ public class PlayerDAOTest extends AndroidTestCase {
             playerDAO.insert(g);
         }
 
-        List<Player> lista = playerDAO.findAll();
+        List<Player> lista = playerDAO.findAll(false);
         assertNotNull("Lista non creata", lista);
         assertTrue("Lista vuota", lista.size() > 0);
         int i = 0;
@@ -105,6 +105,7 @@ public class PlayerDAOTest extends AndroidTestCase {
             Player g = new Player("Player" + i);
             playerDAO.insert(g);
         }
+        //All'installazione dell'app sono inseriti già 6 record
         assertEquals(n, playerDAO.count());
     }
 }

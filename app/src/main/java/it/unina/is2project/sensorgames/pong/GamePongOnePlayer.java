@@ -5,7 +5,9 @@ import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
@@ -15,12 +17,17 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.entity.Giocatore;
+import it.unina.is2project.sensorgames.stats.entity.Player;
+import it.unina.is2project.sensorgames.stats.entity.StatOnePlayer;
 
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
@@ -99,8 +106,6 @@ public class GamePongOnePlayer extends GamePong {
     private int game_event;
 
     // Events' enable
-    private boolean new_event = true;
-    private boolean first_event = true;
     private boolean no_event = false;
     private boolean rush_hour = false;
     private boolean first_enemy = false;
@@ -129,7 +134,7 @@ public class GamePongOnePlayer extends GamePong {
     private boolean allBonusDetached = false;
 
     // Pause utils
-    private boolean pause = false;
+    private static final int PAUSE = 8;
     private Point directions;
     private float old_x_speed;
     private float old_y_speed;
@@ -176,12 +181,7 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(txtEvnt);
 
         /** Adding the life sprites to the scene */
-        for (int i = 1; i <= life + 1; i++) {
-            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
-            lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
-            lifeSprites.add(lifeSprite);
-            scene.attachChild(lifeSprites.get(i - 1));
-        }
+        addLifeSpritesToScene();
 
         txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
 
@@ -194,7 +194,13 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     protected void setBallVeloctity() {
         super.setBallVeloctity();
-        GAME_VELOCITY = 2;
+        GAME_VELOCITY = 2*DEVICE_RATIO;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        pauseGame();
     }
 
     @Override
@@ -239,7 +245,7 @@ public class GamePongOnePlayer extends GamePong {
         Log.d(TAG, "Hit count " + hit_count);
         Log.d(TAG, "Reach count " + reach_count);
         Log.d(TAG, "Level " + level);
-        if (hit_count == reach_count && level > 0) {
+        if (hit_count == reach_count) {
             clearEvent();
             callEvent();
             // Generating a new reach count and reset the hit count
@@ -258,6 +264,8 @@ public class GamePongOnePlayer extends GamePong {
         life = MAX_LIFE - 1;
         score = 0;
         game_event = NO_EVENT;
+        reach_count = 5;
+        level = LEVEL_ONE;
         // Setting false all events
         no_event = false;
         first_enemy = false;
@@ -266,7 +274,20 @@ public class GamePongOnePlayer extends GamePong {
         life_bonus = false;
         rush_hour = false;
         freeze = false;
+        // Setting true level_one
+        level_one = true;
+        // Setting false other levels
+        level_two = false;
+        level_three = false;
+        level_four = false;
+        level_five = false;
+        level_six = false;
+        level_seven = false;
         //Adding life sprites to the scene
+        addLifeSpritesToScene();
+    }
+
+    private void addLifeSpritesToScene() {
         for (int i = 1; i <= life + 1; i++) {
             Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
             lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
@@ -275,9 +296,7 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
+    void restartAfterGameOver(){
         clearGame();
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
         handler.setVelocity(BALL_SPEED, -BALL_SPEED);
@@ -400,7 +419,7 @@ public class GamePongOnePlayer extends GamePong {
         /** Handling game restarting */
         if (restart_game) {
             Log.d(TAG, "Game restarted");
-            onRestart();
+            restartAfterGameOver();
             restart_game = false;
         }
 
@@ -418,48 +437,67 @@ public class GamePongOnePlayer extends GamePong {
             @Override
             public void run() {
                 /** Game over dialog */
-                AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
 
-                alert.setTitle(getApplicationContext().getResources().getString(R.string.text_ttl_oneplayer_savegame));
-                alert.setMessage(getApplicationContext().getResources().getString(R.string.text_msg_oneplayer_savegame));
+                    AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
 
-                // Set an EditText view to get user input
-                final EditText input = new EditText(GamePongOnePlayer.this);
-                alert.setView(input);
+                    alert.setTitle(getApplicationContext().getResources().getString(R.string.text_ttl_oneplayer_savegame));
+                    alert.setMessage(getApplicationContext().getResources().getString(R.string.text_msg_oneplayer_savegame));
 
-                alert.setPositiveButton(getApplicationContext().getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String value = input.getText().toString();
+                    // Set an EditText view to get user input
+                    final EditText input = new EditText(GamePongOnePlayer.this);
+                    alert.setView(input);
 
-                        //TODO idGiocatore sarà un campo della classe e la variabile locale verrà rimossa
-                        int idGiocatore = 1;
-                        // TODO: Salvataggio in DB
-                        GiocatoreDAO giocatoreDAO = new GiocatoreDAO(getApplicationContext());
-                        Giocatore g = giocatoreDAO.findById(idGiocatore);
-                        if (g == null) {
-                            g = new Giocatore("Francesco", 0, 0, 0);
-                            giocatoreDAO.insert(g);
-                        } else {
-                            g.setPartiteGiocateSingolo(g.getPartiteGiocateSingolo() + 1);
-                            giocatoreDAO.update(g);
+                    alert.setPositiveButton(getApplicationContext().getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+
+                            String user_input_name = input.getText().toString();
+
+                            if(!user_input_name.equals("")) {
+                                saveGame(user_input_name);
+
+                                restart_game = true;
+                                game_over = false;
+                            }
+                            else{
+                                Toast toast = Toast.makeText(getApplication(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.TOP,0,0);
+                                toast.show();
+                                run();
+                            }
                         }
-                        Log.d(TAG, "Partite giocate: " + g.getPartiteGiocateSingolo());
+                    });
 
-                        restart_game = true;
-                        game_over = false;
-                    }
-                });
+                    alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            restart_game = true;
+                            game_over = false;
+                        }
+                    });
 
-                alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        restart_game = true;
-                        game_over = false;
-                    }
-                });
-
-                alert.show();
+                    alert.show();
             }
         });
+    }
+
+    @Override
+    protected void saveGame(String user_input_name) {
+        PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
+        Player player = playerDAO.findByNome(user_input_name);
+        long idPlayer = 0;
+
+        if(player == null) {
+            player = new Player(user_input_name);
+            idPlayer = playerDAO.insert(player);
+        }
+        else idPlayer = player.getId();
+
+        StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, new Date().toString(), score);
+        StatOnePlayerDAO statOnePlayerDAO = new StatOnePlayerDAO(getApplicationContext());
+
+        statOnePlayerDAO.insert(statOnePlayer);
+
+        playerDAO.close();
+        statOnePlayerDAO.close();
     }
 
     @Override
@@ -535,6 +573,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void pauseGame() {
+        Log.d(TAG, "pauseGame");
         old_event = (String) txtEvnt.getText();
         txtEvnt.setText(getResources().getString(R.string.text_pause));
         directions = getDirections();
@@ -545,6 +584,8 @@ public class GamePongOnePlayer extends GamePong {
         handler.setVelocity(0);
         GAME_VELOCITY = 0;
         pause = true;
+        touch.stop();
+        previous_event = PAUSE;
     }
 
     private void restartGame() {
@@ -785,7 +826,7 @@ public class GamePongOnePlayer extends GamePong {
         // Generating a new event different from current event
         Random random = new Random();
         int random_int = random.nextInt(level + 1);
-        while (random_int == game_event || (random_int == LIFE_BONUS && life == MAX_LIFE - 1)) {
+        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1)) {
             random_int = random.nextInt(level + 1);
         }
         game_event = random_int;

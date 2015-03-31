@@ -14,16 +14,18 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,8 +33,6 @@ import java.util.TimerTask;
 import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
 import it.unina.is2project.sensorgames.pong.GamePongTraining;
 import it.unina.is2project.sensorgames.stats.activity.StatsActivity;
-import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
-import it.unina.is2project.sensorgames.stats.entity.Giocatore;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -45,6 +45,8 @@ public class MainActivity extends ActionBarActivity {
     private Button btnStats;
     private Button btnAboutUs;
     private LinearLayout mLinearLayout;
+    private TextView txtAppName;
+    private ImageView homeBar;
 
     // Font typeface
     private Typeface typeFace;
@@ -92,12 +94,16 @@ public class MainActivity extends ActionBarActivity {
         // Place the ball
         placeBall();
 
+        // Move bar
+        Animation animMove = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.movebar);
+        homeBar.setAnimation(animMove);
+
         // Sensor Manager
         ((SensorManager)getSystemService(Context.SENSOR_SERVICE)).registerListener(
                 new SensorEventListener() {
                     @Override
                     public void onSensorChanged(SensorEvent event) {
-                        x_speed = (int)-event.values[0];
+                        x_speed = (int) -event.values[0];
                     }
 
                     @Override
@@ -136,18 +142,21 @@ public class MainActivity extends ActionBarActivity {
      * Find views in activity_main.xml routine.
      */
     public void findViews(){
+        txtAppName = (TextView)findViewById(R.id.txt_App_Name);
         btnOnePlayer = (Button)findViewById(R.id.btn_p1);
         btnTwoPlayer = (Button)findViewById(R.id.btn_p2);
         btnTraining = (Button)findViewById(R.id.btn_trng);
         btnStats = (Button)findViewById(R.id.btn_sts);
         btnAboutUs = (Button)findViewById(R.id.btn_about);
         mLinearLayout = (LinearLayout) findViewById(R.id.mLinearLayout);
+        homeBar = (ImageView)findViewById(R.id.homeBar);
     }
 
     /**
      * Set the font face to buttons
      */
     public void buttonFonts(){
+        txtAppName.setTypeface(typeFace);
         btnOnePlayer.setTypeface(typeFace);
         btnTwoPlayer.setTypeface(typeFace);
         btnTraining.setTypeface(typeFace);

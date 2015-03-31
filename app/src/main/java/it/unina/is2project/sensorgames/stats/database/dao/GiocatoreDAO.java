@@ -118,7 +118,7 @@ public class GiocatoreDAO implements IDAO<Giocatore> {
      *
      * @return
      */
-    public List<Giocatore> findAll() {
+    public List<Giocatore> findAll(boolean ordered) {
         List<Giocatore> list = new ArrayList<Giocatore>();
 
         // Name of the columns we want to select

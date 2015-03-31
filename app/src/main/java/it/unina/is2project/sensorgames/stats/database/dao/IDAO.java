@@ -12,7 +12,7 @@ public interface IDAO<T> {
 
     public T findById(int id);
 
-    public List<T> findAll();
+    public List<T> findAll(boolean ordered);
 
     public int count();
 }

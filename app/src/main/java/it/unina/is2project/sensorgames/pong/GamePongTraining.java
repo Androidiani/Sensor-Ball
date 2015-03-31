@@ -50,6 +50,8 @@ public class GamePongTraining extends GamePong {
     protected Scene onCreateScene() {
         super.onCreateScene();
 
+        float spriteRate = easyTextureRegion.getHeight() / easyTextureRegion.getWidth();
+
         // Adding the easySprite to the scene
         easySprite = new Sprite(0, 0, easyTextureRegion, getVertexBufferObjectManager()) {
             @Override
@@ -65,7 +67,7 @@ public class GamePongTraining extends GamePong {
             }
         };
         easySprite.setWidth(CAMERA_WIDTH * 0.5f);
-        easySprite.setHeight(easySprite.getWidth() * 0.581f); // 0.581 is the rate between image width and height
+        easySprite.setHeight(easySprite.getWidth() * spriteRate);
         easySprite.setX((CAMERA_WIDTH - easySprite.getWidth()) / 2); // Position set after scaling
         easySprite.setY(((CAMERA_HEIGHT - easySprite.getHeight()) / 2) - easySprite.getHeight());
 
@@ -84,7 +86,7 @@ public class GamePongTraining extends GamePong {
             }
         };
         normalSprite.setWidth(CAMERA_WIDTH * 0.5f);
-        normalSprite.setHeight(normalSprite.getWidth() * 0.581f); // 0.581 is the rate between image width and height
+        normalSprite.setHeight(normalSprite.getWidth() * spriteRate);
         normalSprite.setX((CAMERA_WIDTH - normalSprite.getWidth()) / 2); // Position set after scaling
         normalSprite.setY((CAMERA_HEIGHT - normalSprite.getHeight()) / 2);
 
@@ -103,7 +105,7 @@ public class GamePongTraining extends GamePong {
             }
         };
         insaneSprite.setWidth(CAMERA_WIDTH * 0.5f);
-        insaneSprite.setHeight(insaneSprite.getWidth() * 0.581f); // 0.581 is the rate between image width and height
+        insaneSprite.setHeight(insaneSprite.getWidth() * spriteRate);
         insaneSprite.setX((CAMERA_WIDTH - insaneSprite.getWidth()) / 2); // Position set after scaling
         insaneSprite.setY(((CAMERA_HEIGHT - insaneSprite.getHeight()) / 2) + insaneSprite.getHeight());
 
@@ -170,6 +172,11 @@ public class GamePongTraining extends GamePong {
         }
     }
 
+    @Override
+    protected void saveGame(String s) {
+        //do nothing
+    }
+
     /**
      * Show the mode's menu
      */
@@ -221,7 +228,7 @@ public class GamePongTraining extends GamePong {
             case EASY_MODE: {
                 handler.setVelocityX(BALL_SPEED * DIRECTIONS.x);
                 handler.setVelocityY(BALL_SPEED * DIRECTIONS.y);
-                GAME_VELOCITY = 2;
+                GAME_VELOCITY = 2 * DEVICE_RATIO;
                 barSprite.setWidth(CAMERA_WIDTH * 0.3f);
                 break;
             }
@@ -229,7 +236,7 @@ public class GamePongTraining extends GamePong {
             case NORMAL_MODE: {
                 handler.setVelocityX(BALL_SPEED * 2 * DIRECTIONS.x);
                 handler.setVelocityY(BALL_SPEED * 2 * DIRECTIONS.y);
-                GAME_VELOCITY = 4;
+                GAME_VELOCITY = 4 * DEVICE_RATIO;
                 barSprite.setWidth(CAMERA_WIDTH * 0.2f);
                 break;
             }
@@ -237,7 +244,7 @@ public class GamePongTraining extends GamePong {
             case INSANE_MODE: {
                 handler.setVelocityX(BALL_SPEED * 4 * DIRECTIONS.x);
                 handler.setVelocityY(BALL_SPEED * 4 * DIRECTIONS.y);
-                GAME_VELOCITY = 4;
+                GAME_VELOCITY = 4 * DEVICE_RATIO;
                 barSprite.setWidth(CAMERA_WIDTH * 0.15f);
                 break;
             }

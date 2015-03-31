@@ -14,11 +14,11 @@
 
     <translate
 
-        android:fromXDelta="0%p"
+        android:fromXDelta="-70%p"
 
-        android:toXDelta="100%p"
+        android:toXDelta="110%p"
 
-        android:duration="2000"
+        android:duration="3000"
 
         />
 
