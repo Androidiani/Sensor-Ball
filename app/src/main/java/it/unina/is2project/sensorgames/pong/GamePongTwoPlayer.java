@@ -33,6 +33,7 @@ public class GamePongTwoPlayer extends GamePong {
     private FSMGame fsmGame = null;
     // Text information
     private Text textInfo;
+    private Text textPoint;
     // Return intent extra
     public static String EXTRA_MASTER = "isMaster_boolean";
     public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
@@ -45,10 +46,15 @@ public class GamePongTwoPlayer extends GamePong {
     private int PROXIMITY_ZONE;
     // Connections Utils
     private boolean isConnected;
+    // Score variables
+    private int score;
+    // Velocity Utils
+    private float myModule;
 
 
     @Override
     protected Scene onCreateScene() {
+        // Getting instance of fsm and service bluetooth
         fsmGame = FSMGame.getFsmInstance(fsmHandler);
         mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
 
@@ -71,12 +77,15 @@ public class GamePongTwoPlayer extends GamePong {
         // Setting up the physics of the game
         settingPhysics();
 
+        // Setting variables
         isConnected = true;
         proximityRegion = false;
-        PROXIMITY_ZONE = CAMERA_HEIGHT / 8;
         transferringBall = false;
         game_over = false;
-        previous_event = 0;
+        score = 0;
+        myModule = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
+        PROXIMITY_ZONE = CAMERA_HEIGHT / 8;
+        previous_event = -1;
 
         if (i.getIntExtra("master", 0) == 1) {
             AppMessage alertMessage = new AppMessage(Constants.MSG_TYPE_ALERT);
@@ -92,6 +101,11 @@ public class GamePongTwoPlayer extends GamePong {
 
         Log.d(TAG, "Sono master : " + isMaster);
 
+        // Attachning textPoint
+        textPoint = new Text(10, barSprite.getY() + barSprite.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score, 30, getVertexBufferObjectManager());
+        scene.attachChild(textPoint);
+
+        // Attaching textInfo
         textInfo = new Text(10, 10, font, "", 30, getVertexBufferObjectManager());
         scene.attachChild(textInfo);
 
@@ -123,13 +137,20 @@ public class GamePongTwoPlayer extends GamePong {
     protected void collidesTop() {
         Log.d(TAG, "collidesTop");
         float xRatio = ballSprite.getX() / CAMERA_WIDTH;
+        myModule = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
+        float angle = (float) Math.abs(Math.atan(handler.getVelocityX()/handler.getVelocityY()));
         AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
                 handler.getVelocityX(),
-                handler.getVelocityY(),
+                angle,
                 xRatio);
         sendBluetoothMessage(messageCoords);
-        Log.d(TAG, "End Top. TransBall: " + transferringBall);
-        Log.d(TAG, "End Top. HaveBall: " + haveBall);
+        old_y_speed = handler.getVelocityY();
+        Log.d("MESSAGECOORDSsen", "Module " + myModule);
+        Log.d("MESSAGECOORDSsen", "VelX " + handler.getVelocityX());
+        Log.d("MESSAGECOORDSsen", "VelY " + handler.getVelocityY());
+        Log.d("MESSAGECOORDSsen", "Angle " + angle);
+//        Log.d(TAG, "End Top. TransBall: " + transferringBall);
+ //       Log.d(TAG, "End Top. HaveBall: " + haveBall);
         haveBall = false;
         transferringBall = true;
         previous_event = TOP;
@@ -138,20 +159,19 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected void bluetoothExtra() {
         // Setting proximityRegion ON
-        // Quando l'avversario riceve la palla, potrebbe eseguire questo codice!
-        if (!proximityRegion && ballSprite.getY() <= PROXIMITY_ZONE) {
+        if(!proximityRegion && ballSprite.getY() <= PROXIMITY_ZONE){
             Log.d("Proximity", "Set Proximity To TRUE");
             proximityRegion = true;
         }
 
         // Al rientro della pallina, proximity regione in ricezione (la metà di quella di invio, più critica)
-        if (proximityRegion && ballSprite.getY() > PROXIMITY_ZONE / 2) {
+        if(proximityRegion && ballSprite.getY() > PROXIMITY_ZONE/2){
             Log.d("Proximity", "Set Proximity To FALSE");
             proximityRegion = false;
         }
 
         // Quando la palla ESCE COMPLETAMENTE dal device
-        if (proximityRegion && ballSprite.getY() < -ballSprite.getHeight()) {
+        if (proximityRegion && ballSprite.getY() < -ballSprite.getHeight()){
             scene.detachChild(ballSprite);
             //ballSprite.detachSelf();
             transferringBall = false;
@@ -162,6 +182,13 @@ public class GamePongTwoPlayer extends GamePong {
         if (transferringBall && ballSprite.getY() > 0) {
             transferringBall = false;
         }
+    }
+
+    @Override
+    protected void collidesBottom() {
+        super.collidesBottom();
+        AppMessage pointToEnemyMessage = new AppMessage(Constants.MSG_TYPE_POINT_UP);
+        sendBluetoothMessage(pointToEnemyMessage);
     }
 
     @Override
@@ -181,19 +208,20 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     public void addScore() {
-        //do nothing
+        score++;
+        textPoint.setText(getResources().getString(R.string.sts_score) + " " + score);
     }
 
     @Override
     public void actionDownEvent() {
         Log.d("Proximity", "Proximity:" + proximityRegion);
         if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !proximityRegion) {
-            if (haveBall) {
+            if(haveBall) {
                 tap = System.currentTimeMillis();
                 fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
                 AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
                 sendBluetoothMessage(pauseMessage);
-            } else {
+            }else{
                 textInfo.setText(getResources().getString(R.string.text_pause_not_allowed));
             }
         }
@@ -276,14 +304,25 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_COORDS:
                                     Log.d("SendReceived", "MSG_TYPE_COORDS");
                                     if (!haveBall) {
+                                        Log.d("MESSAGECOORDSrec", "VelocityXReceived " + recMsg.OP2);
+                                        Log.d("MESSAGECOORDSrec", "AngleReceived " + recMsg.OP3);
+                                        float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
+                                        float velX = (float) (-Math.signum(recMsg.OP2)*myModule*Math.cos(recMsg.OP3));
+                                        float velY;
+                                        if(recMsg.OP3 != 0)
+                                            velY = (float) (myModule * Math.sin(recMsg.OP3));
+                                        else
+                                            velY = -old_y_speed;
+                                        Log.d("MESSAGECOORDSrec", "Module " + myModule);
+                                        Log.d("MESSAGECOORDSrec", "VelX " + velX);
+                                        Log.d("MESSAGECOORDSrec", "VelY " + velY);
+                                        ballSprite.setPosition(xPos, -ballSprite.getHeight());
+                                        scene.attachChild(ballSprite);
+                                        handler.setVelocity(velX, velY);
+                                        previous_event = TOP;
                                         transferringBall = true;
                                         haveBall = true;
                                         proximityRegion = true;
-                                        float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
-                                        ballSprite.setPosition(xPos, -ballSprite.getHeight());
-                                        handler.setVelocity(-recMsg.OP2, -recMsg.OP3);
-                                        scene.attachChild(ballSprite);
-                                        previous_event = TOP;
                                         textInfo.setText("");
                                     }
                                     break;
@@ -342,6 +381,10 @@ public class GamePongTwoPlayer extends GamePong {
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
                                         fsmGame.setState(FSMGame.STATE_OPPONENT_NOT_READY);
                                     }
+                                    break;
+                                case Constants.MSG_TYPE_POINT_UP:
+                                    Log.d("SendReceived", "MSG_TYPE_POINT_UP");
+                                    addScore();
                                     break;
                                 default:
                                     Log.e("SendReceived", "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
