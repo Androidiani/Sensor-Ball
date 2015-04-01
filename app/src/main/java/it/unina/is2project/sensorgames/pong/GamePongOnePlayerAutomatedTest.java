@@ -7,8 +7,10 @@ import org.andengine.input.sensor.acceleration.AccelerationData;
 import java.util.Random;
 
 public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
-    private final String TAG = "1P_Test";
-    private float random_number = 0;
+
+    private static final String TAG = "1P_Test";
+
+    private int random_number = 0;
 
     @Override
     public void onAccelerationChanged(AccelerationData pAccelerationData) {
@@ -21,11 +23,12 @@ public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
         setBarPosition();
     }
 
-    private void setBarPosition(){
+    private void setBarPosition() {
         barSprite.setX(ballSprite.getX() - random_number);
-        if(ballSprite.collidesWith(barSprite)) {
+        Log.d(TAG, "Bar X = " + (ballSprite.getX() - random_number));
+        if (ballSprite.collidesWith(barSprite)) {
             Random random = new Random();
-            random_number = random.nextInt((int)(barSprite.getWidth() - ballSprite.getWidth()));
+            random_number = random.nextInt((int) (barSprite.getWidth() - ballSprite.getWidth()));
         }
     }
 }

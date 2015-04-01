@@ -39,18 +39,19 @@ import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextur
 
 public abstract class GamePong extends SimpleBaseGameActivity implements IAccelerationListener {
 
-    /*
-     Camera
-   */
+    /**
+     * Camera
+     */
     protected static int CAMERA_WIDTH;
     protected static int CAMERA_HEIGHT;
     protected Camera camera;
 
-    /*
-       Scene
-    */
+    /**
+     * Scene
+     */
     protected Scene scene;
     protected PhysicsHandler handler;
+    protected boolean pause = false;
     protected boolean game_over = false;
     protected int previous_event = 0;
     protected static int GAME_VELOCITY;
@@ -64,8 +65,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected static final int OVER = 5;
     protected static final int SIDE = 6;
 
-    /*
-        Graphics
+    /**
+     * Graphics
      */
 
     // Ball
@@ -78,36 +79,41 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected ITextureRegion barTextureRegion;
     protected Sprite barSprite;
 
-    /*
-        Sounds
+    /**
+     * Sounds
      */
     protected Sound touch;
 
-    /*
-        Fonts
+    /**
+     * Fonts
      */
     protected ITexture fontTexture;
     protected Font font;
 
-    /*
-        Sensors
+    /**
+     * Sensors
      */
     protected AccelerationSensorOptions mAccelerationOptions;
 
     /**
      * Bounce bar contraint
      */
+    protected float COS_20 = 0.93969262078590838405410927732473f;
+    protected float SIN_20 = 0.34202014332566873304409961468226f;
     protected float COS_30 = 0.86602540378443864676372317075294f;
     protected float SIN_30 = 0.5f;
-    protected float COS_45 = 0.70710678118654752440084436210485f;
-    protected float SIN_45 = 0.70710678118654752440084436210485f;
+    protected float COS_40 = 0.76604444311897803520239265055542f;
+    protected float SIN_40 = 0.64278760968653932632264340990726f;
+    protected float COS_50 = 0.64278760968653932632264340990726f;
+    protected float SIN_50 = 0.76604444311897803520239265055542f;
+    protected float COS_60 = 0.5f;
+    protected float SIN_60 = 0.86602540378443864676372317075294f;
+    protected float COS_70 = 0.34202014332566873304409961468226f;
+    protected float SIN_70 = 0.93969262078590838405410927732473f;
+    protected float COS_80 = 0.17364817766693034885171662676931f;
+    protected float SIN_80 = 0.98480775301220805936674302458952f;
     protected float COS_90 = 0;
     protected float SIN_90 = 1;
-
-    /**
-     * Pause data
-     */
-    protected boolean pause = false;
 
     @Override
     public EngineOptions onCreateEngineOptions() {
@@ -117,8 +123,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         display.getSize(size);
         CAMERA_WIDTH = size.x;
         CAMERA_HEIGHT = size.y;
-        DEVICE_RATIO  = CAMERA_WIDTH/480;
-        Log.d("Camera","Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
+        DEVICE_RATIO = CAMERA_WIDTH / 480;
+        Log.d("Camera", "Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
         // Setting up the andEngine options
@@ -153,7 +159,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         scene.setBackground(new Background(0f, 0f, 0f));
 
         // Adding the ballSprite to the scene
-        ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth())/2, (CAMERA_HEIGHT - ballTexture.getHeight())/2, ballTextureRegion, getVertexBufferObjectManager());
+        ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
         ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
         ballSprite.setHeight(CAMERA_WIDTH * 0.1f);
         attachBall();
@@ -186,7 +192,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // The bar is moving only on X
         float new_position = barSprite.getX() + pAccelerationData.getX() * GAME_VELOCITY;
         // There's the edges' condition that do not hide the bar beyond the walls
-        if (!(new_position > CAMERA_WIDTH - barSprite.getWidth()/2 || new_position < -barSprite.getWidth()/2))
+        if (!(new_position > CAMERA_WIDTH - barSprite.getWidth() / 2 || new_position < -barSprite.getWidth() / 2))
             barSprite.setX(new_position);
     }
 
@@ -272,7 +278,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             }
 
             @Override
-            public void reset() {}
+            public void reset() {
+            }
         });
     }
 
@@ -316,9 +323,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void collidesBottom() {
         Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
-        scene.detachChild(ballSprite);
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
-        handler.setVelocityY(-BALL_SPEED);
+        ballSprite.detachSelf();
+        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
+        handler.setVelocityY(-handler.getVelocityY());
         attachBall();
     }
 
@@ -330,11 +337,11 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         float yBall = ballSprite.getY() + ballSprite.getHeight();
         float yBar = barSprite.getY();
 
-        return yBall < yBar + barSprite.getHeight()/2 && previous_event != OVER && previous_event != SIDE;
+        return (yBall < yBar + barSprite.getHeight() / 2) && (previous_event != OVER) && (previous_event != SIDE);
     }
 
     protected boolean sideBarCondition() {
-        return previous_event != SIDE && previous_event != OVER;
+        return (previous_event != SIDE) && (previous_event != OVER);
     }
 
     protected void collidesOverBar() {
@@ -348,42 +355,67 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         float ballX = ball_center_coords[0];
         float module = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
 
-        Point pnt = getDirections();
-
-        // The ball hit the left bar side
-        if (ballX - barX < (-(7 * barSprite.getWidth()) / 20)) {
-            Log.d("CollisionBar", "LEFT BAR --> " + (ballX - barX) + " < " + (int) (-(7 * barSprite.getWidth()) / 20));
+        if (ballX - barX <= (-(13 * barSprite.getWidth()) / 30)) {
+            Log.d("CollisionBar", "20° LEFT");
+            handler.setVelocity(-module * COS_20, -module * SIN_20);
+        }
+        if ((ballX - barX > (-(13 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-(11 * barSprite.getWidth()) / 30))) {
+            Log.d("CollisionBar", "30° LEFT");
             handler.setVelocity(-module * COS_30, -module * SIN_30);
         }
-        // The ball hit the center-left bar side
-        if ((ballX - barX >= (-(7 * barSprite.getWidth()) / 20)) && (ballX - barX <= (-(barSprite.getWidth()) / 20))) {
-            Log.d("CollisionBar", "CENTER-LEFT BAR --> " + (int) (-(7 * barSprite.getWidth()) / 20) + " <= " + (ballX - barX) + " <= " + (int) (-(barSprite.getWidth()) / 20));
-            if (pnt.x == 1) {
-                handler.setVelocity(module * COS_45, -module * SIN_45);
-            } else {
-                handler.setVelocity(-module * COS_45, -module * SIN_45);
-            }
+        if ((ballX - barX > (-(11 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-(3 * barSprite.getWidth()) / 10))) {
+            Log.d("CollisionBar", "40° LEFT");
+            handler.setVelocity(-module * COS_40, -module * SIN_40);
         }
-        // The ball hit the center bar side
-        if ((ballX - barX > (-(barSprite.getWidth()) / 20)) && (ballX - barX < ((barSprite.getWidth()) / 20))) {
-            Log.d("CollisionBar", "CENTER BAR --> " + (int) (-(barSprite.getWidth()) / 20) + " < " + (ballX - barX) + " < " + (int) ((barSprite.getWidth()) / 20));
+        if ((ballX - barX > (-(3 * barSprite.getWidth()) / 10)) && (ballX - barX <= (-(7 * barSprite.getWidth()) / 30))) {
+            Log.d("CollisionBar", "50° LEFT");
+            handler.setVelocity(-module * COS_50, -module * SIN_50);
+        }
+        if ((ballX - barX > (-(7 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-barSprite.getWidth() / 6))) {
+            Log.d("CollisionBar", "60° LEFT");
+            handler.setVelocity(-module * COS_60, -module * SIN_60);
+        }
+        if ((ballX - barX > (-barSprite.getWidth() / 6)) && (ballX - barX <= (-barSprite.getWidth() / 10))) {
+            Log.d("CollisionBar", "70° LEFT");
+            handler.setVelocity(-module * COS_70, -module * SIN_70);
+        }
+        if ((ballX - barX > (-barSprite.getWidth() / 10)) && (ballX - barX <= (-barSprite.getWidth() / 30))) {
+            Log.d("CollisionBar", "80° LEFT");
+            handler.setVelocity(-module * COS_80, -module * SIN_80);
+        }
+        if ((ballX - barX > (-barSprite.getWidth() / 30)) && (ballX - barX < (barSprite.getWidth() / 30))) {
+            Log.d("CollisionBar", "90°");
             handler.setVelocity(module * COS_90, -module * SIN_90);
         }
-        // The ball hit the center-right bar side
-        if ((ballX - barX >= ((barSprite.getWidth()) / 20)) && (ballX - barX <= ((7 * barSprite.getWidth()) / 20))) {
-            Log.d("CollisionBar", "CENTER-RIGHT BAR --> " + (int) ((barSprite.getWidth()) / 20) + " <= " + (ballX - barX) + " <= " + (int) ((7 * barSprite.getWidth()) / 20));
-            if (pnt.x == -1) {
-                handler.setVelocity(-module * COS_45, -module * SIN_45);
-            } else {
-                handler.setVelocity(module * COS_45, -module * SIN_45);
-            }
+        if ((ballX - barX >= (barSprite.getWidth() / 30)) && (ballX - barX < (barSprite.getWidth() / 10))) {
+            Log.d("CollisionBar", "80° RIGHT");
+            handler.setVelocity(module * COS_80, -module * SIN_80);
         }
-        // The ball hit the right bar side
-        if (ballX - barX > ((7 * barSprite.getWidth()) / 20)) {
-            Log.d("CollisionBar", "RIGHT BAR --> " + (ballX - barX) + " > " + (int) ((7 * barSprite.getWidth()) / 20));
+        if ((ballX - barX >= (barSprite.getWidth() / 10)) && (ballX - barX < (barSprite.getWidth() / 6))) {
+            Log.d("CollisionBar", "70° RIGHT");
+            handler.setVelocity(module * COS_70, -module * SIN_70);
+        }
+        if ((ballX - barX >= (barSprite.getWidth() / 6)) && (ballX - barX < ((7 * barSprite.getWidth()) / 30))) {
+            Log.d("CollisionBar", "60° RIGHT");
+            handler.setVelocity(module * COS_60, -module * SIN_60);
+        }
+        if ((ballX - barX >= ((7 * barSprite.getWidth()) / 30)) && (ballX - barX < ((3 * barSprite.getWidth()) / 10))) {
+            Log.d("CollisionBar", "50° RIGHT");
+            handler.setVelocity(module * COS_50, -module * SIN_50);
+        }
+        if ((ballX - barX >= ((3 * barSprite.getWidth()) / 10)) && (ballX - barX < ((11 * barSprite.getWidth()) / 30))) {
+            Log.d("CollisionBar", "40° RIGHT");
+            handler.setVelocity(module * COS_40, -module * SIN_40);
+        }
+        if ((ballX - barX >= ((11 * barSprite.getWidth()) / 30)) && (ballX - barX < ((13 * barSprite.getWidth()) / 30))) {
+            Log.d("CollisionBar", "30° RIGHT");
             handler.setVelocity(module * COS_30, -module * SIN_30);
         }
-        Log.d("CollisionBar", "New Velocity V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        if (ballX - barX >= ((13 * barSprite.getWidth()) / 30)) {
+            Log.d("CollisionBar", "20° RIGHT");
+            handler.setVelocity(module * COS_20, -module * SIN_20);
+        }
+
         touch.play();
     }
 
@@ -408,6 +440,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     /**
      * Get the directions of the ball
+     *
      * @return Point
      */
     protected Point getDirections() {

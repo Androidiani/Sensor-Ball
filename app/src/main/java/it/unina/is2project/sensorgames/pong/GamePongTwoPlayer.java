@@ -139,19 +139,19 @@ public class GamePongTwoPlayer extends GamePong {
     protected void bluetoothExtra() {
         // Setting proximityRegion ON
         // Quando l'avversario riceve la palla, potrebbe eseguire questo codice!
-        if(!proximityRegion && ballSprite.getY() <= PROXIMITY_ZONE){
+        if (!proximityRegion && ballSprite.getY() <= PROXIMITY_ZONE) {
             Log.d("Proximity", "Set Proximity To TRUE");
             proximityRegion = true;
         }
 
         // Al rientro della pallina, proximity regione in ricezione (la metà di quella di invio, più critica)
-        if(proximityRegion && ballSprite.getY() > PROXIMITY_ZONE/2){
+        if (proximityRegion && ballSprite.getY() > PROXIMITY_ZONE / 2) {
             Log.d("Proximity", "Set Proximity To FALSE");
             proximityRegion = false;
         }
 
         // Quando la palla ESCE COMPLETAMENTE dal device
-        if (proximityRegion && ballSprite.getY() < -ballSprite.getHeight()){
+        if (proximityRegion && ballSprite.getY() < -ballSprite.getHeight()) {
             scene.detachChild(ballSprite);
             //ballSprite.detachSelf();
             transferringBall = false;
@@ -188,12 +188,12 @@ public class GamePongTwoPlayer extends GamePong {
     public void actionDownEvent() {
         Log.d("Proximity", "Proximity:" + proximityRegion);
         if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !proximityRegion) {
-            if(haveBall) {
+            if (haveBall) {
                 tap = System.currentTimeMillis();
                 fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
                 AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
                 sendBluetoothMessage(pauseMessage);
-            }else{
+            } else {
                 textInfo.setText(getResources().getString(R.string.text_pause_not_allowed));
             }
         }

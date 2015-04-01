@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;//Gabriele è gay
+package it.unina.is2project.sensorgames.pong;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -67,7 +67,7 @@ public class GamePongOnePlayer extends GamePong {
     private int gain;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
-    private int old_life;
+    private int old_life = 0;
     private int reach_count = 1;
     private static final int MIN_REACH_COUNT = 2;
     private static final int MAX_REACH_COUNT = 6;
@@ -105,7 +105,6 @@ public class GamePongOnePlayer extends GamePong {
     private boolean no_event = false;
     private boolean first_enemy = false;
     private boolean bubble_bonus = false;
-    private boolean drunk_ball = false;
     private boolean life_bonus = false;
     private boolean rush_hour = false;
     private boolean freeze = false;
@@ -115,11 +114,10 @@ public class GamePongOnePlayer extends GamePong {
     private static final int NO_EVENT = 0;
     private static final int FIRST_ENEMY = 1;
     private static final int BUBBLE_BONUS = 2;
-    private static final int REVERSE = 3;
-    private static final int LIFE_BONUS = 4;
-    private static final int RUSH_HOUR = 5;
-    private static final int FREEZE = 6;
-    private static final int DRUNK_BALL = 404;
+    private static final int LIFE_BONUS = 3;
+    private static final int RUSH_HOUR = 4;
+    private static final int FREEZE = 5;
+    private static final int REVERSE = 6;
 
     // Events' data
     private static final int BONUS_BALL_MAX_NUM = 5;
@@ -178,6 +176,7 @@ public class GamePongOnePlayer extends GamePong {
         // Adding the life sprites to the scene
         addLifeSpritesToScene();
 
+        // Setting the text score
         txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
 
         // Setting up the physics of the game
@@ -188,33 +187,18 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     protected void collidesBottom() {
-        Log.d(TAG, "Bottom. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        Log.d(TAG, "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
 
-        //  The ballSprite is detached
-        ballSprite.detachSelf();
-        // The lifeSprite is detached
         lifeSprites.get(life).detachSelf();
-        // Life count is decremented
         life--;
-
-        if (game_event == DRUNK_BALL) {
-            Log.d(TAG, "Drunk Ball stopped");
-            clearEvent();
-            callEvent();
-        }
-
-        // If the life count is less equal than 0, the game is over
+        Log.d(TAG, "Life: " + life);
         if (life < 0) {
             gameOver();
-        }
-        // Else replace the ball
-        else {
-            // Setting the position on centre of screen
-            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/ 2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
-            // Set the direction upward
-            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
-            // The ballSprite is attached
+        } else {
+            ballSprite.detachSelf();
+            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
+            handler.setVelocityY(-handler.getVelocityY());
             attachBall();
         }
 
@@ -245,17 +229,19 @@ public class GamePongOnePlayer extends GamePong {
     protected void clearGame() {
         super.clearGame();
         clearEvent();
-        pause = false;
+        // Clear game data
         life = MAX_LIFE - 1;
+        old_life = 0;
         score = 0;
-        game_event = NO_EVENT;
-        reach_count = 5;
+        gain = 0;
         level = LEVEL_ONE;
+        game_event = NO_EVENT;
+        reach_count = 1;
+        txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
         // Setting false all events
         no_event = false;
         first_enemy = false;
         bubble_bonus = false;
-        drunk_ball = false;
         life_bonus = false;
         rush_hour = false;
         freeze = false;
@@ -294,42 +280,35 @@ public class GamePongOnePlayer extends GamePong {
         if (score < BARRIER_ONE && level_one) {
             score += 10;
             gain = 10;
-        }
-        else if (score < BARRIER_TWO  && level_two) {
+        } else if (score < BARRIER_TWO && level_two) {
             score += 20;
             gain = 20;
-        }
-        else if (score < BARRIER_THREE && level_three) {
+        } else if (score < BARRIER_THREE && level_three) {
             score += 40;
             gain = 40;
-        }
-        else if (score < BARRIER_FOUR && level_four) {
+        } else if (score < BARRIER_FOUR && level_four) {
             score += 80;
             gain = 80;
-        }
-        else if (score < BARRIER_FIVE && level_five) {
+        } else if (score < BARRIER_FIVE && level_five) {
             score += 160;
             gain = 160;
-        }
-        else if (score < BARRIER_SIX && level_six) {
+        } else if (score < BARRIER_SIX && level_six) {
             score += 320;
             gain = 320;
-        }
-        else if (score < BARRIER_SEVEN && level_seven) {
+        } else if (score < BARRIER_SEVEN && level_seven) {
             score += 640;
             gain = 640;
-        }
-        else if (score > BARRIER_SEVEN) {
+        } else if (score > BARRIER_SEVEN) {
             score += 1280;
             gain = 1280;
         }
 
         if (game_event == FIRST_ENEMY)
             score += gain * 3;
-        if (game_event == DRUNK_BALL)
-            score += 10000;
         if (game_event == RUSH_HOUR)
-            score += gain * 4;
+            score += gain * 6;
+        if (game_event == REVERSE)
+            score += gain * 10;
 
         Log.d(TAG, "Score: " + score);
     }
@@ -397,49 +376,36 @@ public class GamePongOnePlayer extends GamePong {
             case FIRST_ENEMY:
                 if (!first_enemy) {
                     txtEvnt.setText(getApplicationContext().getString(R.string.text_first_enemy));
-                    first_enemy = true;
                     firstEnemyLogic();
                 }
                 break;
             case BUBBLE_BONUS:
                 if (!bubble_bonus) {
                     txtEvnt.setText(getApplicationContext().getString(R.string.text_bubble));
-                    bubble_bonus = true;
                     bubbleBonusLogic();
-                }
-                break;
-            case DRUNK_BALL:
-                if (!drunk_ball) {
-                    txtEvnt.setText(getApplicationContext().getString(R.string.text_drunkball));
-                    drunk_ball = true;
-                    drunkBallLogic();
                 }
                 break;
             case LIFE_BONUS:
                 if (!life_bonus) {
                     txtEvnt.setText(getApplicationContext().getString(R.string.text_lifebonus));
-                    life_bonus = true;
                     lifeBonusLogic();
                 }
                 break;
             case RUSH_HOUR:
                 if (!rush_hour) {
                     txtEvnt.setText(getApplicationContext().getString(R.string.text_rush));
-                    rush_hour = true;
                     rushHourLogic();
                 }
                 break;
             case FREEZE:
                 if (!freeze) {
                     txtEvnt.setText(getApplicationContext().getString(R.string.text_freeze));
-                    freeze = true;
                     freezeLogic();
                 }
                 break;
             case REVERSE:
                 if (!reverse) {
                     txtEvnt.setText(getResources().getString(R.string.text_reverse));
-                    reverse = true;
                     reverseLogic();
                 }
                 break;
@@ -467,43 +433,42 @@ public class GamePongOnePlayer extends GamePong {
             public void run() {
                 // Game over dialog
 
-                    AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
+                AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
 
-                    alert.setTitle(getApplicationContext().getResources().getString(R.string.text_ttl_oneplayer_savegame));
-                    alert.setMessage(getApplicationContext().getResources().getString(R.string.text_msg_oneplayer_savegame));
+                alert.setTitle(getApplicationContext().getResources().getString(R.string.text_ttl_oneplayer_savegame));
+                alert.setMessage(getApplicationContext().getResources().getString(R.string.text_msg_oneplayer_savegame));
 
-                    // Set an EditText view to get user input
-                    final EditText input = new EditText(GamePongOnePlayer.this);
-                    alert.setView(input);
+                // Set an EditText view to get user input
+                final EditText input = new EditText(GamePongOnePlayer.this);
+                alert.setView(input);
 
-                    alert.setPositiveButton(getApplicationContext().getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
+                alert.setPositiveButton(getApplicationContext().getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
 
-                            String user_input_name = input.getText().toString();
+                        String user_input_name = input.getText().toString();
 
-                            if(!user_input_name.equals("")) {
-                                saveGame(user_input_name);
+                        if (!user_input_name.equals("")) {
+                            saveGame(user_input_name);
 
-                                restart_game = true;
-                                game_over = false;
-                            }
-                            else{
-                                Toast toast = Toast.makeText(getApplication(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_SHORT);
-                                toast.setGravity(Gravity.TOP,0,0);
-                                toast.show();
-                                run();
-                            }
-                        }
-                    });
-
-                    alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
                             restart_game = true;
                             game_over = false;
+                        } else {
+                            Toast toast = Toast.makeText(getApplication(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_SHORT);
+                            toast.setGravity(Gravity.TOP, 0, 0);
+                            toast.show();
+                            run();
                         }
-                    });
+                    }
+                });
 
-                    alert.show();
+                alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        restart_game = true;
+                        game_over = false;
+                    }
+                });
+
+                alert.show();
             }
         });
     }
@@ -514,11 +479,10 @@ public class GamePongOnePlayer extends GamePong {
         Player player = playerDAO.findByNome(user_input_name);
         long idPlayer;
 
-        if(player == null) {
+        if (player == null) {
             player = new Player(user_input_name);
             idPlayer = playerDAO.insert(player);
-        }
-        else idPlayer = player.getId();
+        } else idPlayer = player.getId();
 
         StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, new Date().toString(), score);
         StatOnePlayerDAO statOnePlayerDAO = new StatOnePlayerDAO(getApplicationContext());
@@ -565,7 +529,7 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
-    void restartAfterGameOver(){
+    void restartAfterGameOver() {
         clearGame();
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
         handler.setVelocity(BALL_SPEED, -BALL_SPEED);
@@ -595,19 +559,21 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void firstEnemyLogic() {
+        first_enemy = true;
         firstEnemy = new Sprite(0, CAMERA_HEIGHT / 3, barTextureRegion, getVertexBufferObjectManager());
         firstEnemy.setWidth(CAMERA_WIDTH);
         scene.attachChild(firstEnemy);
     }
 
     private void clearFirstEnemy() {
-        first_enemy = false;
         firstEnemy.detachSelf();
+        first_enemy = false;
     }
 
     private void bubbleBonusLogic() {
-        Random random = new Random();
+        bubble_bonus = true;
 
+        Random random = new Random();
         int BONUS_BALL_NUM = BONUS_BALL_MIN_NUM + random.nextInt(BONUS_BALL_MAX_NUM - BONUS_BALL_MIN_NUM + 1);
 
         // Adding the bonus ball sprites to the scene
@@ -623,7 +589,6 @@ public class GamePongOnePlayer extends GamePong {
             scene.attachChild(bonusBalls.get(i));
         }
         Log.d(TAG, "BONUS_BALL_NUM: " + BONUS_BALL_NUM + " bonusBalls.size(): " + bonusBalls.size());
-
     }
 
     private void clearBubbleBonus() {
@@ -635,46 +600,12 @@ public class GamePongOnePlayer extends GamePong {
                 Log.d(TAG, "Bonus ball detached in clear");
             } while (bonusBalls.size() > 0);
         }
-        bubble_bonus = false;
         allBonusDetached = false;
-    }
-
-    @Deprecated
-    private void drunkBallLogic() {
-        if (ballSprite.getY() < CAMERA_HEIGHT / 2) {
-            if (ballSprite.getX() > ballSprite.getWidth() || ballSprite.getX() < CAMERA_WIDTH - ballSprite.getWidth())
-                handler.setVelocityX(-handler.getVelocityX());
-            else {
-                Random random = new Random();
-                handler.setVelocityX(random.nextFloat() * BALL_SPEED);
-            }
-        }
-    }
-
-    @Deprecated
-    private void clearDrunkBall() {
-        if (level > LEVEL_ONE && level <= LEVEL_TWO)
-            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
-        if (level >= LEVEL_THREE && level <= LEVEL_FOUR)
-            handler.setVelocity(BALL_SPEED * 2, -BALL_SPEED * 2);
-        if (level >= LEVEL_FIVE && level <= LEVEL_SIX)
-            handler.setVelocity(BALL_SPEED * 1.5f * 2, BALL_SPEED * 1.5f * 2);
-        if (level >= LEVEL_SEVEN)
-            handler.setVelocity(BALL_SPEED * 1.5f * 1.5f * 2, BALL_SPEED * 1.5f * 1.5f * 2);
-
-        drunk_ball = false;
-    }
-
-    private void reverseLogic() {
-        GAME_VELOCITY = (-1) * GAME_VELOCITY;
-    }
-
-    private void clearReverseLogic() {
-        GAME_VELOCITY = (-1) * GAME_VELOCITY;
-        reverse = false;
+        bubble_bonus = false;
     }
 
     private void lifeBonusLogic() {
+        life_bonus = true;
         old_life = life;
         if (life < MAX_LIFE - 1) {
             Random random = new Random();
@@ -689,13 +620,14 @@ public class GamePongOnePlayer extends GamePong {
     private void clearLifeBonus() {
         if (!life_detached && life < MAX_LIFE - 1)
             lifeBonus.detachSelf();
-        life_bonus = false;
         life_detached = false;
+        life_bonus = false;
     }
 
     private void rushHourLogic() {
-        Random random = new Random();
+        rush_hour = true;
 
+        Random random = new Random();
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
 
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
@@ -726,12 +658,23 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void freezeLogic() {
+        freeze = true;
         handler.setVelocity(handler.getVelocityX() / 2, handler.getVelocityY() / 2);
     }
 
     private void clearFreeze() {
         handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
         freeze = false;
+    }
+
+    private void reverseLogic() {
+        reverse = true;
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+    }
+
+    private void clearReverseLogic() {
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+        reverse = false;
     }
 
     private void gameEventsCollisionLogic() {
@@ -752,7 +695,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void firstEnemyCollisions() {
-        if (ballSprite.collidesWith(firstEnemy) && first_enemy && ballSprite.getY() < CAMERA_HEIGHT/2 && previous_event != TOP) {
+        if (ballSprite.collidesWith(firstEnemy) && first_enemy && ballSprite.getY() < CAMERA_HEIGHT / 2 && previous_event != TOP) {
             previous_event = TOP;
             handler.setVelocityY(-handler.getVelocityY());
             touch.play();
@@ -816,9 +759,6 @@ public class GamePongOnePlayer extends GamePong {
                 break;
             case BUBBLE_BONUS:
                 clearBubbleBonus();
-                break;
-            case DRUNK_BALL:
-                clearDrunkBall();
                 break;
             case LIFE_BONUS:
                 clearLifeBonus();

@@ -138,7 +138,7 @@ public class GamePongTraining extends GamePong {
     @Override
     protected void actionDownEvent() {
         if (!enableModes) {
-            Log.i(TAG, "Game Paused");
+            Log.d(TAG, "Game Paused");
             showMenu();
         }
     }
