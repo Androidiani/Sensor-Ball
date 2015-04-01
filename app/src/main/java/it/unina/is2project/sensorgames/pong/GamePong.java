@@ -117,10 +117,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         display.getSize(size);
         CAMERA_WIDTH = size.x;
         CAMERA_HEIGHT = size.y;
-        DEVICE_RATIO  = CAMERA_WIDTH/420;
+        DEVICE_RATIO  = CAMERA_WIDTH/480;
+        Log.d("Camera","Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-        Log.d("Camera settings","Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT);
         // Setting up the andEngine options
         EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.PORTRAIT_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
         // Enable the sound option
@@ -152,10 +152,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // Setting up the background color
         scene.setBackground(new Background(0f, 0f, 0f));
 
-        //TODO Cancellare il commento
         // Adding the ballSprite to the scene
-        ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
-        //ballSprite = new Sprite(0,0, ballTextureRegion, getVertexBufferObjectManager());
+        ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth())/2, (CAMERA_HEIGHT - ballTexture.getHeight())/2, ballTextureRegion, getVertexBufferObjectManager());
         ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
         ballSprite.setHeight(CAMERA_WIDTH * 0.1f);
         attachBall();
@@ -165,14 +163,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         barSprite.setWidth(CAMERA_WIDTH * 0.3f);
         scene.attachChild(barSprite);
 
+        //Set game velocity
+        GAME_VELOCITY = 2 * DEVICE_RATIO;
+        BALL_SPEED = 300 * DEVICE_RATIO;
+
         /** Enable the Acceleration Sensor
          * - Option: SensorDelay.GAME */
         this.enableAccelerationSensor(this);
         mAccelerationOptions = new AccelerationSensorOptions(SensorDelay.GAME);
-
-        //Set game velocity
-        GAME_VELOCITY = 2 * DEVICE_RATIO;
-        BALL_SPEED = 350 * DEVICE_RATIO;
 
         this.mEngine.registerUpdateHandler(new FPSLogger());
 
@@ -185,16 +183,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     @Override
     public void onAccelerationChanged(AccelerationData pAccelerationData) {
-        /** The bar is moving only on X
-         * There's the edges' condition that do not hide the bar beyond the walls.
-         */
+        // The bar is moving only on X
         float new_position = barSprite.getX() + pAccelerationData.getX() * GAME_VELOCITY;
-
-        // Border variables
-        float rL = CAMERA_WIDTH - barSprite.getWidth() / 2;
-        float lL = -barSprite.getWidth() / 2;
-
-        if (!(new_position > rL || new_position < lL))
+        // There's the edges' condition that do not hide the bar beyond the walls
+        if (!(new_position > CAMERA_WIDTH - barSprite.getWidth()/2 || new_position < -barSprite.getWidth()/2))
             barSprite.setX(new_position);
     }
 
@@ -280,21 +272,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             }
 
             @Override
-            public void reset() {
-            }
+            public void reset() {}
         });
-    }
-
-    protected void attachBall() {
-        scene.attachChild(ballSprite);
-    }
-
-    protected void setBallVeloctity() {
-        /** The ball has the initial speed
-         * - vx = + BALL_SPEED
-         * - vy = - BALL_SPEED
-         */
-        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
     }
 
     protected boolean leftCondition() {
@@ -338,9 +317,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         Log.d("Collision", "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
         scene.detachChild(ballSprite);
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
-        handler.setVelocityY(-handler.getVelocityY());
-        scene.attachChild(ballSprite);
+        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
+        handler.setVelocityY(-BALL_SPEED);
+        attachBall();
     }
 
     protected boolean overBarCondition() {
@@ -372,16 +351,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         float module = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
 
         Point pnt = getDirections();
-
-//        Log.d("Collision", "Direction: (" + pnt.x + "," + pnt.y + ")");
-//        Log.d("Collision", "ballX = " + ballX);
-//        Log.d("Collision", "barX = " + barX);
-//        Log.d("Collision", "ballX - barX = " + (ballX - barX));
-//        Log.d("Collision", "bar.width = " + (int) barSprite.getWidth());
-//        Log.d("Collision", "-(7/20)*bar.width = " + (int) (-(7 * barSprite.getWidth()) / 20));
-//        Log.d("Collision", "-(1/20)*bar.width = " + (int) (-(barSprite.getWidth()) / 20));
-//        Log.d("Collision", "+(1/20)*bar.width = " + (int) ((barSprite.getWidth()) / 20));
-//        Log.d("Collision", "+(7/20)*bar.width = " + (int) ((7 * barSprite.getWidth()) / 20));
 
         // The ball hit the left bar side
         if (ballX - barX < (-(7 * barSprite.getWidth()) / 20)) {
@@ -427,16 +396,20 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         touch.play();
     }
 
-    protected void clearGame() {
-        GAME_VELOCITY = 2 * DEVICE_RATIO;
-        BALL_SPEED = 350 * DEVICE_RATIO;
-        previous_event = NO_EVENT;
-        game_over = false;
+    protected void attachBall() {
+        scene.attachChild(ballSprite);
+    }
+
+    protected void setBallVeloctity() {
+        /** The ball has the initial speed
+         * - vx = + BALL_SPEED
+         * - vy = - BALL_SPEED
+         */
+        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
     }
 
     /**
      * Get the directions of the ball
-     *
      * @return Point
      */
     protected Point getDirections() {
@@ -449,17 +422,25 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         return mPoint;
     }
 
+    protected void clearGame() {
+        GAME_VELOCITY = 2 * DEVICE_RATIO;
+        BALL_SPEED = 350 * DEVICE_RATIO;
+        previous_event = NO_EVENT;
+        game_over = false;
+        pause = false;
+    }
+
+    protected abstract void actionDownEvent();
+
     protected abstract void bluetoothExtra();
+
+    protected abstract void addScore();
 
     protected abstract void gameLevels();
 
     protected abstract void gameEvents();
 
     protected abstract void gameOver();
-
-    protected abstract void addScore();
-
-    protected abstract void actionDownEvent();
 
     protected abstract void saveGame(String s);
 

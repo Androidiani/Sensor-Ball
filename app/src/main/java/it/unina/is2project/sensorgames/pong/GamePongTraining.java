@@ -1,6 +1,5 @@
 package it.unina.is2project.sensorgames.pong;
 
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
@@ -42,9 +41,6 @@ public class GamePongTraining extends GamePong {
     private boolean enableModes = false;
     private long firstTap;
     private long secondTap;
-
-    // Speed directions
-    private Point DIRECTIONS;
 
     @Override
     protected Scene onCreateScene() {
@@ -140,8 +136,21 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
+    protected void actionDownEvent() {
+        if (!enableModes) {
+            Log.i(TAG, "Game Paused");
+            showMenu();
+        }
+    }
+
+    @Override
     protected void bluetoothExtra() {
-        // do nothing
+        //do nothing
+    }
+
+    @Override
+    protected void addScore() {
+        //do nothing
     }
 
     @Override
@@ -160,19 +169,6 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
-    protected void addScore() {
-        //do nothing
-    }
-
-    @Override
-    protected void actionDownEvent() {
-        if (!enableModes) {
-            Log.i(TAG, "Game Paused");
-            showMenu();
-        }
-    }
-
-    @Override
     protected void saveGame(String s) {
         //do nothing
     }
@@ -181,13 +177,9 @@ public class GamePongTraining extends GamePong {
      * Show the mode's menu
      */
     private void showMenu() {
-        // Store directions data
-        DIRECTIONS = getDirections();
-        Log.d(TAG, "Directions:" + DIRECTIONS.x + " " + DIRECTIONS.y);
-
-        // Stop the ball
-        handler.setVelocity(0f);
+        // Stop the Game
         GAME_VELOCITY = 0;
+        handler.setVelocity(0f);
 
         // Register Touch Area
         scene.registerTouchArea(easySprite);
@@ -226,26 +218,23 @@ public class GamePongTraining extends GamePong {
     private void setMode(int mode) {
         switch (mode) {
             case EASY_MODE: {
-                handler.setVelocityX(BALL_SPEED * DIRECTIONS.x);
-                handler.setVelocityY(BALL_SPEED * DIRECTIONS.y);
                 GAME_VELOCITY = 2 * DEVICE_RATIO;
+                handler.setVelocity(BALL_SPEED, -BALL_SPEED);
                 barSprite.setWidth(CAMERA_WIDTH * 0.3f);
                 break;
             }
 
             case NORMAL_MODE: {
-                handler.setVelocityX(BALL_SPEED * 2 * DIRECTIONS.x);
-                handler.setVelocityY(BALL_SPEED * 2 * DIRECTIONS.y);
-                GAME_VELOCITY = 4 * DEVICE_RATIO;
+                GAME_VELOCITY = 3 * DEVICE_RATIO;
+                handler.setVelocity(BALL_SPEED * 2, -BALL_SPEED * 2);
                 barSprite.setWidth(CAMERA_WIDTH * 0.2f);
                 break;
             }
 
             case INSANE_MODE: {
-                handler.setVelocityX(BALL_SPEED * 4 * DIRECTIONS.x);
-                handler.setVelocityY(BALL_SPEED * 4 * DIRECTIONS.y);
                 GAME_VELOCITY = 4 * DEVICE_RATIO;
-                barSprite.setWidth(CAMERA_WIDTH * 0.15f);
+                handler.setVelocity(BALL_SPEED * 4, -BALL_SPEED * 4);
+                barSprite.setWidth(CAMERA_WIDTH * 0.1f);
                 break;
             }
         }
