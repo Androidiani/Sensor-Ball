@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.pong;//Gabriele è gay
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
