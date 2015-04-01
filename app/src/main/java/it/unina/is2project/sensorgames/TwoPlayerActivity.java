@@ -190,6 +190,16 @@ public class TwoPlayerActivity extends ActionBarActivity {
             mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
             mBluetoothService.start();
         }
+
+        // FSM STATE CHANGE
+        fsmGame = FSMGame.getFsmInstance(fsmHandler);
+        if(fsmGame.getState() == FSMGame.STATE_DISCONNECTED){
+            fsmGame.setState(FSMGame.STATE_DISCONNECTED);
+        }
+        if(mBluetoothService.getState() == BluetoothService.STATE_CONNECTED){
+
+        }
+
         super.onResume();
     }
 
@@ -445,7 +455,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 mBluetoothService.stop();
 
                 //Clear bluetooth activity's data
-                txtEnemy.setText("");
+                txtEnemy.setText(getResources().getString(R.string.text_none));
                 stringArrayAdapter.clear();
                 stringArrayAdapter.notifyDataSetChanged();
 
@@ -629,7 +639,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                         case FSMGame.STATE_DISCONNECTED:
                             stringArrayAdapter.clear();
                             stringArrayAdapter.notifyDataSetChanged();
-                            txtEnemy.setText("");
+                            txtEnemy.setText(getResources().getString(R.string.text_none));
                             btnPlay.setEnabled(false);
                             mConnectedDeviceName = null;
                             privateNumber = null;

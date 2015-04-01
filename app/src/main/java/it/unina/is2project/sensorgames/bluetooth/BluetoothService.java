@@ -541,11 +541,8 @@ public class BluetoothService implements Cloneable{
                 try{
                     // Lettura dall'imput stream
                     bytes = mmInStream.read(buffer);
-                    //TODO Inserito un SYNCRONIZED da eliminare
-                    synchronized (this) {
-                        // Mando il messaggio alla UI
-                        mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
-                    }
+                    // Mando il messaggio alla UI
+                    mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
                 }catch (IOException e){
                     Log.e(TAG, "disconnected while reading", e);
                     connectionLost();

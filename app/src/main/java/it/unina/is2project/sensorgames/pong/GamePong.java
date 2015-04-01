@@ -152,10 +152,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // Setting up the background color
         scene.setBackground(new Background(0f, 0f, 0f));
 
-        //TODO Cancellare il commento
         // Adding the ballSprite to the scene
         ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
-        //ballSprite = new Sprite(0,0, ballTextureRegion, getVertexBufferObjectManager());
         ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
         ballSprite.setHeight(CAMERA_WIDTH * 0.1f);
         attachBall();

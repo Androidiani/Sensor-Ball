@@ -26,15 +26,13 @@ public class GamePongTwoPlayer extends GamePong {
     // Indicates who starts game
     private boolean isMaster = false;
     // Indicates when ball is passing
-    private boolean transferringBall = false;
-    // Result Codes
-    public static final int CONNECTION_DOWN = 203;
+    private boolean transferringBall;
     // Service bluetooth
     private BluetoothService mBluetoothService = null;
     // Finite State Machine
     private FSMGame fsmGame = null;
     // Text information
-    Text textInfo;
+    private Text textInfo;
     // Return intent extra
     public static String EXTRA_MASTER = "isMaster_boolean";
     public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
@@ -43,8 +41,11 @@ public class GamePongTwoPlayer extends GamePong {
     private float old_y_speed;
     private int old_game_speed;
     private long tap;
+    private boolean proximityRegion;
+    private int PROXIMITY_ZONE;
     // Connections Utils
     private boolean isConnected;
+
 
     @Override
     protected Scene onCreateScene() {
@@ -71,6 +72,9 @@ public class GamePongTwoPlayer extends GamePong {
         settingPhysics();
 
         isConnected = true;
+        proximityRegion = false;
+        PROXIMITY_ZONE = CAMERA_HEIGHT / 8;
+        transferringBall = false;
         game_over = false;
         previous_event = 0;
 
@@ -109,12 +113,10 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected boolean topCondition() {
-        //if (ballSprite.getY() < ballSprite.getWidth() / 2 && previous_event != TOP && haveBall && !transferringBall) {
-        if (ballSprite.getY() < 0 && previous_event != TOP && haveBall && !transferringBall) {
+        if (!transferringBall && ballSprite.getY() < 0 && previous_event != TOP && haveBall) {
             Log.d(TAG, "topCondition TRUE");
             return true;
         } else return false;
-        //return super.topCondition() && haveBall;
     }
 
     @Override
@@ -135,14 +137,29 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected void bluetoothExtra() {
-        //if (ballSprite.getY() < -ballSprite.getWidth() / 2) {
-        if (ballSprite.getY() < -ballSprite.getHeight()){
+        // Setting proximityRegion ON
+        // Quando l'avversario riceve la palla, potrebbe eseguire questo codice!
+        if(!proximityRegion && ballSprite.getY() <= PROXIMITY_ZONE){
+            Log.d("Proximity", "Set Proximity To TRUE");
+            proximityRegion = true;
+        }
+
+        // Al rientro della pallina, proximity regione in ricezione (la metà di quella di invio, più critica)
+        if(proximityRegion && ballSprite.getY() > PROXIMITY_ZONE/2){
+            Log.d("Proximity", "Set Proximity To FALSE");
+            proximityRegion = false;
+        }
+
+        // Quando la palla ESCE COMPLETAMENTE dal device
+        if (proximityRegion && ballSprite.getY() < -ballSprite.getHeight()){
             scene.detachChild(ballSprite);
             //ballSprite.detachSelf();
             transferringBall = false;
+            Log.d("Proximity", "Set Proximity To FALSE");
+            proximityRegion = false;
         }
-        //if (ballSprite.getY() > ballSprite.getWidth() / 2) {
-        if (ballSprite.getY() > 0) {
+        // Quando la palla ENTRA COMPLETAMENTE nel device
+        if (transferringBall && ballSprite.getY() > 0) {
             transferringBall = false;
         }
     }
@@ -169,14 +186,15 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     public void actionDownEvent() {
-        if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !transferringBall) {
+        Log.d("Proximity", "Proximity:" + proximityRegion);
+        if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !proximityRegion) {
             if(haveBall) {
                 tap = System.currentTimeMillis();
                 fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
                 AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
                 sendBluetoothMessage(pauseMessage);
             }else{
-                // Codice pausa senza palla
+                textInfo.setText(getResources().getString(R.string.text_pause_not_allowed));
             }
         }
 
@@ -259,12 +277,14 @@ public class GamePongTwoPlayer extends GamePong {
                                     Log.d("SendReceived", "MSG_TYPE_COORDS");
                                     if (!haveBall) {
                                         transferringBall = true;
+                                        haveBall = true;
+                                        proximityRegion = true;
                                         float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
-                                        ballSprite.setPosition(xPos, -ballSprite.getWidth() / 2);
+                                        ballSprite.setPosition(xPos, -ballSprite.getHeight());
                                         handler.setVelocity(-recMsg.OP2, -recMsg.OP3);
                                         scene.attachChild(ballSprite);
-                                        haveBall = true;
                                         previous_event = TOP;
+                                        textInfo.setText("");
                                     }
                                     break;
                                 case Constants.MSG_TYPE_SYNC:
