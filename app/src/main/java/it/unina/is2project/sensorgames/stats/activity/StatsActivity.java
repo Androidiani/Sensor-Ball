@@ -22,6 +22,7 @@ import it.unina.is2project.sensorgames.stats.service.StatService;
 
 
 public class StatsActivity extends ActionBarActivity {
+    //TODO: risolvere il problema del metodo close su StatService
 
     // Font typeface
     private Typeface typeFace;
@@ -87,14 +88,14 @@ public class StatsActivity extends ActionBarActivity {
                     textViewVinte.setText("0");
                     textViewWinningRate.setText("0");
                 }
-                statService.close();
+                //statService.close();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        statService.close();
+        //statService.close();
     }
 
 
@@ -110,9 +111,9 @@ public class StatsActivity extends ActionBarActivity {
         single = (TextView) findViewById(R.id.txt_single);
         multi = (TextView) findViewById(R.id.txt_multi);
 
-        textViewColVinte = (TextView) findViewById(R.id.textViewColVinte);
-        textViewColGiocate = (TextView) findViewById(R.id.textViewColGiocate);
-        textViewColWinningRate = (TextView) findViewById(R.id.textViewColWinningRate);
+        textViewColVinte = (TextView) findViewById(R.id.textViewVinte);
+        textViewColGiocate = (TextView) findViewById(R.id.textViewGiocate);
+        textViewColWinningRate = (TextView) findViewById(R.id.textViewWinningRate);
 
         listView = (ListView) findViewById(R.id.listViewDemo);
         textViewVinte = (TextView) findViewById(R.id.textViewVinte);

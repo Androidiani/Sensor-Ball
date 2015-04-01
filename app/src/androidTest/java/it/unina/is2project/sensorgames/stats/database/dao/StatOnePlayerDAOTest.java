@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.database.dao;
+package it.unina.is2project.sensorgames.stats.database.dao;
 
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
@@ -58,7 +58,7 @@ public class StatOnePlayerDAOTest extends AndroidTestCase {
         StatOnePlayer stat2 = statOnePlayerDAO.findById((int) id);
         assertNotNull("Record con id " + id + " non trovato.", stat2);
         String nome = "Gianluca";
-        int score = stat2.getScore();
+        long score = stat2.getScore();
         String data = stat2.getData();
         int player = stat2.getIdPlayer();
 

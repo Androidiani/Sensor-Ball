@@ -1,4 +1,6 @@
-package it.unina.is2project.sensorgames.database.dao;
+//TODO: i test non sono funzionanti perché associati alla precedente versione del database
+
+package it.unina.is2project.sensorgames.stats.database.dao;
 
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;

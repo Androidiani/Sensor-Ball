@@ -55,6 +55,7 @@
     <string name="text_opponent_not_ready">Your opponent\nis not ready</string>
     <string name="text_waiting">Waiting for\nyour opponent</string>
     <string name="text_exit_pause">Your opponent\nis in pause</string>
+    <string name="text_pause_not_allowed">Pause not\nallowed now</string>
 
     <!-- Toasts -->
     <string name="toast_bluetoothNotSupported">Bluetooth not supported on your device</string>
