@@ -76,25 +76,43 @@ public class GamePongOnePlayer extends GamePong {
     private int level;
     private boolean level_one = true;
     private static final int LEVEL_ONE = 0;
-    private static final int BARRIER_ONE = 50;
+    private static final int BARRIER_ONE = 100;
     private boolean level_two = false;
     private static final int LEVEL_TWO = 1;
-    private static final int BARRIER_TWO = 500;
+    private static final int BARRIER_TWO = 200;
     private boolean level_three = false;
     private static final int LEVEL_THREE = 2;
-    private static final int BARRIER_THREE = 3000;
+    private static final int BARRIER_THREE = 500;
     private boolean level_four = false;
     private static final int LEVEL_FOUR = 3;
-    private static final int BARRIER_FOUR = 9000;
+    private static final int BARRIER_FOUR = 1000;
     private boolean level_five = false;
     private static final int LEVEL_FIVE = 4;
-    private static final int BARRIER_FIVE = 18000;
+    private static final int BARRIER_FIVE = 2000;
     private boolean level_six = false;
     private static final int LEVEL_SIX = 5;
-    private static final int BARRIER_SIX = 36000;
+    private static final int BARRIER_SIX = 5000;
     private boolean level_seven = false;
     private static final int LEVEL_SEVEN = 6;
-    private static final int BARRIER_SEVEN = 72000;
+    private static final int BARRIER_SEVEN = 10000;
+    private boolean level_eight = false;
+    private static final int LEVEL_EIGHT = 7;
+    private static final int BARRIER_EIGHT = 20000;
+    private boolean level_nine = false;
+    private static final int LEVEL_NINE = 8;
+    private static final int BARRIER_NINE = 50000;
+    private boolean level_ten = false;
+    private static final int LEVEL_TEN = 9;
+    private static final int BARRIER_TEN = 100000;
+    private boolean level_eleven = false;
+    private static final int LEVEL_ELEVEN = 10;
+    private static final int BARRIER_ELEVEN = 200000;
+    private boolean level_twelve = false;
+    private static final int LEVEL_TWELVE = 11;
+    private static final int BARRIER_TWELVE = 500000;
+    private boolean level_max = false;
+    private static final int LEVEL_MAX = 12;
+
 
     /**
      * Events
@@ -105,19 +123,25 @@ public class GamePongOnePlayer extends GamePong {
     private boolean no_event = false;
     private boolean first_enemy = false;
     private boolean bubble_bonus = false;
+    private boolean cut_bar_30 = false;
     private boolean life_bonus = false;
-    private boolean rush_hour = false;
-    private boolean freeze = false;
+    private boolean cut_bar_50 = false;
+    private boolean big_bar = false;
     private boolean reverse = false;
+    private boolean freeze = false;
+    private boolean rush_hour = false;
 
     // Events' number
     private static final int NO_EVENT = 0;
     private static final int FIRST_ENEMY = 1;
     private static final int BUBBLE_BONUS = 2;
-    private static final int LIFE_BONUS = 3;
-    private static final int RUSH_HOUR = 4;
-    private static final int FREEZE = 5;
-    private static final int REVERSE = 6;
+    private static final int CUT_BAR_30 = 3;
+    private static final int LIFE_BONUS = 4;
+    private static final int CUT_BAR_50 = 5;
+    private static final int BIG_BAR = 6;
+    private static final int REVERSE = 7;
+    private static final int FREEZE = 8;
+    private static final int RUSH_HOUR = 9;
 
     // Events' data
     private static final int BONUS_BALL_MAX_NUM = 5;
@@ -128,7 +152,7 @@ public class GamePongOnePlayer extends GamePong {
     private boolean allBonusDetached = false;
 
     // Pause utils
-    private static final int PAUSE = 7;
+    private static final int PAUSE = 10;
     private float old_x_speed;
     private float old_y_speed;
     private int old_game_speed;
@@ -190,13 +214,13 @@ public class GamePongOnePlayer extends GamePong {
         Log.d(TAG, "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
 
+        ballSprite.detachSelf();
         lifeSprites.get(life).detachSelf();
         life--;
         Log.d(TAG, "Life: " + life);
         if (life < 0) {
             gameOver();
         } else {
-            ballSprite.detachSelf();
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
             handler.setVelocityY(-handler.getVelocityY());
             attachBall();
@@ -242,10 +266,13 @@ public class GamePongOnePlayer extends GamePong {
         no_event = false;
         first_enemy = false;
         bubble_bonus = false;
+        cut_bar_30 = false;
         life_bonus = false;
-        rush_hour = false;
-        freeze = false;
+        cut_bar_50 = false;
+        big_bar = false;
         reverse = false;
+        freeze = false;
+        rush_hour = false;
         // Setting true level_one
         level_one = true;
         // Setting false other levels
@@ -255,6 +282,11 @@ public class GamePongOnePlayer extends GamePong {
         level_five = false;
         level_six = false;
         level_seven = false;
+        level_eight = false;
+        level_nine = false;
+        level_ten = false;
+        level_eleven = false;
+        level_twelve = false;
         //Adding life sprites to the scene
         addLifeSpritesToScene();
     }
@@ -280,34 +312,65 @@ public class GamePongOnePlayer extends GamePong {
         if (score < BARRIER_ONE && level_one) {
             score += 10;
             gain = 10;
-        } else if (score < BARRIER_TWO && level_two) {
+        }
+        if (score < BARRIER_TWO && level_two) {
+            score += 15;
+            gain = 15;
+        }
+        if (score < BARRIER_THREE && level_three) {
             score += 20;
             gain = 20;
-        } else if (score < BARRIER_THREE && level_three) {
+        }
+        if (score < BARRIER_FOUR && level_four) {
             score += 40;
             gain = 40;
-        } else if (score < BARRIER_FOUR && level_four) {
-            score += 80;
-            gain = 80;
-        } else if (score < BARRIER_FIVE && level_five) {
-            score += 160;
-            gain = 160;
-        } else if (score < BARRIER_SIX && level_six) {
-            score += 320;
-            gain = 320;
-        } else if (score < BARRIER_SEVEN && level_seven) {
-            score += 640;
-            gain = 640;
-        } else if (score > BARRIER_SEVEN) {
-            score += 1280;
-            gain = 1280;
+        }
+        if (score < BARRIER_FIVE && level_five) {
+            score += 60;
+            gain = 60;
+        }
+        if (score < BARRIER_SIX && level_six) {
+            score += 100;
+            gain = 100;
+        }
+        if (score < BARRIER_SEVEN && level_seven) {
+            score += 200;
+            gain = 200;
+        }
+        if (score < BARRIER_EIGHT && level_eight) {
+            score += 300;
+            gain = 300;
+        }
+        if (score < BARRIER_NINE && level_nine) {
+            score += 400;
+            gain = 400;
+        }
+        if (score < BARRIER_TEN && level_ten) {
+            score += 500;
+            gain = 500;
+        }
+        if (score < BARRIER_ELEVEN && level_eleven) {
+            score += 1000;
+            gain = 1000;
+        }
+        if (score < BARRIER_TWELVE && level_twelve) {
+            score += 2000;
+            gain = 2000;
+        }
+        if (score > BARRIER_TWELVE && level_max) {
+            score += 3000;
+            gain = 3000;
         }
 
         if (game_event == FIRST_ENEMY)
-            score += gain * 3;
-        if (game_event == RUSH_HOUR)
+            score += gain * 2;
+        if (game_event == CUT_BAR_30)
+            score += gain * 4;
+        if (game_event == CUT_BAR_50)
             score += gain * 6;
         if (game_event == REVERSE)
+            score += gain * 8;
+        if (game_event == RUSH_HOUR)
             score += gain * 10;
 
         Log.d(TAG, "Score: " + score);
@@ -324,39 +387,67 @@ public class GamePongOnePlayer extends GamePong {
         if (score >= BARRIER_ONE && score < BARRIER_TWO && !level_two) {
             level = LEVEL_TWO;
             level_two = true;
-            GAME_VELOCITY *= 2;
             txtLvl.setText(getApplicationContext().getString(R.string.text_lv2));
         }
         if (score >= BARRIER_TWO && score < BARRIER_THREE && !level_three) {
             level = LEVEL_THREE;
             level_three = true;
-            handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
+            GAME_VELOCITY *= 2;
+            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
             txtLvl.setText(getApplicationContext().getString(R.string.text_lv3));
         }
         if (score >= BARRIER_THREE && score < BARRIER_FOUR && !level_four) {
             level = LEVEL_FOUR;
             level_four = true;
-            barSprite.setWidth(0.2f * CAMERA_WIDTH);
             txtLvl.setText(getApplicationContext().getString(R.string.text_lv4));
         }
         if (score >= BARRIER_FOUR && score < BARRIER_FIVE && !level_five) {
             level = LEVEL_FIVE;
             level_five = true;
-            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
-            barSprite.setWidth(0.3f * CAMERA_WIDTH);
             txtLvl.setText(getApplicationContext().getString(R.string.text_lv5));
         }
         if (score >= BARRIER_FIVE && score < BARRIER_SIX && !level_six) {
             level = LEVEL_SIX;
             level_six = true;
-            barSprite.setWidth(0.2f * CAMERA_WIDTH);
+            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
             txtLvl.setText(getApplicationContext().getString(R.string.text_lv6));
         }
-        if (score >= BARRIER_SEVEN && !level_seven) {
+        if (score >= BARRIER_SIX && score < BARRIER_SEVEN && !level_seven) {
             level = LEVEL_SEVEN;
             level_seven = true;
-            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
             txtLvl.setText(getApplicationContext().getString(R.string.text_lv7));
+        }
+        if (score >= BARRIER_SEVEN && score < BARRIER_EIGHT && !level_eight) {
+            level = LEVEL_EIGHT;
+            level_eight = true;
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv8));
+        }
+        if (score >= BARRIER_EIGHT && score < BARRIER_NINE && !level_nine) {
+            level = LEVEL_NINE;
+            level_nine = true;
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv9));
+        }
+        if (score >= BARRIER_NINE && score < BARRIER_TEN && !level_ten) {
+            level = LEVEL_TEN;
+            level_ten = true;
+            GAME_VELOCITY *= 2;
+            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv10));
+        }
+        if (score >= BARRIER_TEN && score < BARRIER_ELEVEN && !level_eleven) {
+            level = LEVEL_ELEVEN;
+            level_eleven = true;
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv11));
+        }
+        if (score >= BARRIER_ELEVEN && score < BARRIER_TWELVE && !level_twelve) {
+            level = LEVEL_TWELVE;
+            level_twelve = true;
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv12));
+        }
+        if (score >= BARRIER_TWELVE && !level_max) {
+            level = LEVEL_MAX;
+            level_max = true;
+            txtLvl.setText(getApplicationContext().getString(R.string.text_lv13));
         }
     }
 
@@ -385,16 +476,34 @@ public class GamePongOnePlayer extends GamePong {
                     bubbleBonusLogic();
                 }
                 break;
+            case CUT_BAR_30:
+                if (!cut_bar_30) {
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_cut_bar_30));
+                    cutBar30Logic();
+                }
+                break;
             case LIFE_BONUS:
                 if (!life_bonus) {
                     txtEvnt.setText(getApplicationContext().getString(R.string.text_lifebonus));
                     lifeBonusLogic();
                 }
                 break;
-            case RUSH_HOUR:
-                if (!rush_hour) {
-                    txtEvnt.setText(getApplicationContext().getString(R.string.text_rush));
-                    rushHourLogic();
+            case CUT_BAR_50:
+                if (!cut_bar_50) {
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_cut_bar_50));
+                    cutBar50Logic();
+                }
+                break;
+            case BIG_BAR:
+                if (!big_bar) {
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_big_bar));
+                    bigBarLogic();
+                }
+                break;
+            case REVERSE:
+                if (!reverse) {
+                    txtEvnt.setText(getResources().getString(R.string.text_reverse));
+                    reverseLogic();
                 }
                 break;
             case FREEZE:
@@ -403,10 +512,10 @@ public class GamePongOnePlayer extends GamePong {
                     freezeLogic();
                 }
                 break;
-            case REVERSE:
-                if (!reverse) {
-                    txtEvnt.setText(getResources().getString(R.string.text_reverse));
-                    reverseLogic();
+            case RUSH_HOUR:
+                if (!rush_hour) {
+                    txtEvnt.setText(getApplicationContext().getString(R.string.text_rush));
+                    rushHourLogic();
                 }
                 break;
         }
@@ -520,22 +629,6 @@ public class GamePongOnePlayer extends GamePong {
         AlertDialog dialog = builder.create();
     }
 
-    private void addLifeSpritesToScene() {
-        for (int i = 1; i <= life + 1; i++) {
-            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
-            lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
-            lifeSprites.add(lifeSprite);
-            scene.attachChild(lifeSprites.get(i - 1));
-        }
-    }
-
-    void restartAfterGameOver() {
-        clearGame();
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
-        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
-        scene.attachChild(ballSprite);
-    }
-
     private void pauseGame() {
         Log.d(TAG, "pauseGame");
         old_event = (String) txtEvnt.getText();
@@ -549,6 +642,22 @@ public class GamePongOnePlayer extends GamePong {
         pause = true;
         touch.stop();
         previous_event = PAUSE;
+    }
+
+    private void addLifeSpritesToScene() {
+        for (int i = 1; i <= life + 1; i++) {
+            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
+            lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
+            lifeSprites.add(lifeSprite);
+            scene.attachChild(lifeSprites.get(i - 1));
+        }
+    }
+
+    private void restartAfterGameOver() {
+        clearGame();
+        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
+        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+        scene.attachChild(ballSprite);
     }
 
     private void restartGame() {
@@ -604,6 +713,16 @@ public class GamePongOnePlayer extends GamePong {
         bubble_bonus = false;
     }
 
+    private void cutBar30Logic() {
+        cut_bar_30 = true;
+        barSprite.setWidth(0.21f * CAMERA_WIDTH);
+    }
+
+    private void clearCutBar30() {
+        barSprite.setWidth(0.3f * CAMERA_WIDTH);
+        cut_bar_30 = false;
+    }
+
     private void lifeBonusLogic() {
         life_bonus = true;
         old_life = life;
@@ -622,6 +741,46 @@ public class GamePongOnePlayer extends GamePong {
             lifeBonus.detachSelf();
         life_detached = false;
         life_bonus = false;
+    }
+
+    private void cutBar50Logic() {
+        cut_bar_50 = true;
+        barSprite.setWidth(0.15f * CAMERA_WIDTH);
+    }
+
+    private void clearCutBar50() {
+        barSprite.setWidth(0.3f * CAMERA_WIDTH);
+        cut_bar_50 = false;
+    }
+
+    private void bigBarLogic() {
+        big_bar = true;
+        barSprite.setWidth(0.45f * CAMERA_WIDTH);
+    }
+
+    private void clearBigBar() {
+        barSprite.setWidth(0.3f * CAMERA_WIDTH);
+        big_bar = false;
+    }
+
+    private void reverseLogic() {
+        reverse = true;
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+    }
+
+    private void clearReverseLogic() {
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+        reverse = false;
+    }
+
+    private void freezeLogic() {
+        freeze = true;
+        handler.setVelocity(handler.getVelocityX() / 2, handler.getVelocityY() / 2);
+    }
+
+    private void clearFreeze() {
+        handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
+        freeze = false;
     }
 
     private void rushHourLogic() {
@@ -655,26 +814,6 @@ public class GamePongOnePlayer extends GamePong {
         } while (rushHour.size() > 0);
 
         rush_hour = false;
-    }
-
-    private void freezeLogic() {
-        freeze = true;
-        handler.setVelocity(handler.getVelocityX() / 2, handler.getVelocityY() / 2);
-    }
-
-    private void clearFreeze() {
-        handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
-        freeze = false;
-    }
-
-    private void reverseLogic() {
-        reverse = true;
-        GAME_VELOCITY = (-1) * GAME_VELOCITY;
-    }
-
-    private void clearReverseLogic() {
-        GAME_VELOCITY = (-1) * GAME_VELOCITY;
-        reverse = false;
     }
 
     private void gameEventsCollisionLogic() {
@@ -760,17 +899,26 @@ public class GamePongOnePlayer extends GamePong {
             case BUBBLE_BONUS:
                 clearBubbleBonus();
                 break;
+            case CUT_BAR_30:
+                clearCutBar30();
+                break;
             case LIFE_BONUS:
                 clearLifeBonus();
                 break;
-            case RUSH_HOUR:
-                clearRushHour();
+            case CUT_BAR_50:
+                clearCutBar50();
+                break;
+            case BIG_BAR:
+                clearBigBar();
+                break;
+            case REVERSE:
+                clearReverseLogic();
                 break;
             case FREEZE:
                 clearFreeze();
                 break;
-            case REVERSE:
-                clearReverseLogic();
+            case RUSH_HOUR:
+                clearRushHour();
                 break;
         }
     }
@@ -781,7 +929,7 @@ public class GamePongOnePlayer extends GamePong {
         // Generating a new event different from current event
         Random random = new Random();
         int random_int = random.nextInt(level + 1);
-        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1)) {
+        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12)) {
             random_int = random.nextInt(level + 1);
         }
         game_event = random_int;

@@ -334,10 +334,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
          * - yBall: is the relative position of the ball according to the CAMERA_HEIGHT
          * - yBar: is the relative position of the bar according to the CAMERA_HEIGHT
          */
-        float yBall = ballSprite.getY() + ballSprite.getHeight();
-        float yBar = barSprite.getY();
+        //float yBall = ballSprite.getY() + ballSprite.getHeight();
+        //float yBar = barSprite.getY();
 
-        return (yBall < yBar + barSprite.getHeight() / 2) && (previous_event != OVER) && (previous_event != SIDE);
+        return /*(yBall < yBar + barSprite.getHeight() / 2) &&*/ (previous_event != OVER) && (previous_event != SIDE);
     }
 
     protected boolean sideBarCondition() {
