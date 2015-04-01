@@ -213,7 +213,7 @@ public class GamePongOnePlayer extends GamePong {
             // Setting the position on centre of screen
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/ 2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
             // Set the direction upward
-            handler.setVelocityY(-BALL_SPEED);
+            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
             // The ballSprite is attached
             attachBall();
         }
@@ -292,12 +292,10 @@ public class GamePongOnePlayer extends GamePong {
     public void addScore() {
         // This procedure increase the score according to the current score
         if (score < BARRIER_ONE && level_one) {
-            Log.d(TAG, "score <= BARRIER_ONE");
             score += 10;
             gain = 10;
         }
         else if (score < BARRIER_TWO  && level_two) {
-            Log.d(TAG, "score > BARRIER_ONE && score <= BARRIER_TWO");
             score += 20;
             gain = 20;
         }
