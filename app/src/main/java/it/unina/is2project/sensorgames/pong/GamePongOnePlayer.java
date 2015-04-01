@@ -133,6 +133,9 @@ public class GamePongOnePlayer extends GamePong {
     private boolean life_detached = false;
     private boolean allBonusDetached = false;
 
+    // Scene event
+    private static final int FIRST_ENEMY_EVENT = 10;
+
     // Pause utils
     private static final int PAUSE = 8;
     private Point directions;
@@ -457,6 +460,7 @@ public class GamePongOnePlayer extends GamePong {
 
                                 restart_game = true;
                                 game_over = false;
+                                pause = true;
                             }
                             else{
                                 Toast toast = Toast.makeText(getApplication(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_SHORT);
@@ -471,6 +475,7 @@ public class GamePongOnePlayer extends GamePong {
                         public void onClick(DialogInterface dialog, int whichButton) {
                             restart_game = true;
                             game_over = false;
+                            pause = true;
                         }
                     });
 
@@ -742,8 +747,8 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void firstEnemyCollisions() {
-        if (ballSprite.collidesWith(firstEnemy) && first_enemy && ballSprite.getY() < CAMERA_HEIGHT / 2) {
-            previous_event = TOP;
+        if (ballSprite.collidesWith(firstEnemy) && first_enemy && ballSprite.getY() < CAMERA_HEIGHT / 2 && previous_event != FIRST_ENEMY_EVENT) {
+            previous_event = FIRST_ENEMY_EVENT;
             handler.setVelocityY(-handler.getVelocityY());
             touch.play();
         }
