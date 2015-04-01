@@ -6,7 +6,7 @@ public class AppMessage implements Serializable {
     public int TYPE;    // Type
     public int OP1;     // Integer
     public float OP2;   // VelocityX
-    public float OP3;   // VelocityY
+    public float OP3;   // Angolo
     public float OP4;   // X Ratio
 
     public AppMessage(int TYPE) {
