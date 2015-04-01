@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.pong;//Gabriele è gay
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -109,15 +109,17 @@ public class GamePongOnePlayer extends GamePong {
     private boolean life_bonus = false;
     private boolean rush_hour = false;
     private boolean freeze = false;
+    private boolean reverse = false;
 
     // Events' number
     private static final int NO_EVENT = 0;
     private static final int FIRST_ENEMY = 1;
     private static final int BUBBLE_BONUS = 2;
-    private static final int DRUNK_BALL = 3;
+    private static final int REVERSE = 3;
     private static final int LIFE_BONUS = 4;
     private static final int RUSH_HOUR = 5;
     private static final int FREEZE = 6;
+    private static final int DRUNK_BALL = 404;
 
     // Events' data
     private static final int BONUS_BALL_MAX_NUM = 5;
@@ -211,7 +213,7 @@ public class GamePongOnePlayer extends GamePong {
             // Setting the position on centre of screen
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth())/ 2, (CAMERA_HEIGHT - ballSprite.getHeight())/2);
             // Set the direction upward
-            handler.setVelocityY(-BALL_SPEED);
+            handler.setVelocity(BALL_SPEED, -BALL_SPEED);
             // The ballSprite is attached
             attachBall();
         }
@@ -257,6 +259,7 @@ public class GamePongOnePlayer extends GamePong {
         life_bonus = false;
         rush_hour = false;
         freeze = false;
+        reverse = false;
         // Setting true level_one
         level_one = true;
         // Setting false other levels
@@ -289,12 +292,10 @@ public class GamePongOnePlayer extends GamePong {
     public void addScore() {
         // This procedure increase the score according to the current score
         if (score < BARRIER_ONE && level_one) {
-            Log.d(TAG, "score <= BARRIER_ONE");
             score += 10;
             gain = 10;
         }
         else if (score < BARRIER_TWO  && level_two) {
-            Log.d(TAG, "score > BARRIER_ONE && score <= BARRIER_TWO");
             score += 20;
             gain = 20;
         }
@@ -433,6 +434,13 @@ public class GamePongOnePlayer extends GamePong {
                     txtEvnt.setText(getApplicationContext().getString(R.string.text_freeze));
                     freeze = true;
                     freezeLogic();
+                }
+                break;
+            case REVERSE:
+                if (!reverse) {
+                    txtEvnt.setText(getResources().getString(R.string.text_reverse));
+                    reverse = true;
+                    reverseLogic();
                 }
                 break;
         }
@@ -631,6 +639,7 @@ public class GamePongOnePlayer extends GamePong {
         allBonusDetached = false;
     }
 
+    @Deprecated
     private void drunkBallLogic() {
         if (ballSprite.getY() < CAMERA_HEIGHT / 2) {
             if (ballSprite.getX() > ballSprite.getWidth() || ballSprite.getX() < CAMERA_WIDTH - ballSprite.getWidth())
@@ -642,6 +651,7 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
+    @Deprecated
     private void clearDrunkBall() {
         if (level > LEVEL_ONE && level <= LEVEL_TWO)
             handler.setVelocity(BALL_SPEED, -BALL_SPEED);
@@ -653,6 +663,15 @@ public class GamePongOnePlayer extends GamePong {
             handler.setVelocity(BALL_SPEED * 1.5f * 1.5f * 2, BALL_SPEED * 1.5f * 1.5f * 2);
 
         drunk_ball = false;
+    }
+
+    private void reverseLogic() {
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+    }
+
+    private void clearReverseLogic() {
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+        reverse = false;
     }
 
     private void lifeBonusLogic() {
@@ -809,6 +828,9 @@ public class GamePongOnePlayer extends GamePong {
                 break;
             case FREEZE:
                 clearFreeze();
+                break;
+            case REVERSE:
+                clearReverseLogic();
                 break;
         }
     }

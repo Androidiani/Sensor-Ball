@@ -4,8 +4,11 @@ import android.util.Log;
 
 import org.andengine.input.sensor.acceleration.AccelerationData;
 
+import java.util.Random;
+
 public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
     private final String TAG = "1P_Test";
+    private float random_number = 0;
 
     @Override
     public void onAccelerationChanged(AccelerationData pAccelerationData) {
@@ -15,6 +18,14 @@ public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
     @Override
     protected void gameEvents() {
         super.gameEvents();
-        barSprite.setX(ballSprite.getX());
+        setBarPosition();
+    }
+
+    private void setBarPosition(){
+        barSprite.setX(ballSprite.getX() - random_number);
+        if(ballSprite.collidesWith(barSprite)) {
+            Random random = new Random();
+            random_number = random.nextInt((int)(barSprite.getWidth() - ballSprite.getWidth()));
+        }
     }
 }
