@@ -2,13 +2,24 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
+import org.andengine.input.touch.TouchEvent;
+import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
+import org.andengine.opengl.texture.region.ITextureRegion;
+
+import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
+
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import it.unina.is2project.sensorgames.FSMGame;
 import it.unina.is2project.sensorgames.R;
@@ -48,6 +59,28 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean isConnected;
     // Score variables
     private int score;
+    // Constant Utils
+    private final int SPRITE_NONE = -1;
+    // Speed X2 Bonus
+    private BitmapTextureAtlas speedTexture_X2;
+    private ITextureRegion speedTextureRegion_X2;
+    private Sprite speedSprite_X2;
+    // Speed X3 Bonus
+    private BitmapTextureAtlas speedTexture_X3;
+    private ITextureRegion speedTextureRegion_X3;
+    private Sprite speedSprite_X3;
+    // Speed X4 Bonus
+    private BitmapTextureAtlas speedTexture_X4;
+    private ITextureRegion speedTextureRegion_X4;
+    private Sprite speedSprite_X4;
+    // Bonus Constants
+    private final int SPEEDX2 = 1;
+    private final int SPEEDX3 = SPEEDX2 + 1;
+    private final int SPEEDX4 = SPEEDX3 + 1;
+    // Bonus Utils
+    private int activedSprite = SPRITE_NONE;
+    TimerTask task = new TimerBonusTask();
+    Timer timer;
 
 
     @Override
@@ -67,9 +100,11 @@ public class GamePongTwoPlayer extends GamePong {
 
         super.onCreateScene();
 
+        initializeSprite();
+
         Log.d(TAG, "Ho la palla : " + haveBall);
 
-        // Set result in failure case
+        // Set result in case of failure
         setResult(Activity.RESULT_CANCELED);
 
         // Setting up the physics of the game
@@ -113,6 +148,26 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
+    protected void loadGraphics() {
+        super.loadGraphics();
+        // Speed X2
+        Drawable speedDrawable_X2 = getResources().getDrawable(R.drawable.speedx2);
+        speedTexture_X2 = new BitmapTextureAtlas(getTextureManager(), speedDrawable_X2.getIntrinsicWidth(), speedDrawable_X2.getIntrinsicHeight());
+        speedTextureRegion_X2 = createFromResource(speedTexture_X2, this, R.drawable.speedx2, 0, 0);
+        speedTexture_X2.load();
+        // Speed X3
+        Drawable speedDrawable_X3 = getResources().getDrawable(R.drawable.speedx3);
+        speedTexture_X3 = new BitmapTextureAtlas(getTextureManager(), speedDrawable_X3.getIntrinsicWidth(), speedDrawable_X3.getIntrinsicHeight());
+        speedTextureRegion_X3 = createFromResource(speedTexture_X3, this, R.drawable.speedx3, 0, 0);
+        speedTexture_X3.load();
+        // Speed X4
+        Drawable speedDrawable_X4 = getResources().getDrawable(R.drawable.speedx4);
+        speedTexture_X4 = new BitmapTextureAtlas(getTextureManager(), speedDrawable_X4.getIntrinsicWidth(), speedDrawable_X4.getIntrinsicHeight());
+        speedTextureRegion_X4 = createFromResource(speedTexture_X4, this, R.drawable.speedx4, 0, 0);
+        speedTexture_X4.load();
+    }
+
+    @Override
     protected void attachBall() {
         Log.i(TAG, "Call drawBall() with haveBall = " + haveBall);
         if (haveBall) super.attachBall();
@@ -147,8 +202,6 @@ public class GamePongTwoPlayer extends GamePong {
         Log.d("MESSAGECOORDSsen", "VelX " + handler.getVelocityX());
         Log.d("MESSAGECOORDSsen", "VelY " + handler.getVelocityY());
         Log.d("MESSAGECOORDSsen", "Sign(Velx) " + Math.signum(handler.getVelocityX()));
-//        Log.d(TAG, "End Top. TransBall: " + transferringBall);
-//        Log.d(TAG, "End Top. HaveBall: " + haveBall);
         haveBall = false;
         transferringBall = true;
         previous_event = TOP;
@@ -204,6 +257,12 @@ public class GamePongTwoPlayer extends GamePong {
         //do nothing
     }
 
+
+    @Override
+    protected void saveGame(String s) {
+
+    }
+
     @Override
     public void addScore() {
         score++;
@@ -232,11 +291,6 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
-    protected void saveGame(String s) {
-
-    }
-
-    @Override
     public void onBackPressed() {
         if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
                 fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
@@ -250,13 +304,14 @@ public class GamePongTwoPlayer extends GamePong {
         intent.putExtra(EXTRA_CONNECTION_STATE, isConnected);
         intent.putExtra(EXTRA_MASTER, isMaster);
         setResult(Activity.RESULT_CANCELED, intent);
+        timer.cancel();
         super.onBackPressed();
     }
 
     //----------------------------------------------
     // MISCELLANEA
     //----------------------------------------------
-    private synchronized void sendBluetoothMessage(AppMessage message) {
+    private void sendBluetoothMessage(AppMessage message) {
         Log.d("SendReceived", "Send Message Type: " + message.TYPE);
         if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
@@ -265,6 +320,66 @@ public class GamePongTwoPlayer extends GamePong {
 
         byte[] send = Serializer.serializeObject(message);
         mBluetoothService.write(send);
+    }
+
+    private void initializeSprite(){
+
+        // SPEED X2 INITIALIZING
+
+        speedSprite_X2 = new Sprite(0, 0, speedTextureRegion_X2, getVertexBufferObjectManager()){
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                Log.d("Sprite", "Sprite SPEEDX2 Touched");
+//                speedSprite_X2.detachSelf();
+                scene.detachChild(speedSprite_X2);
+                activedSprite = SPRITE_NONE;
+                scene.unregisterTouchArea(speedSprite_X2);
+                // TODO
+                return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+            }
+        };
+
+        speedSprite_X2.setScale(speedSprite_X2.getScaleX()/2);
+        speedSprite_X2.setX((CAMERA_WIDTH/2) - (speedSprite_X2.getWidth()/2));
+        speedSprite_X2.setY((CAMERA_HEIGHT/2) - (speedSprite_X2.getHeight()/2));
+        
+        // SPEED X3 INITIALIZING
+
+        speedSprite_X3 = new Sprite(0, 0, speedTextureRegion_X3, getVertexBufferObjectManager()){
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                Log.d("Sprite", "Sprite SPEEDX3 Touched");
+//                speedSprite_X2.detachSelf();
+                scene.detachChild(speedSprite_X3);
+                activedSprite = SPRITE_NONE;
+                scene.unregisterTouchArea(speedSprite_X3);
+                // TODO
+                return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+            }
+        };
+
+        speedSprite_X3.setScale(speedSprite_X3.getScaleX()/2);
+        speedSprite_X3.setX((CAMERA_WIDTH/2) - (speedSprite_X3.getWidth()/2));
+        speedSprite_X3.setY((CAMERA_HEIGHT/2) - (speedSprite_X3.getHeight()/2));
+        
+        // SPEED X4 INITIALIZING
+
+        speedSprite_X4 = new Sprite(0, 0, speedTextureRegion_X4, getVertexBufferObjectManager()){
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                Log.d("Sprite", "Sprite SPEEDX4 Touched");
+//                speedSprite_X2.detachSelf();
+                scene.detachChild(speedSprite_X4);
+                activedSprite = SPRITE_NONE;
+                scene.unregisterTouchArea(speedSprite_X4);
+                // TODO
+                return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+            }
+        };
+
+        speedSprite_X4.setScale(speedSprite_X4.getScaleX()/2);
+        speedSprite_X4.setX((CAMERA_WIDTH/2) - (speedSprite_X4.getWidth()/2));
+        speedSprite_X4.setY((CAMERA_HEIGHT/2) - (speedSprite_X4.getHeight()/2));
     }
 
     //----------------------------------------------
@@ -415,6 +530,8 @@ public class GamePongTwoPlayer extends GamePong {
                                 handler.setVelocity(old_x_speed, old_y_speed);
                                 GAME_VELOCITY = old_game_speed;
                                 textInfo.setText("");
+                                timer = new Timer();
+                                timer.schedule(task, 2000, 10000);
                                 break;
                             case FSMGame.STATE_IN_GAME_WAITING:
                                 handler.setVelocity(0, 0);
@@ -482,5 +599,91 @@ public class GamePongTwoPlayer extends GamePong {
             }
         }
     };
+
+    //----------------------------------------------
+    // THREADS
+    //----------------------------------------------
+
+    private class TimerBonusTask extends TimerTask{
+        @Override
+        public void run() {
+            Random rand = new Random();
+            int bonusChoice = rand.nextInt(( SPEEDX4 - SPEEDX2) + 1) + SPEEDX2;
+            if(activedSprite == SPRITE_NONE){
+                Log.d("Sprite", "First One Is None");
+                attachSprite(bonusChoice);
+            }else{
+                Log.d("Sprite", "Actived Is " + activedSprite);
+                detachSprite(activedSprite);
+                attachSprite(bonusChoice);
+            }
+            activedSprite = bonusChoice;
+        }
+
+        @Override
+        public boolean cancel() {
+            if(activedSprite != SPRITE_NONE){
+                detachSprite(activedSprite);
+                activedSprite = SPRITE_NONE;
+            }
+            return super.cancel();
+        }
+    }
+
+    //----------------------------------------------
+    // THREADS UTILITY
+    //----------------------------------------------
+
+    private void attachSprite(int bonusID){
+        switch (bonusID){
+            case SPEEDX2:
+                Log.d("AttachSprite", "Attaching SPEEDX2");
+                scene.registerTouchArea(speedSprite_X2);
+                scene.attachChild(speedSprite_X2);
+                break;
+
+            case SPEEDX3:
+                Log.d("AttachSprite", "Attaching SPEEDX3");
+                scene.registerTouchArea(speedSprite_X3);
+                scene.attachChild(speedSprite_X3);
+                break;
+
+            case SPEEDX4:
+                Log.d("AttachSprite", "Attaching SPEEDX4");
+                scene.registerTouchArea(speedSprite_X4);
+                scene.attachChild(speedSprite_X4);
+                break;
+
+            default:
+                Log.e(TAG, "Error in attachSprite(). Invalid ID");
+                break;
+        }
+    }
+
+    private void detachSprite(int bonusID){
+        switch (bonusID){
+            case SPEEDX2:
+                Log.d("DetachSprite", "Deattaching SPEEDX2");
+                scene.unregisterTouchArea(speedSprite_X2);
+                speedSprite_X2.detachSelf();
+                break;
+
+            case SPEEDX3:
+                Log.d("DetachSprite", "Deattaching SPEEDX3");
+                scene.unregisterTouchArea(speedSprite_X3);
+                speedSprite_X3.detachSelf();
+                break;
+
+            case SPEEDX4:
+                Log.d("DetachSprite", "Deattaching SPEEDX4");
+                scene.unregisterTouchArea(speedSprite_X4);
+                speedSprite_X4.detachSelf();
+                break;
+
+            default:
+                Log.e(TAG, "Error in detachSprite(). Invalid ID");
+                break;
+        }
+    }
 
 }

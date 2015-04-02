@@ -633,6 +633,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
                             break;
                         case FSMGame.STATE_CONNECTED:
                             if(isMaster) btnPlay.setEnabled(true);
+                            stringArrayAdapter.clear();
+                            stringArrayAdapter.notifyDataSetChanged();
                             break;
                         case FSMGame.STATE_IN_GAME:
                             break;
