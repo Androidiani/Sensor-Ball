@@ -287,6 +287,7 @@ public class GamePongOnePlayer extends GamePong {
         level_ten = false;
         level_eleven = false;
         level_twelve = false;
+        level_max = false;
         //Adding life sprites to the scene
         addLifeSpritesToScene();
     }
@@ -297,7 +298,7 @@ public class GamePongOnePlayer extends GamePong {
             pauseGame();
         }
         if (pause && (System.currentTimeMillis() - tap > 500)) {
-            restartGame();
+            restartGameAfterPause();
         }
     }
 
@@ -622,7 +623,7 @@ public class GamePongOnePlayer extends GamePong {
         }).setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
-                restartGame();
+                restartGameAfterPause();
             }
         }).show();
 
@@ -630,7 +631,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void pauseGame() {
-        Log.d(TAG, "pauseGame");
+        Log.d(TAG, "Game Paused");
         old_event = (String) txtEvnt.getText();
         txtEvnt.setText(getResources().getString(R.string.text_pause));
         old_x_speed = handler.getVelocityX();
@@ -639,9 +640,9 @@ public class GamePongOnePlayer extends GamePong {
         tap = System.currentTimeMillis();
         handler.setVelocity(0);
         GAME_VELOCITY = 0;
-        pause = true;
         touch.stop();
         previous_event = PAUSE;
+        pause = true;
     }
 
     private void addLifeSpritesToScene() {
@@ -660,7 +661,7 @@ public class GamePongOnePlayer extends GamePong {
         scene.attachChild(ballSprite);
     }
 
-    private void restartGame() {
+    private void restartGameAfterPause() {
         txtEvnt.setText(old_event);
         handler.setVelocity(old_x_speed, old_y_speed);
         GAME_VELOCITY = old_game_speed;
@@ -848,7 +849,6 @@ public class GamePongOnePlayer extends GamePong {
                 bonusBalls.get(i).detachSelf();
                 bonusBalls.remove(i);
                 score += 20 * (level + 1);
-                // Set score section
                 txtScore.setText(getResources().getString(R.string.text_score) + ": " + score);
                 if (bonusBalls.size() == 0) {
                     allBonusDetached = true;
