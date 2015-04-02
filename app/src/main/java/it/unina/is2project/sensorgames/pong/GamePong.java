@@ -96,7 +96,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected AccelerationSensorOptions mAccelerationOptions;
 
     /**
-     * Bounce bar contraint
+     * Bounce bar constraint
      */
     protected float COS_20 = 0.93969262078590838405410927732473f;
     protected float SIN_20 = 0.34202014332566873304409961468226f;
@@ -114,6 +114,13 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected float SIN_80 = 0.98480775301220805936674302458952f;
     protected float COS_90 = 0;
     protected float SIN_90 = 1;
+
+    /**
+     * Selected angles and module
+     */
+    protected float SIN_X;
+    protected float COS_X;
+    protected float myModule;
 
     @Override
     public EngineOptions onCreateEngineOptions() {
@@ -353,67 +360,97 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         float barX = bar_center_coords[0];
         float[] ball_center_coords = ballSprite.getSceneCenterCoordinates();
         float ballX = ball_center_coords[0];
-        float module = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
+        myModule = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
 
         if (ballX - barX <= (-(13 * barSprite.getWidth()) / 30)) {
             Log.d("CollisionBar", "20° LEFT");
-            handler.setVelocity(-module * COS_20, -module * SIN_20);
+            SIN_X = SIN_20;
+            COS_X = COS_20;
+            handler.setVelocity(-myModule * COS_20, -myModule * SIN_20);
         }
         if ((ballX - barX > (-(13 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-(11 * barSprite.getWidth()) / 30))) {
             Log.d("CollisionBar", "30° LEFT");
-            handler.setVelocity(-module * COS_30, -module * SIN_30);
+            SIN_X = SIN_30;
+            COS_X = COS_30;
+            handler.setVelocity(-myModule * COS_30, -myModule * SIN_30);
         }
         if ((ballX - barX > (-(11 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-(3 * barSprite.getWidth()) / 10))) {
             Log.d("CollisionBar", "40° LEFT");
-            handler.setVelocity(-module * COS_40, -module * SIN_40);
+            SIN_X = SIN_40;
+            COS_X = COS_40;
+            handler.setVelocity(-myModule * COS_40, -myModule * SIN_40);
         }
         if ((ballX - barX > (-(3 * barSprite.getWidth()) / 10)) && (ballX - barX <= (-(7 * barSprite.getWidth()) / 30))) {
             Log.d("CollisionBar", "50° LEFT");
-            handler.setVelocity(-module * COS_50, -module * SIN_50);
+            SIN_X = SIN_50;
+            COS_X = COS_50;
+            handler.setVelocity(-myModule * COS_50, -myModule * SIN_50);
         }
         if ((ballX - barX > (-(7 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-barSprite.getWidth() / 6))) {
             Log.d("CollisionBar", "60° LEFT");
-            handler.setVelocity(-module * COS_60, -module * SIN_60);
+            SIN_X = SIN_60;
+            COS_X = COS_60;
+            handler.setVelocity(-myModule * COS_60, -myModule * SIN_60);
         }
         if ((ballX - barX > (-barSprite.getWidth() / 6)) && (ballX - barX <= (-barSprite.getWidth() / 10))) {
             Log.d("CollisionBar", "70° LEFT");
-            handler.setVelocity(-module * COS_70, -module * SIN_70);
+            SIN_X = SIN_70;
+            COS_X = COS_70;
+            handler.setVelocity(-myModule * COS_70, -myModule * SIN_70);
         }
         if ((ballX - barX > (-barSprite.getWidth() / 10)) && (ballX - barX <= (-barSprite.getWidth() / 30))) {
             Log.d("CollisionBar", "80° LEFT");
-            handler.setVelocity(-module * COS_80, -module * SIN_80);
+            SIN_X = SIN_80;
+            COS_X = COS_80;
+            handler.setVelocity(-myModule * COS_80, -myModule * SIN_80);
         }
         if ((ballX - barX > (-barSprite.getWidth() / 30)) && (ballX - barX < (barSprite.getWidth() / 30))) {
             Log.d("CollisionBar", "90°");
-            handler.setVelocity(module * COS_90, -module * SIN_90);
+            SIN_X = SIN_90;
+            COS_X = COS_90;
+            handler.setVelocity(myModule * COS_90, -myModule * SIN_90);
         }
         if ((ballX - barX >= (barSprite.getWidth() / 30)) && (ballX - barX < (barSprite.getWidth() / 10))) {
             Log.d("CollisionBar", "80° RIGHT");
-            handler.setVelocity(module * COS_80, -module * SIN_80);
+            SIN_X = SIN_80;
+            COS_X = COS_80;
+            handler.setVelocity(myModule * COS_80, -myModule * SIN_80);
         }
         if ((ballX - barX >= (barSprite.getWidth() / 10)) && (ballX - barX < (barSprite.getWidth() / 6))) {
             Log.d("CollisionBar", "70° RIGHT");
-            handler.setVelocity(module * COS_70, -module * SIN_70);
+            SIN_X = SIN_70;
+            COS_X = COS_70;
+            handler.setVelocity(myModule * COS_70, -myModule * SIN_70);
         }
         if ((ballX - barX >= (barSprite.getWidth() / 6)) && (ballX - barX < ((7 * barSprite.getWidth()) / 30))) {
             Log.d("CollisionBar", "60° RIGHT");
-            handler.setVelocity(module * COS_60, -module * SIN_60);
+            SIN_X = SIN_60;
+            COS_X = COS_60;
+            handler.setVelocity(myModule * COS_60, -myModule * SIN_60);
         }
         if ((ballX - barX >= ((7 * barSprite.getWidth()) / 30)) && (ballX - barX < ((3 * barSprite.getWidth()) / 10))) {
             Log.d("CollisionBar", "50° RIGHT");
-            handler.setVelocity(module * COS_50, -module * SIN_50);
+            SIN_X = SIN_50;
+            COS_X = COS_50;
+            handler.setVelocity(myModule * COS_50, -myModule * SIN_50);
         }
         if ((ballX - barX >= ((3 * barSprite.getWidth()) / 10)) && (ballX - barX < ((11 * barSprite.getWidth()) / 30))) {
             Log.d("CollisionBar", "40° RIGHT");
-            handler.setVelocity(module * COS_40, -module * SIN_40);
+            SIN_X = SIN_40;
+            COS_X = COS_40;
+            handler.setVelocity(myModule * COS_40, -myModule * SIN_40);
         }
         if ((ballX - barX >= ((11 * barSprite.getWidth()) / 30)) && (ballX - barX < ((13 * barSprite.getWidth()) / 30))) {
             Log.d("CollisionBar", "30° RIGHT");
-            handler.setVelocity(module * COS_30, -module * SIN_30);
+            SIN_X = SIN_30;
+            COS_X = COS_30;
+            handler.setVelocity(myModule * COS_30, -myModule * SIN_30);
         }
         if (ballX - barX >= ((13 * barSprite.getWidth()) / 30)) {
             Log.d("CollisionBar", "20° RIGHT");
-            handler.setVelocity(module * COS_20, -module * SIN_20);
+            SIN_X = SIN_20;
+            COS_X = COS_20;
+            handler.setVelocity(myModule * COS_20, -myModule * SIN_20);
         }
 
         touch.play();
