@@ -13,7 +13,7 @@ public class Bonus {
     private Handler handler;
     private Map<Integer, Integer> bonusMap = new HashMap<>();
 
-    public static final int DEFAULT_BONUS_COUNT = 3;
+    private final int DEFAULT_BONUS_COUNT = 3;
 
     public static final int BONUS_EXPIRED = 725;
     public static final int BONUS_CREATED = 825;
