@@ -21,5 +21,5 @@
         android:id="@+id/appNameSplash"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/splash_name" />
+        android:src="@drawable/splash_name"/>
 </RelativeLayout>
