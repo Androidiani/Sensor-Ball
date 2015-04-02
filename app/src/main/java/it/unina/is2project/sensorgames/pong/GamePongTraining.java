@@ -17,6 +17,11 @@ public class GamePongTraining extends GamePong {
 
     private final String TAG = "TrainingGame";
 
+    // Setting button
+    protected BitmapTextureAtlas settingTexture;
+    protected ITextureRegion settingTextureRegion;
+    protected Sprite settingSprite;
+
     // Easy mode button
     protected BitmapTextureAtlas easyTexture;
     protected ITextureRegion easyTextureRegion;
@@ -47,6 +52,13 @@ public class GamePongTraining extends GamePong {
         super.onCreateScene();
 
         float spriteRate = easyTextureRegion.getHeight() / easyTextureRegion.getWidth();
+
+        // Adding the settingSprite to the scene
+        settingSprite = new Sprite(0, 0, settingTextureRegion, getVertexBufferObjectManager());
+        settingSprite.setWidth(CAMERA_WIDTH * 0.1f);
+        settingSprite.setHeight(CAMERA_WIDTH * 0.1f);
+        settingSprite.setX(CAMERA_WIDTH - settingSprite.getWidth());
+        scene.attachChild(settingSprite);
 
         // Adding the easySprite to the scene
         easySprite = new Sprite(0, 0, easyTextureRegion, getVertexBufferObjectManager()) {
@@ -115,6 +127,12 @@ public class GamePongTraining extends GamePong {
     @Override
     protected void loadGraphics() {
         super.loadGraphics();
+        
+        // Setting
+        Drawable settingDrawable = getResources().getDrawable(R.drawable.setting);
+        settingTexture = new BitmapTextureAtlas(getTextureManager(), settingDrawable.getIntrinsicWidth(), settingDrawable.getIntrinsicHeight());
+        settingTextureRegion = createFromResource(settingTexture, this, R.drawable.setting, 0, 0);
+        settingTexture.load();
 
         // Easy mode
         Drawable easyDrawable = getResources().getDrawable(R.drawable.training_setting_easy);
@@ -139,6 +157,7 @@ public class GamePongTraining extends GamePong {
     protected void actionDownEvent() {
         if (!enableModes) {
             Log.d(TAG, "Game Paused");
+            firstTap = System.currentTimeMillis();
             showMenu();
         }
     }
@@ -191,7 +210,6 @@ public class GamePongTraining extends GamePong {
         scene.attachChild(normalSprite);
         scene.attachChild(insaneSprite);
 
-        firstTap = System.currentTimeMillis();
         enableModes = true;
     }
 
