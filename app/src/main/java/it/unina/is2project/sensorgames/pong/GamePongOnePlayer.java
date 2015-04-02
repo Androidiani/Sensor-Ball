@@ -524,7 +524,7 @@ public class GamePongOnePlayer extends GamePong {
         // Handling game restarting
         if (restart_game) {
             Log.d(TAG, "Game restarted");
-            restartAfterGameOver();
+            restartGameAfterGameOver();
             restart_game = false;
         }
 
@@ -626,8 +626,6 @@ public class GamePongOnePlayer extends GamePong {
                 restartGameAfterPause();
             }
         }).show();
-
-        AlertDialog dialog = builder.create();
     }
 
     private void pauseGame() {
@@ -654,7 +652,7 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
-    private void restartAfterGameOver() {
+    private void restartGameAfterGameOver() {
         clearGame();
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
         handler.setVelocity(BALL_SPEED, -BALL_SPEED);
