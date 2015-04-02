@@ -104,6 +104,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected float SIN_30 = 0.5f;
     protected float COS_40 = 0.76604444311897803520239265055542f;
     protected float SIN_40 = 0.64278760968653932632264340990726f;
+    protected float COS_45 = 0.70710678118654752440084436210485f;
+    protected float SIN_45 = 0.70710678118654752440084436210485f;
     protected float COS_50 = 0.64278760968653932632264340990726f;
     protected float SIN_50 = 0.76604444311897803520239265055542f;
     protected float COS_60 = 0.5f;

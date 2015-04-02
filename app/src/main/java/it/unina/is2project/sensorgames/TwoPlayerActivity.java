@@ -594,10 +594,12 @@ public class TwoPlayerActivity extends ActionBarActivity {
                                     btnPlay.setEnabled(true);
                                     break;
                                 case Constants.MSG_TYPE_SYNC:
-                                    //TODO C'è qualcosa di sbagliato qui
-                                    //TODO Quando il master esce e rientra, l'altro ha il bottone abilitato
                                     AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
                                     sendBluetoothMessage(notReadyMessage);
+                                    break;
+                                case Constants.MSG_TYPE_FAIL:
+                                    btnPlay.setEnabled(false);
+                                    break;
                                 default:
                                     Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                                     break;

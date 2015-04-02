@@ -48,8 +48,6 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean isConnected;
     // Score variables
     private int score;
-    // Velocity Utils
-    private float myModule;
 
 
     @Override
@@ -84,6 +82,8 @@ public class GamePongTwoPlayer extends GamePong {
         game_over = false;
         score = 0;
         myModule = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
+        COS_X = COS_45;
+        SIN_X = SIN_45;
         PROXIMITY_ZONE = CAMERA_HEIGHT / 8;
         previous_event = -1;
 
@@ -137,20 +137,18 @@ public class GamePongTwoPlayer extends GamePong {
     protected void collidesTop() {
         Log.d(TAG, "collidesTop");
         float xRatio = ballSprite.getX() / CAMERA_WIDTH;
-        myModule = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
-        float angle = (float) Math.abs(Math.atan(handler.getVelocityX()/handler.getVelocityY()));
         AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
-                handler.getVelocityX(),
-                angle,
+                Math.signum(handler.getVelocityX()),
+                COS_X,
+                SIN_X,
                 xRatio);
         sendBluetoothMessage(messageCoords);
-        old_y_speed = handler.getVelocityY();
         Log.d("MESSAGECOORDSsen", "Module " + myModule);
         Log.d("MESSAGECOORDSsen", "VelX " + handler.getVelocityX());
         Log.d("MESSAGECOORDSsen", "VelY " + handler.getVelocityY());
-        Log.d("MESSAGECOORDSsen", "Angle " + angle);
+        Log.d("MESSAGECOORDSsen", "Sign(Velx) " + Math.signum(handler.getVelocityX()));
 //        Log.d(TAG, "End Top. TransBall: " + transferringBall);
- //       Log.d(TAG, "End Top. HaveBall: " + haveBall);
+//        Log.d(TAG, "End Top. HaveBall: " + haveBall);
         haveBall = false;
         transferringBall = true;
         previous_event = TOP;
@@ -242,7 +240,8 @@ public class GamePongTwoPlayer extends GamePong {
     public void onBackPressed() {
         if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
                 fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
-                fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
+                fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
         }
@@ -304,15 +303,13 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_COORDS:
                                     Log.d("SendReceived", "MSG_TYPE_COORDS");
                                     if (!haveBall) {
-                                        Log.d("MESSAGECOORDSrec", "VelocityXReceived " + recMsg.OP2);
-                                        Log.d("MESSAGECOORDSrec", "AngleReceived " + recMsg.OP3);
+                                        Log.d("MESSAGECOORDSrec", "COS_X " + recMsg.OP2);
+                                        Log.d("MESSAGECOORDSrec", "SIN_X " + recMsg.OP3);
                                         float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
-                                        float velX = (float) (-Math.signum(recMsg.OP2)*myModule*Math.cos(recMsg.OP3));
-                                        float velY;
-                                        if(recMsg.OP3 != 0)
-                                            velY = (float) (myModule * Math.sin(recMsg.OP3));
-                                        else
-                                            velY = -old_y_speed;
+                                        float velX = -recMsg.OP1*myModule*recMsg.OP2;
+                                        float velY = myModule*recMsg.OP3;
+                                        COS_X = recMsg.OP2;
+                                        SIN_X = recMsg.OP3;
                                         Log.d("MESSAGECOORDSrec", "Module " + myModule);
                                         Log.d("MESSAGECOORDSrec", "VelX " + velX);
                                         Log.d("MESSAGECOORDSrec", "VelY " + velY);
