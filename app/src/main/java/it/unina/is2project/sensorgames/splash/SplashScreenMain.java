@@ -1,5 +1,6 @@
 package it.unina.is2project.sensorgames.splash;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,10 +12,17 @@ import android.widget.ImageView;
 import it.unina.is2project.sensorgames.MainActivity;
 import it.unina.is2project.sensorgames.R;
 
-public class SplashScreenMain extends SplashScreen {
+public class SplashScreenMain extends Activity {
+
+    protected long ms = 0;
+    protected long splashTime = 3000;
+    protected boolean splashActive = true;
+    protected boolean paused = false;
 
     Animation animMove;
+    Animation animFadein;
     ImageView splashAnim;
+    ImageView gameName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +31,12 @@ public class SplashScreenMain extends SplashScreen {
         setContentView(R.layout.activity_splash_screen_main);
 
         animMove = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
-
         splashAnim = (ImageView) findViewById(R.id.splashAnim);
-
         splashAnim.startAnimation(animMove);
+
+        animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
+        gameName = (ImageView) findViewById(R.id.appNameSplash);
+        gameName.startAnimation(animFadein);
 
         Thread mythread = new Thread() {
             public void run() {
