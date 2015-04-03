@@ -158,7 +158,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             @Override
             public boolean onSceneTouchEvent(TouchEvent pSceneTouchEvent) {
                 if (pSceneTouchEvent.isActionDown()) {
-                    actionDownEvent();
+                    actionDownEvent(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
                 }
                 return super.onSceneTouchEvent(pSceneTouchEvent);
             }
@@ -500,7 +500,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         pause = false;
     }
 
-    protected abstract void actionDownEvent();
+    protected abstract void actionDownEvent(float x, float y);
 
     protected abstract void bluetoothExtra();
 

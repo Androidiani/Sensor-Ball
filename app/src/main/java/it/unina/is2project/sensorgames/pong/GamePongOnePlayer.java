@@ -293,7 +293,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     @Override
-    public void actionDownEvent() {
+    public void actionDownEvent(float x, float y) {
         if (!pause) {
             pauseGame();
         }

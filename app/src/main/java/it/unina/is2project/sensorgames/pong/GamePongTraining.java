@@ -154,7 +154,7 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
-    protected void actionDownEvent() {
+    protected void actionDownEvent(float x, float y) {
         if (!enableModes) {
             Log.d(TAG, "Game Paused");
             firstTap = System.currentTimeMillis();

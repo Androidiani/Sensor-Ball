@@ -3,15 +3,17 @@ package it.unina.is2project.sensorgames.bluetooth.messages;
 import java.io.Serializable;
 
 public class AppMessage implements Serializable {
-    public int TYPE;    // Type         // Type         // Type
-    public int OP1;     //              // Integer      // Sign(VelocityX)
-    public float OP2;   //              //              // COS_X
-    public float OP3;   //              //              // SIN_X
-    public float OP4;   //              //              // X Ratio
+    //Types:            // Single Type  // Integer Type // Bonus Actived        // Coords Message
+    public int TYPE;    // Type         // Type         // Type                 // Type
+    public int OP1;     //              // Integer      // Bonus Reach Count    // Sign(VelocityX)
+    public float OP2;   //              //              //                      // COS_X
+    public float OP3;   //              //              //                      // SIN_X
+    public float OP4;   //              //              //                      // X Ratio
 
     public AppMessage(int TYPE) {
         this.TYPE = TYPE;
     }
+
 
     public AppMessage(int TYPE, int OP1) {
         this.TYPE = TYPE;
@@ -21,10 +23,10 @@ public class AppMessage implements Serializable {
     /**
      * Generally a coords message
      * @param TYPE Type of sent message
-     * @param OP1
-     * @param OP2
-     * @param OP3
-     * @param OP4
+     * @param OP1 Sign of velocityX
+     * @param OP2 Cosine(angle)
+     * @param OP3 Sine(angle)
+     * @param OP4 X Ratio (adapted by screen)
      */
     public AppMessage(int TYPE, float OP1, float OP2, float OP3, float OP4) {
         this.TYPE = TYPE;

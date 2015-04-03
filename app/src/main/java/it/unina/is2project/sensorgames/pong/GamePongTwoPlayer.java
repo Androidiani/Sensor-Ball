@@ -42,6 +42,8 @@ public class GamePongTwoPlayer extends GamePong {
     private BluetoothService mBluetoothService = null;
     // Finite State Machine
     private FSMGame fsmGame = null;
+    // Bonus manager
+    private BonusManager bonusManager = null;
     // Text information
     private Text textInfo;
     private Text textPoint;
@@ -74,20 +76,23 @@ public class GamePongTwoPlayer extends GamePong {
     private ITextureRegion speedTextureRegion_X4;
     private Sprite speedSprite_X4;
     // Bonus Constants
-    private final int SPEEDX2 = 1;
-    private final int SPEEDX3 = SPEEDX2 + 1;
-    private final int SPEEDX4 = SPEEDX3 + 1;
+    public final static int NOBONUS = 1;
+    public final static int SPEEDX2 = 2;
+    public final static int SPEEDX3 = 3;
+    public final static int SPEEDX4 = 4;
     // Bonus Utils
     private int activedSprite = SPRITE_NONE;
-    TimerTask task = new TimerBonusTask();
+    private boolean deletedSprite = true;
+    TimerTask task;
     Timer timer;
 
 
     @Override
     protected Scene onCreateScene() {
-        // Getting instance of fsm and service bluetooth
+        // Getting instance of fsm, service bluetooth and bonus manager
         fsmGame = FSMGame.getFsmInstance(fsmHandler);
         mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
+        bonusManager = BonusManager.getBonusInstance(bonusHandler);
 
         // Retrieve intent message
         Intent i = getIntent();
@@ -211,13 +216,13 @@ public class GamePongTwoPlayer extends GamePong {
     protected void bluetoothExtra() {
         // Setting proximityRegion ON
         if(!proximityRegion && ballSprite.getY() <= PROXIMITY_ZONE){
-            Log.d("Proximity", "Set Proximity To TRUE");
+//            Log.d("Proximity", "Set Proximity To TRUE");
             proximityRegion = true;
         }
 
         // Al rientro della pallina, proximity regione in ricezione (la metà di quella di invio, più critica)
         if(proximityRegion && ballSprite.getY() > PROXIMITY_ZONE/2){
-            Log.d("Proximity", "Set Proximity To FALSE");
+//            Log.d("Proximity", "Set Proximity To FALSE");
             proximityRegion = false;
         }
 
@@ -226,7 +231,7 @@ public class GamePongTwoPlayer extends GamePong {
             scene.detachChild(ballSprite);
             //ballSprite.detachSelf();
             transferringBall = false;
-            Log.d("Proximity", "Set Proximity To FALSE");
+//            Log.d("Proximity", "Set Proximity To FALSE");
             proximityRegion = false;
         }
         // Quando la palla ENTRA COMPLETAMENTE nel device
@@ -240,6 +245,12 @@ public class GamePongTwoPlayer extends GamePong {
         super.collidesBottom();
         AppMessage pointToEnemyMessage = new AppMessage(Constants.MSG_TYPE_POINT_UP);
         sendBluetoothMessage(pointToEnemyMessage);
+    }
+
+    @Override
+    protected void collidesOverBar() {
+        super.collidesOverBar();
+        bonusManager.decrementCount();
     }
 
     @Override
@@ -270,23 +281,25 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
-    public void actionDownEvent() {
-        Log.d("Proximity", "Proximity:" + proximityRegion);
-        if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !proximityRegion) {
-            if(haveBall) {
-                tap = System.currentTimeMillis();
-                fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
-                AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
-                sendBluetoothMessage(pauseMessage);
-            }else{
-                textInfo.setText(getResources().getString(R.string.text_pause_not_allowed));
+    public void actionDownEvent(float x, float y) {
+        if(!checkTouchOnSprite(activedSprite, x, y)) {
+            Log.d("Proximity", "Proximity:" + proximityRegion);
+            if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !proximityRegion) {
+                if (haveBall) {
+                    tap = System.currentTimeMillis();
+                    fsmGame.setState(FSMGame.STATE_GAME_PAUSED);
+                    AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_PAUSE);
+                    sendBluetoothMessage(pauseMessage);
+                } else {
+                    textInfo.setText(getResources().getString(R.string.text_pause_not_allowed));
+                }
             }
-        }
 
-        if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)) {
-            fsmGame.setState(FSMGame.STATE_IN_GAME);
-            AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
-            sendBluetoothMessage(resumeMessage);
+            if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)) {
+                fsmGame.setState(FSMGame.STATE_IN_GAME);
+                AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
+                sendBluetoothMessage(resumeMessage);
+            }
         }
     }
 
@@ -322,6 +335,37 @@ public class GamePongTwoPlayer extends GamePong {
         mBluetoothService.write(send);
     }
 
+    private boolean checkTouchOnSprite(int bonusID, float x, float y){
+        boolean checkTouchSpriteStatus = false;
+        switch (bonusID){
+            case SPEEDX2:
+                if(x <= speedSprite_X2.getX() + speedSprite_X2.getWidth() &&
+                        x >= speedSprite_X2.getX() &&
+                        y >= speedSprite_X2.getY() &&
+                        y <= speedSprite_X2.getY() + speedSprite_X2.getHeight())
+                    checkTouchSpriteStatus = true;
+                break;
+            case SPEEDX3:
+                if(x <= speedSprite_X3.getX() + speedSprite_X3.getWidth() &&
+                        x >= speedSprite_X3.getX() &&
+                        y >= speedSprite_X3.getY() &&
+                        y <= speedSprite_X3.getY() + speedSprite_X3.getHeight())
+                    checkTouchSpriteStatus = true;
+                break;
+            case SPEEDX4:
+                if(x <= speedSprite_X4.getX() + speedSprite_X4.getWidth() &&
+                        x >= speedSprite_X4.getX() &&
+                        y >= speedSprite_X4.getY() &&
+                        y <= speedSprite_X4.getY() + speedSprite_X4.getHeight())
+                    checkTouchSpriteStatus = true;
+                break;
+            default:
+                checkTouchSpriteStatus = false;
+                break;
+        }
+        return checkTouchSpriteStatus;
+    }
+
     private void initializeSprite(){
 
         // SPEED X2 INITIALIZING
@@ -330,11 +374,11 @@ public class GamePongTwoPlayer extends GamePong {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 Log.d("Sprite", "Sprite SPEEDX2 Touched");
-//                speedSprite_X2.detachSelf();
-                scene.detachChild(speedSprite_X2);
-                activedSprite = SPRITE_NONE;
-                scene.unregisterTouchArea(speedSprite_X2);
-                // TODO
+                detachSprite(SPEEDX2);
+                Random rand = new Random();
+                int randNum = rand.nextInt(5) + 1;
+                AppMessage speedx2Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX2, randNum);
+                sendBluetoothMessage(speedx2Message);
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -349,11 +393,11 @@ public class GamePongTwoPlayer extends GamePong {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 Log.d("Sprite", "Sprite SPEEDX3 Touched");
-//                speedSprite_X2.detachSelf();
-                scene.detachChild(speedSprite_X3);
-                activedSprite = SPRITE_NONE;
-                scene.unregisterTouchArea(speedSprite_X3);
-                // TODO
+                detachSprite(SPEEDX3);
+                Random rand = new Random();
+                int randNum = rand.nextInt(5) + 1;
+                AppMessage speedx3Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX3, randNum);
+                sendBluetoothMessage(speedx3Message);
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -368,11 +412,11 @@ public class GamePongTwoPlayer extends GamePong {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 Log.d("Sprite", "Sprite SPEEDX4 Touched");
-//                speedSprite_X2.detachSelf();
-                scene.detachChild(speedSprite_X4);
-                activedSprite = SPRITE_NONE;
-                scene.unregisterTouchArea(speedSprite_X4);
-                // TODO
+                detachSprite(SPEEDX4);
+                Random rand = new Random();
+                int randNum = rand.nextInt(5) + 1;
+                AppMessage speedx4Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX4, randNum);
+                sendBluetoothMessage(speedx4Message);
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -385,6 +429,7 @@ public class GamePongTwoPlayer extends GamePong {
     //----------------------------------------------
     // HANDLERS
     //----------------------------------------------
+    @SuppressWarnings("all")
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -415,6 +460,7 @@ public class GamePongTwoPlayer extends GamePong {
                         AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
                         if (recMsg != null) {
                             switch (recMsg.TYPE) {
+                                //------------------------COORDS------------------------
                                 case Constants.MSG_TYPE_COORDS:
                                     Log.d("SendReceived", "MSG_TYPE_COORDS");
                                     if (!haveBall) {
@@ -438,12 +484,14 @@ public class GamePongTwoPlayer extends GamePong {
                                         textInfo.setText("");
                                     }
                                     break;
+                                //------------------------SYNC------------------------
                                 case Constants.MSG_TYPE_SYNC:
                                     Log.d("SendReceived", "MSG_TYPE_SYNC");
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
                                         fsmGame.setState(FSMGame.STATE_IN_GAME);
                                     }
                                     break;
+                                //------------------------FAIL------------------------
                                 case Constants.MSG_TYPE_FAIL:
                                     Log.d("SendReceived", "MSG_TYPE_FAIL");
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
@@ -452,12 +500,14 @@ public class GamePongTwoPlayer extends GamePong {
                                         fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
                                     }
                                     break;
+                                //------------------------PAUSE------------------------
                                 case Constants.MSG_TYPE_PAUSE:
                                     Log.d("SendReceived", "MSG_TYPE_PAUSE");
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                                         fsmGame.setState(FSMGame.STATE_GAME_OPPONENT_PAUSED);
                                     }
                                     break;
+                                //------------------------RESUME------------------------
                                 case Constants.MSG_TYPE_RESUME:
                                     Log.d("SendReceived", "MSG_TYPE_RESUME");
                                     if (fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
@@ -468,16 +518,19 @@ public class GamePongTwoPlayer extends GamePong {
                                         sendBluetoothMessage(resumeNotReadyMessage);
                                     }
                                     break;
+                                //------------------------RESUME NOREADY------------------------
                                 case Constants.MSG_TYPE_RESUME_NOREADY:
                                     Log.d("SendReceived", "MSG_TYPE_RESUME_NOREADY");
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                                         fsmGame.setState(FSMGame.STATE_GAME_EXIT_PAUSE);
                                     }
                                     break;
+                                //------------------------INTEGER------------------------
                                 case Constants.MSG_TYPE_INTEGER:
                                     Log.d("SendReceived", "MSG_TYPE_INTEGER");
                                     //TODO
                                     break;
+                                //------------------------ALERT------------------------
                                 case Constants.MSG_TYPE_ALERT:
                                     Log.d("SendReceived", "MSG_TYPE_ALERT");
                                     if (fsmGame.getState() == FSMGame.STATE_DISCONNECTED ||
@@ -488,15 +541,32 @@ public class GamePongTwoPlayer extends GamePong {
                                         sendBluetoothMessage(notReadyMessage);
                                     }
                                     break;
+                                //------------------------NOREADY------------------------
                                 case Constants.MSG_TYPE_NOREADY:
                                     Log.d("SendReceived", "MSG_TYPE_NOREADY");
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
                                         fsmGame.setState(FSMGame.STATE_OPPONENT_NOT_READY);
                                     }
                                     break;
+                                //------------------------POINT UP------------------------
                                 case Constants.MSG_TYPE_POINT_UP:
                                     Log.d("SendReceived", "MSG_TYPE_POINT_UP");
                                     addScore();
+                                    break;
+                                //------------------------BONUS SPEED X2------------------------
+                                case Constants.MSG_TYPE_BONUS_SPEEDX2:
+                                    Log.d("SendReceived", "MSG_TYPE_BONUS_SPEEDX2");
+                                    bonusManager.addBonus(SPEEDX2, recMsg.OP1);
+                                    break;
+                                //------------------------BONUS SPEED X3------------------------
+                                case Constants.MSG_TYPE_BONUS_SPEEDX3:
+                                    Log.d("SendReceived", "MSG_TYPE_BONUS_SPEEDX3");
+                                    bonusManager.addBonus(SPEEDX3, recMsg.OP1);
+                                    break;
+                                //------------------------BONUS SPEED X4------------------------
+                                case Constants.MSG_TYPE_BONUS_SPEEDX4:
+                                    Log.d("SendReceived", "MSG_TYPE_BONUS_SPEEDX4");
+                                    bonusManager.addBonus(SPEEDX4, recMsg.OP1);
                                     break;
                                 default:
                                     Log.e("SendReceived", "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
@@ -515,6 +585,7 @@ public class GamePongTwoPlayer extends GamePong {
         }
     };
 
+    @SuppressWarnings("all")
     private final Handler fsmHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -530,6 +601,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 handler.setVelocity(old_x_speed, old_y_speed);
                                 GAME_VELOCITY = old_game_speed;
                                 textInfo.setText("");
+                                task = new TimerBonusTask();
                                 timer = new Timer();
                                 timer.schedule(task, 2000, 10000);
                                 break;
@@ -545,6 +617,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 old_game_speed = GAME_VELOCITY;
                                 handler.setVelocity(0, 0);
                                 GAME_VELOCITY = 0;
+                                timer.cancel();
                                 break;
                             case FSMGame.STATE_GAME_EXIT_PAUSE:
                                 textInfo.setText(getResources().getString(R.string.text_exit_pause));
@@ -561,6 +634,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 old_game_speed = GAME_VELOCITY;
                                 handler.setVelocity(0, 0);
                                 GAME_VELOCITY = 0;
+                                timer.cancel();
                                 break;
                             case FSMGame.STATE_OPPONENT_NOT_READY:
                                 textInfo.setText(getResources().getString(R.string.text_opponent_not_ready));
@@ -584,21 +658,59 @@ public class GamePongTwoPlayer extends GamePong {
         }
     };
 
+    @SuppressWarnings("all")
     private final Handler bonusHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case Bonus.BONUS_CREATED:
-                    //TODO
+                case BonusManager.BONUS_CREATED:
+                    switch (msg.arg1){
+                        case SPEEDX2:
+                            setVelocityFromPrevious(msg.arg2, SPEEDX2);
+                            break;
+                        case SPEEDX3:
+                            setVelocityFromPrevious(msg.arg2, SPEEDX3);
+                            break;
+                        case SPEEDX4:
+                            setVelocityFromPrevious(msg.arg2, SPEEDX4);
+                            break;
+                        default:
+                            Log.e("Bonus", "Error - Invalid Bonus ID Created");
+                            break;
+                    }
                     break;
-                case Bonus.BONUS_EXPIRED:
-                    //TODO
+                case BonusManager.BONUS_EXPIRED:
+                    switch (msg.arg1){
+                        case SPEEDX2:
+                            setVelocityFromPrevious(SPEEDX2, NOBONUS);
+                            break;
+                        case SPEEDX3:
+                            setVelocityFromPrevious(SPEEDX3, NOBONUS);
+                            break;
+                        case SPEEDX4:
+                            setVelocityFromPrevious(SPEEDX4, NOBONUS);
+                            break;
+                        default:
+                            Log.e("Bonus", "Error - Invalid Bonus ID Expired");
+                            break;
+                    }
                     break;
                 default:
                     break;
             }
         }
     };
+
+    private void setVelocityFromPrevious(int previousBonus, int nextBonus){
+        myModule = (myModule/previousBonus)*nextBonus;
+        if(haveBall) {
+            handler.setVelocityX(Math.signum(handler.getVelocityX()) * myModule * COS_X);
+            handler.setVelocityY(Math.signum(handler.getVelocityY()) * myModule * COS_X);
+        }
+        Log.d("BonusVelocity", "New Module: " + myModule);
+        Log.d("BonusVelocity", "New Velx: " + handler.getVelocityX());
+        Log.d("BonusVelocity", "New Vely: " + handler.getVelocityY());
+    }
 
     //----------------------------------------------
     // THREADS
@@ -609,7 +721,7 @@ public class GamePongTwoPlayer extends GamePong {
         public void run() {
             Random rand = new Random();
             int bonusChoice = rand.nextInt(( SPEEDX4 - SPEEDX2) + 1) + SPEEDX2;
-            if(activedSprite == SPRITE_NONE){
+            if(deletedSprite){
                 Log.d("Sprite", "First One Is None");
                 attachSprite(bonusChoice);
             }else{
@@ -617,7 +729,6 @@ public class GamePongTwoPlayer extends GamePong {
                 detachSprite(activedSprite);
                 attachSprite(bonusChoice);
             }
-            activedSprite = bonusChoice;
         }
 
         @Override
@@ -640,18 +751,24 @@ public class GamePongTwoPlayer extends GamePong {
                 Log.d("AttachSprite", "Attaching SPEEDX2");
                 scene.registerTouchArea(speedSprite_X2);
                 scene.attachChild(speedSprite_X2);
+                activedSprite = SPEEDX2;
+                deletedSprite = false;
                 break;
 
             case SPEEDX3:
                 Log.d("AttachSprite", "Attaching SPEEDX3");
                 scene.registerTouchArea(speedSprite_X3);
                 scene.attachChild(speedSprite_X3);
+                activedSprite = SPEEDX3;
+                deletedSprite = false;
                 break;
 
             case SPEEDX4:
                 Log.d("AttachSprite", "Attaching SPEEDX4");
                 scene.registerTouchArea(speedSprite_X4);
                 scene.attachChild(speedSprite_X4);
+                activedSprite = SPEEDX4;
+                deletedSprite = false;
                 break;
 
             default:
@@ -665,19 +782,25 @@ public class GamePongTwoPlayer extends GamePong {
             case SPEEDX2:
                 Log.d("DetachSprite", "Deattaching SPEEDX2");
                 scene.unregisterTouchArea(speedSprite_X2);
-                speedSprite_X2.detachSelf();
+                scene.detachChild(speedSprite_X2);
+                activedSprite = SPRITE_NONE;
+                deletedSprite = true;
                 break;
 
             case SPEEDX3:
                 Log.d("DetachSprite", "Deattaching SPEEDX3");
                 scene.unregisterTouchArea(speedSprite_X3);
-                speedSprite_X3.detachSelf();
+                scene.detachChild(speedSprite_X3);
+                activedSprite = SPRITE_NONE;
+                deletedSprite = true;
                 break;
 
             case SPEEDX4:
                 Log.d("DetachSprite", "Deattaching SPEEDX4");
                 scene.unregisterTouchArea(speedSprite_X4);
-                speedSprite_X4.detachSelf();
+                scene.detachChild(speedSprite_X4);
+                activedSprite = SPRITE_NONE;
+                deletedSprite = true;
                 break;
 
             default:

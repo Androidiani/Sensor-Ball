@@ -9,7 +9,7 @@ public interface Constants {
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
 
-    // Message types
+    // Message Types
     public static final int MSG_TYPE_COORDS = 6;
     public static final int MSG_TYPE_INTEGER = 7;
     public static final int MSG_TYPE_SYNC = 8;
@@ -21,6 +21,11 @@ public interface Constants {
     @Deprecated
     public static final int MSG_TYPE_RESUME_NOREADY = 14;
     public static final int MSG_TYPE_POINT_UP = 15;
+
+    // Message Bonus Types
+    public static final int MSG_TYPE_BONUS_SPEEDX2 = 16;
+    public static final int MSG_TYPE_BONUS_SPEEDX3 = 17;
+    public static final int MSG_TYPE_BONUS_SPEEDX4 = 18;
 
     // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";
