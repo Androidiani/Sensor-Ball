@@ -108,4 +108,7 @@
     <string name="text_msg_oneplayer_savegame">Do you want to save this score?\nInsert name:</string>
     <string name="text_no_user_input">Insert not null char sequence</string>
 
+    <!-- Training Game -->
+    <string name="text_hit">Hit</string>
+
 </resources>

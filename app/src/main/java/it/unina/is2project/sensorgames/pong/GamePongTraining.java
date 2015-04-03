@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
@@ -18,32 +19,43 @@ public class GamePongTraining extends GamePong {
     private final String TAG = "TrainingGame";
 
     // Setting button
-    protected BitmapTextureAtlas settingTexture;
-    protected ITextureRegion settingTextureRegion;
-    protected Sprite settingSprite;
+    private BitmapTextureAtlas settingTexture;
+    private ITextureRegion settingTextureRegion;
+    private Sprite settingSprite;
 
     // Easy mode button
-    protected BitmapTextureAtlas easyTexture;
-    protected ITextureRegion easyTextureRegion;
-    protected Sprite easySprite;
+    private BitmapTextureAtlas easyTexture;
+    private ITextureRegion easyTextureRegion;
+    private Sprite easySprite;
 
     // Normal mode button
-    protected BitmapTextureAtlas normalTexture;
-    protected ITextureRegion normalTextureRegion;
-    protected Sprite normalSprite;
+    private BitmapTextureAtlas normalTexture;
+    private ITextureRegion normalTextureRegion;
+    private Sprite normalSprite;
 
     // Insane mode button
-    protected BitmapTextureAtlas insaneTexture;
-    protected ITextureRegion insaneTextureRegion;
-    protected Sprite insaneSprite;
+    private BitmapTextureAtlas insaneTexture;
+    private ITextureRegion insaneTextureRegion;
+    private Sprite insaneSprite;
+
+    // Text info
+    private Text textHit;
+    private Text textEvent;
 
     // Game's mode
+    private int hit_count = 0;
     private static final int EASY_MODE = 0;
     private static final int NORMAL_MODE = 1;
     private static final int INSANE_MODE = 2;
 
     // Events
     private boolean enableModes = false;
+
+    // Pause utils
+    private static final int PAUSE = -1;
+    private float old_x_speed;
+    private float old_y_speed;
+    private int old_game_speed;
     private long firstTap;
     private long secondTap;
 
@@ -52,6 +64,15 @@ public class GamePongTraining extends GamePong {
         super.onCreateScene();
 
         float spriteRate = easyTextureRegion.getHeight() / easyTextureRegion.getWidth();
+
+        // Adding the textHit to the scene
+        textHit = new Text(10, 10, font, "", 20, getVertexBufferObjectManager());
+        scene.attachChild(textHit);
+        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+
+        // Adding the textEvnt to the scene
+        textEvent = new Text(10, textHit.getY() + textHit.getHeight(), font, "", 20, getVertexBufferObjectManager());
+        scene.attachChild(textEvent);
 
         // Adding the settingSprite to the scene
         settingSprite = new Sprite(0, 0, settingTextureRegion, getVertexBufferObjectManager());
@@ -127,7 +148,7 @@ public class GamePongTraining extends GamePong {
     @Override
     protected void loadGraphics() {
         super.loadGraphics();
-        
+
         // Setting
         Drawable settingDrawable = getResources().getDrawable(R.drawable.setting);
         settingTexture = new BitmapTextureAtlas(getTextureManager(), settingDrawable.getIntrinsicWidth(), settingDrawable.getIntrinsicHeight());
@@ -154,11 +175,29 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
+    protected void collidesBottom() {
+        super.collidesBottom();
+        hit_count = 0;
+        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+    }
+
+    @Override
+    protected void collidesOverBar() {
+        super.collidesOverBar();
+        hit_count++;
+        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+    }
+
+    @Override
     protected void actionDownEvent(float x, float y) {
-        if (!enableModes) {
-            Log.d(TAG, "Game Paused");
-            firstTap = System.currentTimeMillis();
-            showMenu();
+        if (!pause) {
+            pauseGame();
+            if (checkTouchOnSprite(x, y) && !enableModes) {
+                showMenu();
+            }
+        }
+        if (pause && (System.currentTimeMillis() - firstTap > 500)) {
+            restartGameAfterPause();
         }
     }
 
@@ -192,14 +231,46 @@ public class GamePongTraining extends GamePong {
         //do nothing
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        pauseGame();
+    }
+
+    private void pauseGame() {
+        Log.d(TAG, "Game Paused");
+        textEvent.setText(getResources().getString(R.string.text_pause));
+        // Saving Game Data
+        old_x_speed = handler.getVelocityX();
+        old_y_speed = handler.getVelocityY();
+        old_game_speed = GAME_VELOCITY;
+        // Stop the Game
+        handler.setVelocity(0);
+        GAME_VELOCITY = 0;
+        firstTap = System.currentTimeMillis();
+        previous_event = PAUSE;
+        touch.stop();
+        pause = true;
+    }
+
+    private void restartGameAfterPause() {
+        textEvent.setText("");
+        handler.setVelocity(old_x_speed, old_y_speed);
+        GAME_VELOCITY = old_game_speed;
+        pause = false;
+    }
+
+    private boolean checkTouchOnSprite(float x, float y) {
+        boolean checkTouchSpriteStatus = false;
+        if (x <= settingSprite.getX() + settingSprite.getWidth() && x >= settingSprite.getX() && y >= settingSprite.getY() && y <= settingSprite.getY() + settingSprite.getHeight())
+            checkTouchSpriteStatus = true;
+        return checkTouchSpriteStatus;
+    }
+
     /**
      * Show the mode's menu
      */
     private void showMenu() {
-        // Stop the Game
-        GAME_VELOCITY = 0;
-        handler.setVelocity(0f);
-
         // Register Touch Area
         scene.registerTouchArea(easySprite);
         scene.registerTouchArea(normalSprite);
@@ -217,15 +288,15 @@ public class GamePongTraining extends GamePong {
      * Hide the mode's menu
      */
     private void hideMenu() {
-        // Detach menu's children
-        scene.detachChild(easySprite);
-        scene.detachChild(normalSprite);
-        scene.detachChild(insaneSprite);
-
         // Unregister Touch Area
         scene.unregisterTouchArea(easySprite);
         scene.unregisterTouchArea(normalSprite);
         scene.unregisterTouchArea(insaneSprite);
+
+        // Detach menu's children
+        scene.detachChild(easySprite);
+        scene.detachChild(normalSprite);
+        scene.detachChild(insaneSprite);
 
         enableModes = false;
     }
@@ -245,14 +316,14 @@ public class GamePongTraining extends GamePong {
             case NORMAL_MODE: {
                 GAME_VELOCITY = 3 * DEVICE_RATIO;
                 handler.setVelocity(BALL_SPEED * 2, -BALL_SPEED * 2);
-                barSprite.setWidth(CAMERA_WIDTH * 0.2f);
+                barSprite.setWidth(CAMERA_WIDTH * 0.21f);
                 break;
             }
 
             case INSANE_MODE: {
                 GAME_VELOCITY = 4 * DEVICE_RATIO;
                 handler.setVelocity(BALL_SPEED * 4, -BALL_SPEED * 4);
-                barSprite.setWidth(CAMERA_WIDTH * 0.1f);
+                barSprite.setWidth(CAMERA_WIDTH * 0.15f);
                 break;
             }
         }
