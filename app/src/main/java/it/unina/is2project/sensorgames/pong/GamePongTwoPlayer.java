@@ -317,7 +317,7 @@ public class GamePongTwoPlayer extends GamePong {
         intent.putExtra(EXTRA_CONNECTION_STATE, isConnected);
         intent.putExtra(EXTRA_MASTER, isMaster);
         setResult(Activity.RESULT_CANCELED, intent);
-        timer.cancel();
+        if(timer != null) timer.cancel();
         super.onBackPressed();
     }
 
