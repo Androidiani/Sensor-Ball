@@ -708,7 +708,7 @@ public class GamePongTwoPlayer extends GamePong {
         myModule = (myModule/previousBonus)*nextBonus;
         if(haveBall) {
             handler.setVelocityX(Math.signum(handler.getVelocityX()) * myModule * COS_X);
-            handler.setVelocityY(Math.signum(handler.getVelocityY()) * myModule * COS_X);
+            handler.setVelocityY(Math.signum(handler.getVelocityY()) * myModule * SIN_X);
         }
         Log.d("BonusVelocity", "New Module: " + myModule);
         Log.d("BonusVelocity", "New Velx: " + handler.getVelocityX());
