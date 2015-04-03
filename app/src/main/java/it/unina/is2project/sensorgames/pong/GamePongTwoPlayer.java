@@ -141,13 +141,16 @@ public class GamePongTwoPlayer extends GamePong {
 
         Log.d(TAG, "Sono master : " + isMaster);
 
-        // Attachning textPoint
-        textPoint = new Text(10, barSprite.getY() + barSprite.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score, 30, getVertexBufferObjectManager());
-        scene.attachChild(textPoint);
-
         // Attaching textInfo
         textInfo = new Text(10, 10, font, "", 30, getVertexBufferObjectManager());
         scene.attachChild(textInfo);
+
+        // Attachning textPoint
+        textPoint = new Text(10, CAMERA_HEIGHT-textInfo.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score, 30, getVertexBufferObjectManager());
+        scene.attachChild(textPoint);
+
+        // Traslating bar
+        barSprite.setY(CAMERA_HEIGHT-textPoint.getHeight()-barSprite.getHeight());
 
         return scene;
     }
