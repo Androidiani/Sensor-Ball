@@ -75,16 +75,22 @@ public class GamePongTwoPlayer extends GamePong {
     private BitmapTextureAtlas speedTexture_X4;
     private ITextureRegion speedTextureRegion_X4;
     private Sprite speedSprite_X4;
+    // Lock Field Bonus
+    private BitmapTextureAtlas lockFieldTexture;
+    private ITextureRegion lockFieldTextureRegion;
+    private Sprite lockFieldSprite;
     // Bonus Constants
     public final static int NOBONUS = 1;
     public final static int SPEEDX2 = 2;
     public final static int SPEEDX3 = 3;
     public final static int SPEEDX4 = 4;
+    public final static int LOCKFIELD = 5;
     // Bonus Utils
     private int activedSprite = SPRITE_NONE;
     private boolean deletedSprite = true;
     TimerTask task;
     Timer timer;
+    private boolean locksField = false;
 
 
     @Override
@@ -173,6 +179,11 @@ public class GamePongTwoPlayer extends GamePong {
         speedTexture_X4 = new BitmapTextureAtlas(getTextureManager(), speedDrawable_X4.getIntrinsicWidth(), speedDrawable_X4.getIntrinsicHeight());
         speedTextureRegion_X4 = createFromResource(speedTexture_X4, this, R.drawable.speedx4, 0, 0);
         speedTexture_X4.load();
+        // Lock Screen
+        Drawable lockFieldDrawable = getResources().getDrawable(R.drawable.firstenemy);
+        lockFieldTexture = new BitmapTextureAtlas(getTextureManager(), lockFieldDrawable.getIntrinsicWidth(), lockFieldDrawable.getIntrinsicHeight());
+        lockFieldTextureRegion = createFromResource(lockFieldTexture, this, R.drawable.firstenemy, 0, 0);
+        lockFieldTexture.load();
     }
 
     @Override
@@ -199,20 +210,24 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected void collidesTop() {
         Log.d(TAG, "collidesTop");
-        float xRatio = ballSprite.getX() / CAMERA_WIDTH;
-        AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
-                Math.signum(handler.getVelocityX()),
-                COS_X,
-                SIN_X,
-                xRatio);
-        sendBluetoothMessage(messageCoords);
-        Log.d("MESSAGECOORDSsen", "Module " + myModule);
-        Log.d("MESSAGECOORDSsen", "VelX " + handler.getVelocityX());
-        Log.d("MESSAGECOORDSsen", "VelY " + handler.getVelocityY());
-        Log.d("MESSAGECOORDSsen", "Sign(Velx) " + Math.signum(handler.getVelocityX()));
-        haveBall = false;
-        transferringBall = true;
-        previous_event = TOP;
+        if(!locksField) {
+            float xRatio = ballSprite.getX() / CAMERA_WIDTH;
+            AppMessage messageCoords = new AppMessage(Constants.MSG_TYPE_COORDS,
+                    Math.signum(handler.getVelocityX()),
+                    COS_X,
+                    SIN_X,
+                    xRatio);
+            sendBluetoothMessage(messageCoords);
+//            Log.d("MESSAGECOORDSsen", "Module " + myModule);
+//            Log.d("MESSAGECOORDSsen", "VelX " + handler.getVelocityX());
+//            Log.d("MESSAGECOORDSsen", "VelY " + handler.getVelocityY());
+//            Log.d("MESSAGECOORDSsen", "Sign(Velx) " + Math.signum(handler.getVelocityX()));
+            haveBall = false;
+            transferringBall = true;
+            previous_event = TOP;
+        }else{
+            super.collidesTop();
+        }
     }
 
     @Override
@@ -362,6 +377,13 @@ public class GamePongTwoPlayer extends GamePong {
                         y <= speedSprite_X4.getY() + speedSprite_X4.getHeight())
                     checkTouchSpriteStatus = true;
                 break;
+            case LOCKFIELD:
+                if(x <= lockFieldSprite.getX() + lockFieldSprite.getWidth() &&
+                        x >= lockFieldSprite.getX() &&
+                        y >= lockFieldSprite.getY() &&
+                        y <= lockFieldSprite.getY() + lockFieldSprite.getHeight())
+                    checkTouchSpriteStatus = true;
+                break;
             default:
                 checkTouchSpriteStatus = false;
                 break;
@@ -427,6 +449,23 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X4.setScale(speedSprite_X4.getScaleX()/2);
         speedSprite_X4.setX((CAMERA_WIDTH/2) - (speedSprite_X4.getWidth()/2));
         speedSprite_X4.setY((CAMERA_HEIGHT/2) - (speedSprite_X4.getHeight()/2));
+
+        // LOCK FIELD INITIALIZING
+        lockFieldSprite = new Sprite(0, 0, lockFieldTextureRegion, getVertexBufferObjectManager()){
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                Log.d("Sprite", "Sprite LOCKFIELD Touched");
+                detachSprite(LOCKFIELD);
+                Random rand = new Random();
+                int randNum = rand.nextInt(5) + 1;
+                AppMessage lockFieldMessage = new AppMessage(Constants.MSG_TYPE_BONUS_LOCKFIELD, randNum);
+                sendBluetoothMessage(lockFieldMessage);
+                return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+            }
+        };
+        lockFieldSprite.setScale(lockFieldSprite.getScaleX()/2);
+        lockFieldSprite.setX((CAMERA_WIDTH / 2) - (lockFieldSprite.getWidth() / 2));
+        lockFieldSprite.setY((CAMERA_HEIGHT / 2) - (lockFieldSprite.getHeight() / 2));
     }
 
     //----------------------------------------------
@@ -467,16 +506,16 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_COORDS:
                                     Log.d("SendReceived", "MSG_TYPE_COORDS");
                                     if (!haveBall) {
-                                        Log.d("MESSAGECOORDSrec", "COS_X " + recMsg.OP2);
-                                        Log.d("MESSAGECOORDSrec", "SIN_X " + recMsg.OP3);
+//                                        Log.d("MESSAGECOORDSrec", "COS_X " + recMsg.OP2);
+//                                        Log.d("MESSAGECOORDSrec", "SIN_X " + recMsg.OP3);
                                         float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
                                         float velX = -recMsg.OP1*myModule*recMsg.OP2;
                                         float velY = myModule*recMsg.OP3;
                                         COS_X = recMsg.OP2;
                                         SIN_X = recMsg.OP3;
-                                        Log.d("MESSAGECOORDSrec", "Module " + myModule);
-                                        Log.d("MESSAGECOORDSrec", "VelX " + velX);
-                                        Log.d("MESSAGECOORDSrec", "VelY " + velY);
+//                                        Log.d("MESSAGECOORDSrec", "Module " + myModule);
+//                                        Log.d("MESSAGECOORDSrec", "VelX " + velX);
+//                                        Log.d("MESSAGECOORDSrec", "VelY " + velY);
                                         ballSprite.setPosition(xPos, -ballSprite.getHeight());
                                         scene.attachChild(ballSprite);
                                         handler.setVelocity(velX, velY);
@@ -570,6 +609,11 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_BONUS_SPEEDX4:
                                     Log.d("SendReceived", "MSG_TYPE_BONUS_SPEEDX4");
                                     bonusManager.addBonus(SPEEDX4, recMsg.OP1);
+                                    break;
+                                //------------------------BONUS LOCKFIELD------------------------
+                                case Constants.MSG_TYPE_BONUS_LOCKFIELD:
+                                    Log.d("SendReceived", "MSG_TYPE_BONUS_LOCKFIELD");
+                                    bonusManager.addBonus(LOCKFIELD, recMsg.OP1);
                                     break;
                                 default:
                                     Log.e("SendReceived", "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
@@ -669,13 +713,20 @@ public class GamePongTwoPlayer extends GamePong {
                 case BonusManager.BONUS_CREATED:
                     switch (msg.arg1){
                         case SPEEDX2:
+                            Log.d("BONUSCREATED", "ID : " + SPEEDX2);
                             setVelocityFromPrevious(msg.arg2, SPEEDX2);
                             break;
                         case SPEEDX3:
+                            Log.d("BONUSCREATED", "ID : " + SPEEDX3);
                             setVelocityFromPrevious(msg.arg2, SPEEDX3);
                             break;
                         case SPEEDX4:
+                            Log.d("BONUSCREATED", "ID : " + SPEEDX4);
                             setVelocityFromPrevious(msg.arg2, SPEEDX4);
+                            break;
+                        case LOCKFIELD:
+                            Log.d("BONUSCREATED", "ID : " + LOCKFIELD);
+                            locksField = true;
                             break;
                         default:
                             Log.e("Bonus", "Error - Invalid Bonus ID Created");
@@ -685,13 +736,20 @@ public class GamePongTwoPlayer extends GamePong {
                 case BonusManager.BONUS_EXPIRED:
                     switch (msg.arg1){
                         case SPEEDX2:
+                            Log.d("BONUSEXPIRED", "ID : " + SPEEDX2);
                             setVelocityFromPrevious(SPEEDX2, NOBONUS);
                             break;
                         case SPEEDX3:
+                            Log.d("BONUSEXPIRED", "ID : " + SPEEDX3);
                             setVelocityFromPrevious(SPEEDX3, NOBONUS);
                             break;
                         case SPEEDX4:
+                            Log.d("BONUSEXPIRED", "ID : " + SPEEDX4);
                             setVelocityFromPrevious(SPEEDX4, NOBONUS);
+                            break;
+                        case LOCKFIELD:
+                            Log.d("BONUSEXPIRED", "ID : " + LOCKFIELD);
+                            locksField = false;
                             break;
                         default:
                             Log.e("Bonus", "Error - Invalid Bonus ID Expired");
@@ -705,14 +763,18 @@ public class GamePongTwoPlayer extends GamePong {
     };
 
     private void setVelocityFromPrevious(int previousBonus, int nextBonus){
+//        Log.d("BonusVelocity", "Previous Module: " + myModule);
+//        Log.d("BonusVelocity", "Previous Velx: " + handler.getVelocityX());
+//        Log.d("BonusVelocity", "Previous Vely: " + handler.getVelocityY());
+
         myModule = (myModule/previousBonus)*nextBonus;
         if(haveBall) {
             handler.setVelocityX(Math.signum(handler.getVelocityX()) * myModule * COS_X);
             handler.setVelocityY(Math.signum(handler.getVelocityY()) * myModule * SIN_X);
         }
-        Log.d("BonusVelocity", "New Module: " + myModule);
-        Log.d("BonusVelocity", "New Velx: " + handler.getVelocityX());
-        Log.d("BonusVelocity", "New Vely: " + handler.getVelocityY());
+//        Log.d("BonusVelocity", "New Module: " + myModule);
+//        Log.d("BonusVelocity", "New Velx: " + handler.getVelocityX());
+//        Log.d("BonusVelocity", "New Vely: " + handler.getVelocityY());
     }
 
     //----------------------------------------------
@@ -723,7 +785,7 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public void run() {
             Random rand = new Random();
-            int bonusChoice = rand.nextInt(( SPEEDX4 - SPEEDX2) + 1) + SPEEDX2;
+            int bonusChoice = rand.nextInt(( LOCKFIELD - SPEEDX2) + 1) + SPEEDX2;
             if(deletedSprite){
                 Log.d("Sprite", "First One Is None");
                 attachSprite(bonusChoice);
@@ -774,6 +836,14 @@ public class GamePongTwoPlayer extends GamePong {
                 deletedSprite = false;
                 break;
 
+            case LOCKFIELD:
+                Log.d("AttachSprite", "Attaching LOCKFIELD");
+                scene.registerTouchArea(lockFieldSprite);
+                scene.attachChild(lockFieldSprite);
+                activedSprite = LOCKFIELD;
+                deletedSprite = false;
+                break;
+
             default:
                 Log.e(TAG, "Error in attachSprite(). Invalid ID");
                 break;
@@ -802,6 +872,14 @@ public class GamePongTwoPlayer extends GamePong {
                 Log.d("DetachSprite", "Deattaching SPEEDX4");
                 scene.unregisterTouchArea(speedSprite_X4);
                 scene.detachChild(speedSprite_X4);
+                activedSprite = SPRITE_NONE;
+                deletedSprite = true;
+                break;
+
+            case LOCKFIELD:
+                Log.d("DetachSprite", "Deattaching LOCKFIELD");
+                scene.unregisterTouchArea(lockFieldSprite);
+                scene.detachChild(lockFieldSprite);
                 activedSprite = SPRITE_NONE;
                 deletedSprite = true;
                 break;

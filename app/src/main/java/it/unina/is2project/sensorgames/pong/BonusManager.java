@@ -59,9 +59,13 @@ public class BonusManager {
             }
         }
 
+        // If the map previously contained a mapping for the key, the old value is replaced.
         bonusMap.put(bonusID, reachCount);
         Log.d(TAG, "Added Bonus With ID: " + bonusID + " and reachCount " + reachCount);
-        Log.d(TAG, "Exist Previous bonus ID: " + previousBonus);
+
+        if(previousBonus != GamePongTwoPlayer.NOBONUS)
+            Log.d(TAG, "Exist Previous bonus ID: " + previousBonus);
+
         handler.obtainMessage(BONUS_CREATED, bonusID, previousBonus, -1).sendToTarget();
     }
 
@@ -76,9 +80,11 @@ public class BonusManager {
             Map.Entry pair = (Map.Entry)it.next();
             value = (Integer)pair.getValue();
             value--;
-            Log.d("BonusManager", "Remain " + value + " of " + pair.getKey());
+            Log.d("BonusManager", "Remain " + value + " of " + pair.getValue() + " ID: " + pair.getKey());
             if (value == 0){
-                bonusMap.remove(pair.getKey());
+//                bonusMap.remove(pair.getKey());
+                it.remove();
+                Log.d("BonusManager", "Removed bonus ID: " + pair.getKey());
                 handler.obtainMessage(BONUS_EXPIRED, (Integer)pair.getKey(),-1).sendToTarget();
             }else{
                 bonusMap.put((Integer)pair.getKey(), value);
