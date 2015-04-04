@@ -79,18 +79,29 @@ public class GamePongTwoPlayer extends GamePong {
     private BitmapTextureAtlas lockFieldTexture;
     private ITextureRegion lockFieldTextureRegion;
     private Sprite lockFieldSprite;
+    // Cut Bar 30 Bonus
+    private BitmapTextureAtlas cutBar30Texture;
+    private ITextureRegion cutBar30TextureRegion;
+    private Sprite cutBar30Sprite;
+    // Cut Bar 50 Bonus
+    private BitmapTextureAtlas cutBar50Texture;
+    private ITextureRegion cutBar50TextureRegion;
+    private Sprite cutBar50Sprite;
     // Bonus Constants
-    public final static int NOBONUS = 1;
-    public final static int SPEEDX2 = 2;
-    public final static int SPEEDX3 = 3;
-    public final static int SPEEDX4 = 4;
+    public final static int NOBONUS = 1; // Necessarily with value 1 -> If change see setVelocityFromPrevious
+    public final static int SPEEDX2 = 2; // Necessarily with value 2 -> If change see setVelocityFromPrevious
+    public final static int SPEEDX3 = 3; // Necessarily with value 3 -> If change see setVelocityFromPrevious
+    public final static int SPEEDX4 = 4; // Necessarily with value 4 -> If change see setVelocityFromPrevious
     public final static int LOCKFIELD = 5;
+    public final static int CUTBAR30 = 6;
+    public final static int CUTBAR50 = 7;
     // Bonus Utils
     private int activedSprite = SPRITE_NONE;
     private boolean deletedSprite = true;
     TimerTask task;
     Timer timer;
     private boolean locksField = false;
+    private float BARWIDTH;
 
 
     @Override
@@ -157,6 +168,7 @@ public class GamePongTwoPlayer extends GamePong {
 
         // Traslating bar
         barSprite.setY(CAMERA_HEIGHT-textPoint.getHeight()-barSprite.getHeight());
+        BARWIDTH = barSprite.getWidth();
 
         return scene;
     }
@@ -184,6 +196,16 @@ public class GamePongTwoPlayer extends GamePong {
         lockFieldTexture = new BitmapTextureAtlas(getTextureManager(), lockFieldDrawable.getIntrinsicWidth(), lockFieldDrawable.getIntrinsicHeight());
         lockFieldTextureRegion = createFromResource(lockFieldTexture, this, R.drawable.firstenemy, 0, 0);
         lockFieldTexture.load();
+        // Cut Bar 30%
+        Drawable cutBar30Drawable = getResources().getDrawable(R.drawable.reduce30);
+        cutBar30Texture = new BitmapTextureAtlas(getTextureManager(), cutBar30Drawable.getIntrinsicWidth(), cutBar30Drawable.getIntrinsicHeight());
+        cutBar30TextureRegion = createFromResource(cutBar30Texture, this, R.drawable.reduce30, 0, 0);
+        cutBar30Texture.load();
+        // Cut Bar 50%
+        Drawable cutBar50Drawable = getResources().getDrawable(R.drawable.reduce50);
+        cutBar50Texture = new BitmapTextureAtlas(getTextureManager(), cutBar50Drawable.getIntrinsicWidth(), cutBar50Drawable.getIntrinsicHeight());
+        cutBar50TextureRegion = createFromResource(cutBar50Texture, this, R.drawable.reduce50, 0, 0);
+        cutBar50Texture.load();
     }
 
     @Override
@@ -384,6 +406,20 @@ public class GamePongTwoPlayer extends GamePong {
                         y <= lockFieldSprite.getY() + lockFieldSprite.getHeight())
                     checkTouchSpriteStatus = true;
                 break;
+            case CUTBAR30:
+                if(x <= cutBar30Sprite.getX() + cutBar30Sprite.getWidth() &&
+                        x >= cutBar30Sprite.getX() &&
+                        y >= cutBar30Sprite.getY() &&
+                        y <= cutBar30Sprite.getY() + cutBar30Sprite.getHeight())
+                    checkTouchSpriteStatus = true;
+                break;
+            case CUTBAR50:
+                if(x <= cutBar50Sprite.getX() + cutBar50Sprite.getWidth() &&
+                        x >= cutBar50Sprite.getX() &&
+                        y >= cutBar50Sprite.getY() &&
+                        y <= cutBar50Sprite.getY() + cutBar50Sprite.getHeight())
+                    checkTouchSpriteStatus = true;
+                break;
             default:
                 checkTouchSpriteStatus = false;
                 break;
@@ -466,6 +502,40 @@ public class GamePongTwoPlayer extends GamePong {
         lockFieldSprite.setScale(lockFieldSprite.getScaleX()/2);
         lockFieldSprite.setX((CAMERA_WIDTH / 2) - (lockFieldSprite.getWidth() / 2));
         lockFieldSprite.setY((CAMERA_HEIGHT / 2) - (lockFieldSprite.getHeight() / 2));
+
+        // CUT BAR 30 INITIALIZING
+        cutBar30Sprite = new Sprite(0, 0, cutBar30TextureRegion, getVertexBufferObjectManager()){
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                Log.d("Sprite", "Sprite CUTBAR30 Touched");
+                detachSprite(CUTBAR30);
+                Random rand = new Random();
+                int randNum = rand.nextInt(5) + 1;
+                AppMessage cutBar30Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUTBAR30, randNum);
+                sendBluetoothMessage(cutBar30Message);
+                return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+            }
+        };
+        cutBar30Sprite.setScale(cutBar30Sprite.getScaleX()/2);
+        cutBar30Sprite.setX((CAMERA_WIDTH / 2) - (cutBar30Sprite.getWidth() / 2));
+        cutBar30Sprite.setY((CAMERA_HEIGHT / 2) - (cutBar30Sprite.getHeight() / 2));
+
+        // CUT BAR 50 INITIALIZING
+        cutBar50Sprite = new Sprite(0, 0, cutBar50TextureRegion, getVertexBufferObjectManager()){
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                Log.d("Sprite", "Sprite CUTBAR30 Touched");
+                detachSprite(CUTBAR50);
+                Random rand = new Random();
+                int randNum = rand.nextInt(5) + 1;
+                AppMessage cutBar50Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUTBAR50, randNum);
+                sendBluetoothMessage(cutBar50Message);
+                return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+            }
+        };
+        cutBar50Sprite.setScale(cutBar50Sprite.getScaleX()/2);
+        cutBar50Sprite.setX((CAMERA_WIDTH / 2) - (cutBar50Sprite.getWidth() / 2));
+        cutBar50Sprite.setY((CAMERA_HEIGHT / 2) - (cutBar50Sprite.getHeight() / 2));
     }
 
     //----------------------------------------------
@@ -615,6 +685,16 @@ public class GamePongTwoPlayer extends GamePong {
                                     Log.d("SendReceived", "MSG_TYPE_BONUS_LOCKFIELD");
                                     bonusManager.addBonus(LOCKFIELD, recMsg.OP1);
                                     break;
+                                //------------------------BONUS CUTBAR30------------------------
+                                case Constants.MSG_TYPE_BONUS_CUTBAR30:
+                                    Log.d("SendReceived", "MSG_TYPE_BONUS_CUTBAR30");
+                                    bonusManager.addBonus(CUTBAR30, recMsg.OP1);
+                                    break;
+                                //------------------------BONUS CUTBAR50------------------------
+                                case Constants.MSG_TYPE_BONUS_CUTBAR50:
+                                    Log.d("SendReceived", "MSG_TYPE_BONUS_CUTBAR50");
+                                    bonusManager.addBonus(CUTBAR50, recMsg.OP1);
+                                    break;
                                 default:
                                     Log.e("SendReceived", "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                             }
@@ -713,20 +793,28 @@ public class GamePongTwoPlayer extends GamePong {
                 case BonusManager.BONUS_CREATED:
                     switch (msg.arg1){
                         case SPEEDX2:
-                            Log.d("BONUSCREATED", "ID : " + SPEEDX2);
+                            Log.d("BONUSCREATED", "SPEEDX2");
                             setVelocityFromPrevious(msg.arg2, SPEEDX2);
                             break;
                         case SPEEDX3:
-                            Log.d("BONUSCREATED", "ID : " + SPEEDX3);
+                            Log.d("BONUSCREATED", "SPEEDX3");
                             setVelocityFromPrevious(msg.arg2, SPEEDX3);
                             break;
                         case SPEEDX4:
-                            Log.d("BONUSCREATED", "ID : " + SPEEDX4);
+                            Log.d("BONUSCREATED", "SPEEDX4");
                             setVelocityFromPrevious(msg.arg2, SPEEDX4);
                             break;
                         case LOCKFIELD:
-                            Log.d("BONUSCREATED", "ID : " + LOCKFIELD);
+                            Log.d("BONUSCREATED", "LOCKFIELD");
                             locksField = true;
+                            break;
+                        case CUTBAR30:
+                            Log.d("BONUSCREATED", "CUTBAR30");
+                            barSprite.setWidth(BARWIDTH*0.7f);
+                            break;
+                        case CUTBAR50:
+                            Log.d("BONUSCREATED", "CUTBAR50");
+                            barSprite.setWidth(BARWIDTH*0.5f);
                             break;
                         default:
                             Log.e("Bonus", "Error - Invalid Bonus ID Created");
@@ -736,20 +824,28 @@ public class GamePongTwoPlayer extends GamePong {
                 case BonusManager.BONUS_EXPIRED:
                     switch (msg.arg1){
                         case SPEEDX2:
-                            Log.d("BONUSEXPIRED", "ID : " + SPEEDX2);
+                            Log.d("BONUSEXPIRED", "SPEEDX2");
                             setVelocityFromPrevious(SPEEDX2, NOBONUS);
                             break;
                         case SPEEDX3:
-                            Log.d("BONUSEXPIRED", "ID : " + SPEEDX3);
+                            Log.d("BONUSEXPIRED", "SPEEDX3");
                             setVelocityFromPrevious(SPEEDX3, NOBONUS);
                             break;
                         case SPEEDX4:
-                            Log.d("BONUSEXPIRED", "ID : " + SPEEDX4);
+                            Log.d("BONUSEXPIRED", "SPEEDX4");
                             setVelocityFromPrevious(SPEEDX4, NOBONUS);
                             break;
                         case LOCKFIELD:
-                            Log.d("BONUSEXPIRED", "ID : " + LOCKFIELD);
+                            Log.d("BONUSEXPIRED", "LOCKFIELD");
                             locksField = false;
+                            break;
+                        case CUTBAR30:
+                            Log.d("BONUSEXPIRED", "CUTBAR30");
+                            barSprite.setWidth(BARWIDTH);
+                            break;
+                        case CUTBAR50:
+                            Log.d("BONUSEXPIRED", "CUTBAR50");
+                            barSprite.setWidth(BARWIDTH);
                             break;
                         default:
                             Log.e("Bonus", "Error - Invalid Bonus ID Expired");
@@ -785,7 +881,7 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public void run() {
             Random rand = new Random();
-            int bonusChoice = rand.nextInt(( LOCKFIELD - SPEEDX2) + 1) + SPEEDX2;
+            int bonusChoice = rand.nextInt(( CUTBAR50 - SPEEDX2) + 1) + SPEEDX2;
             if(deletedSprite){
                 Log.d("Sprite", "First One Is None");
                 attachSprite(bonusChoice);
@@ -844,6 +940,22 @@ public class GamePongTwoPlayer extends GamePong {
                 deletedSprite = false;
                 break;
 
+            case CUTBAR30:
+                Log.d("AttachSprite", "Attaching CUTBAR30");
+                scene.registerTouchArea(cutBar30Sprite);
+                scene.attachChild(cutBar30Sprite);
+                activedSprite = CUTBAR30;
+                deletedSprite = false;
+                break;
+
+            case CUTBAR50:
+                Log.d("AttachSprite", "Attaching CUTBAR50");
+                scene.registerTouchArea(cutBar50Sprite);
+                scene.attachChild(cutBar50Sprite);
+                activedSprite = CUTBAR50;
+                deletedSprite = false;
+                break;
+
             default:
                 Log.e(TAG, "Error in attachSprite(). Invalid ID");
                 break;
@@ -880,6 +992,22 @@ public class GamePongTwoPlayer extends GamePong {
                 Log.d("DetachSprite", "Deattaching LOCKFIELD");
                 scene.unregisterTouchArea(lockFieldSprite);
                 scene.detachChild(lockFieldSprite);
+                activedSprite = SPRITE_NONE;
+                deletedSprite = true;
+                break;
+            
+            case CUTBAR30:
+                Log.d("DetachSprite", "Deattaching CUTBAR30");
+                scene.unregisterTouchArea(cutBar30Sprite);
+                scene.detachChild(cutBar30Sprite);
+                activedSprite = SPRITE_NONE;
+                deletedSprite = true;
+                break;
+
+            case CUTBAR50:
+                Log.d("DetachSprite", "Deattaching CUTBAR50");
+                scene.unregisterTouchArea(cutBar50Sprite);
+                scene.detachChild(cutBar50Sprite);
                 activedSprite = SPRITE_NONE;
                 deletedSprite = true;
                 break;

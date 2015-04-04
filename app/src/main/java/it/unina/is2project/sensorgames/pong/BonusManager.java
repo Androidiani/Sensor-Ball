@@ -59,6 +59,12 @@ public class BonusManager {
             }
         }
 
+        if(bonusID == GamePongTwoPlayer.CUTBAR30 ||
+                bonusID == GamePongTwoPlayer.CUTBAR50){
+            bonusMap.remove(GamePongTwoPlayer.CUTBAR30);
+            bonusMap.remove(GamePongTwoPlayer.CUTBAR50);
+        }
+
         // If the map previously contained a mapping for the key, the old value is replaced.
         bonusMap.put(bonusID, reachCount);
         Log.d(TAG, "Added Bonus With ID: " + bonusID + " and reachCount " + reachCount);
