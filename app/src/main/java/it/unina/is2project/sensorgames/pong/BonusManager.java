@@ -76,6 +76,7 @@ public class BonusManager {
             Map.Entry pair = (Map.Entry)it.next();
             value = (Integer)pair.getValue();
             value--;
+            Log.d("BonusManager", "Remain " + value + " of " + pair.getKey());
             if (value == 0){
                 bonusMap.remove(pair.getKey());
                 handler.obtainMessage(BONUS_EXPIRED, (Integer)pair.getKey(),-1).sendToTarget();

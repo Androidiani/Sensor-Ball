@@ -149,7 +149,6 @@ public class GamePongTwoPlayer extends GamePong {
         textPoint = new Text(10, CAMERA_HEIGHT-textInfo.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score, 30, getVertexBufferObjectManager());
         scene.attachChild(textPoint);
 
-        //TODO - Cambiare assolutamente... le cacate non le vogliamo fare
         // Traslating bar
         barSprite.setY(CAMERA_HEIGHT-textPoint.getHeight()-barSprite.getHeight());
 
