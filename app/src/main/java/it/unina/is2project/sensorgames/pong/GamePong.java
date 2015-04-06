@@ -17,6 +17,7 @@ import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.sensor.SensorDelay;
 import org.andengine.input.sensor.acceleration.AccelerationData;
@@ -124,6 +125,17 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected float COS_X;
     protected float myModule;
 
+    /**
+     * Pause Utils
+     */
+    protected Text textPause;
+    protected Text textPause_util;
+    protected static final int PAUSE = -1;
+    protected float old_x_speed;
+    protected float old_y_speed;
+    protected int old_game_speed;
+    protected long firstTap;
+
     @Override
     public EngineOptions onCreateEngineOptions() {
         // Understanding the device display's dimensions
@@ -167,6 +179,11 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // Setting up the background color
         scene.setBackground(new Background(0f, 0f, 0f));
 
+        // Adding the textPause to the scene
+        textPause_util = new Text(0, 0, font, "Pause", 20, getVertexBufferObjectManager());
+        textPause = new Text((CAMERA_WIDTH - textPause_util.getWidth()) / 2, (CAMERA_HEIGHT - textPause_util.getHeight()) / 2, font, "", 20, getVertexBufferObjectManager());
+        scene.attachChild(textPause);
+
         // Adding the ballSprite to the scene
         ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
         ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
@@ -203,6 +220,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // There's the edges' condition that do not hide the bar beyond the walls
         if (!(new_position > CAMERA_WIDTH - barSprite.getWidth() / 2 || new_position < -barSprite.getWidth() / 2))
             barSprite.setX(new_position);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        pauseGame();
     }
 
     protected void loadGraphics() {
@@ -477,6 +500,48 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         handler.setVelocity(BALL_SPEED, -BALL_SPEED);
     }
 
+    protected void clearGame() {
+        GAME_VELOCITY = 2 * DEVICE_RATIO;
+        BALL_SPEED = 350 * DEVICE_RATIO;
+        previous_event = NO_EVENT;
+        game_over = false;
+        pause = false;
+    }
+
+    protected void actionDownEvent(float x, float y) {
+        if (!pause) {
+            pauseGame();
+        }
+        if (pause && (System.currentTimeMillis() - firstTap > 500)) {
+            restartGameAfterPause();
+        }
+    }
+
+    protected void pauseGame() {
+        Log.d("Pause", "Game Paused");
+        textPause.setText(getResources().getString(R.string.text_pause));
+        // Saving Game Data
+        old_x_speed = handler.getVelocityX();
+        old_y_speed = handler.getVelocityY();
+        old_game_speed = GAME_VELOCITY;
+        // Stop the Game
+        handler.setVelocity(0);
+        GAME_VELOCITY = 0;
+        firstTap = System.currentTimeMillis();
+        previous_event = PAUSE;
+        touch.stop();
+        pause = true;
+    }
+
+    protected void restartGameAfterPause() {
+        Log.d("Pause", "Game Restarted");
+        textPause.setText("");
+        // Setting the old game velocity
+        handler.setVelocity(old_x_speed, old_y_speed);
+        GAME_VELOCITY = old_game_speed;
+        pause = false;
+    }
+
     /**
      * Get the directions of the ball
      *
@@ -491,16 +556,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         mPoint.set(x, y);
         return mPoint;
     }
-
-    protected void clearGame() {
-        GAME_VELOCITY = 2 * DEVICE_RATIO;
-        BALL_SPEED = 350 * DEVICE_RATIO;
-        previous_event = NO_EVENT;
-        game_over = false;
-        pause = false;
-    }
-
-    protected abstract void actionDownEvent(float x, float y);
 
     protected abstract void bluetoothExtra();
 

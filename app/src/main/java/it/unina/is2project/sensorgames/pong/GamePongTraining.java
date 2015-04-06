@@ -38,25 +38,17 @@ public class GamePongTraining extends GamePong {
     private ITextureRegion insaneTextureRegion;
     private Sprite insaneSprite;
 
-    // Text info
+    // Text Hit
     private Text textHit;
-    private Text textEvent;
 
-    // Game's mode
+    // 
     private int hit_count = 0;
-    private static final int EASY_MODE = 0;
-    private static final int NORMAL_MODE = 1;
-    private static final int INSANE_MODE = 2;
+    private static final int EASY_MODE = 1;
+    private static final int NORMAL_MODE = 2;
+    private static final int INSANE_MODE = 3;
 
     // Events
     private boolean enableModes = false;
-
-    // Pause utils
-    private static final int PAUSE = -1;
-    private float old_x_speed;
-    private float old_y_speed;
-    private int old_game_speed;
-    private long firstTap;
     private long secondTap;
 
     @Override
@@ -70,15 +62,20 @@ public class GamePongTraining extends GamePong {
         scene.attachChild(textHit);
         textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
 
-        // Adding the textEvnt to the scene
-        textEvent = new Text(10, textHit.getY() + textHit.getHeight(), font, "", 20, getVertexBufferObjectManager());
-        scene.attachChild(textEvent);
-
         // Adding the settingSprite to the scene
-        settingSprite = new Sprite(0, 0, settingTextureRegion, getVertexBufferObjectManager());
+        settingSprite = new Sprite(0, 0, settingTextureRegion, getVertexBufferObjectManager()) {
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                if (!enableModes) {
+                    showMenu();
+                }
+                return true;
+            }
+        };
         settingSprite.setWidth(CAMERA_WIDTH * 0.1f);
         settingSprite.setHeight(CAMERA_WIDTH * 0.1f);
         settingSprite.setX(CAMERA_WIDTH - settingSprite.getWidth());
+        scene.registerTouchArea(settingSprite);
         scene.attachChild(settingSprite);
 
         // Adding the easySprite to the scene
@@ -192,11 +189,8 @@ public class GamePongTraining extends GamePong {
     protected void actionDownEvent(float x, float y) {
         if (!pause) {
             pauseGame();
-            if (checkTouchOnSprite(x, y) && !enableModes) {
-                showMenu();
-            }
         }
-        if (pause && (System.currentTimeMillis() - firstTap > 500)) {
+        if (pause && (System.currentTimeMillis() - firstTap > 500) && !checkTouchOnSettingSprite(x, y)) {
             restartGameAfterPause();
         }
     }
@@ -231,36 +225,7 @@ public class GamePongTraining extends GamePong {
         //do nothing
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        pauseGame();
-    }
-
-    private void pauseGame() {
-        Log.d(TAG, "Game Paused");
-        textEvent.setText(getResources().getString(R.string.text_pause));
-        // Saving Game Data
-        old_x_speed = handler.getVelocityX();
-        old_y_speed = handler.getVelocityY();
-        old_game_speed = GAME_VELOCITY;
-        // Stop the Game
-        handler.setVelocity(0);
-        GAME_VELOCITY = 0;
-        firstTap = System.currentTimeMillis();
-        previous_event = PAUSE;
-        touch.stop();
-        pause = true;
-    }
-
-    private void restartGameAfterPause() {
-        textEvent.setText("");
-        handler.setVelocity(old_x_speed, old_y_speed);
-        GAME_VELOCITY = old_game_speed;
-        pause = false;
-    }
-
-    private boolean checkTouchOnSprite(float x, float y) {
+    private boolean checkTouchOnSettingSprite(float x, float y) {
         boolean checkTouchSpriteStatus = false;
         if (x <= settingSprite.getX() + settingSprite.getWidth() && x >= settingSprite.getX() && y >= settingSprite.getY() && y <= settingSprite.getY() + settingSprite.getHeight())
             checkTouchSpriteStatus = true;
@@ -312,14 +277,12 @@ public class GamePongTraining extends GamePong {
                 barSprite.setWidth(CAMERA_WIDTH * 0.3f);
                 break;
             }
-
             case NORMAL_MODE: {
                 GAME_VELOCITY = 3 * DEVICE_RATIO;
                 handler.setVelocity(BALL_SPEED * 2, -BALL_SPEED * 2);
                 barSprite.setWidth(CAMERA_WIDTH * 0.21f);
                 break;
             }
-
             case INSANE_MODE: {
                 GAME_VELOCITY = 4 * DEVICE_RATIO;
                 handler.setVelocity(BALL_SPEED * 4, -BALL_SPEED * 4);
