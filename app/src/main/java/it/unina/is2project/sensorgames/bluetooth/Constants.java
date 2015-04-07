@@ -29,6 +29,8 @@ public interface Constants {
     public static final int MSG_TYPE_BONUS_LOCKFIELD = 19;
     public static final int MSG_TYPE_BONUS_CUTBAR30 = 20;
     public static final int MSG_TYPE_BONUS_CUTBAR50 = 21;
+    public static final int MSG_TYPE_BONUS_REVERTEDBAR = 22;
+    public static final int MSG_TYPE_BONUS_RUSHHOUR = 23;
 
     // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";

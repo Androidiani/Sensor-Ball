@@ -8,6 +8,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
@@ -17,6 +18,8 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 
 import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -87,6 +90,19 @@ public class GamePongTwoPlayer extends GamePong {
     private BitmapTextureAtlas cutBar50Texture;
     private ITextureRegion cutBar50TextureRegion;
     private Sprite cutBar50Sprite;
+    // Reverted Bar Bonus
+    private BitmapTextureAtlas revertedBarTexture;
+    private ITextureRegion revertedBarTextureRegion;
+    private Sprite revertedBarSprite;
+    // Rush-Hour Bonus
+    private BitmapTextureAtlas rushHourTexture;
+    private ITextureRegion rushHourTextureRegion;
+    private Sprite rushHourSprite;
+    private List<Sprite> rushHour = new ArrayList<>();
+    private List<PhysicsHandler> rushHourHandlers = new ArrayList<>();
+    private boolean rush_hour = false;
+    private final int RUSH_HOUR_MIN_NUM = 15;
+    private final int RUSH_HOUR_MAX_NUM = 30;
     // Bonus Constants
     public final static int NOBONUS = 1; // Necessarily with value 1 -> If change see setVelocityFromPrevious
     public final static int SPEEDX2 = 2; // Necessarily with value 2 -> If change see setVelocityFromPrevious
@@ -95,6 +111,8 @@ public class GamePongTwoPlayer extends GamePong {
     public final static int LOCKFIELD = 5;
     public final static int CUTBAR30 = 6;
     public final static int CUTBAR50 = 7;
+    public final static int REVERTEDBAR = 8;
+    public final static int RUSHHOUR = 9;
     // Bonus Utils
     private int activedSprite = SPRITE_NONE;
     private boolean deletedSprite = true;
@@ -206,6 +224,16 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar50Texture = new BitmapTextureAtlas(getTextureManager(), cutBar50Drawable.getIntrinsicWidth(), cutBar50Drawable.getIntrinsicHeight());
         cutBar50TextureRegion = createFromResource(cutBar50Texture, this, R.drawable.reduce50, 0, 0);
         cutBar50Texture.load();
+        // Reverted Bar
+        Drawable revertedBarDrawable = getResources().getDrawable(R.drawable.revert);
+        revertedBarTexture = new BitmapTextureAtlas(getTextureManager(), revertedBarDrawable.getIntrinsicWidth(), revertedBarDrawable.getIntrinsicHeight());
+        revertedBarTextureRegion = createFromResource(revertedBarTexture, this, R.drawable.revert, 0, 0);
+        revertedBarTexture.load();
+        // Rush Hour
+        Drawable rushHourDrawable = getResources().getDrawable(R.drawable.rush_hour);
+        rushHourTexture = new BitmapTextureAtlas(getTextureManager(), rushHourDrawable.getIntrinsicWidth(), rushHourDrawable.getIntrinsicHeight());
+        rushHourTextureRegion = createFromResource(rushHourTexture, this, R.drawable.rush_hour, 0, 0);
+        rushHourTexture.load();
     }
 
     @Override
@@ -269,7 +297,6 @@ public class GamePongTwoPlayer extends GamePong {
         // Quando la palla ESCE COMPLETAMENTE dal device
         if (proximityRegion && ballSprite.getY() < -ballSprite.getHeight()){
             scene.detachChild(ballSprite);
-            //ballSprite.detachSelf();
             transferringBall = false;
 //            Log.d("Proximity", "Set Proximity To FALSE");
             proximityRegion = false;
@@ -300,7 +327,22 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected void gameEvents() {
-        //do nothing
+        if(rush_hour){
+            for (int i = 0; i < rushHour.size(); i++) {
+                if (rushHour.get(i).getX() < 0) {
+                    rushHourHandlers.get(i).setVelocityX(-rushHourHandlers.get(i).getVelocityX());
+                }
+                if (rushHour.get(i).getX() > CAMERA_WIDTH - (int) ballSprite.getWidth()) {
+                    rushHourHandlers.get(i).setVelocityX(-rushHourHandlers.get(i).getVelocityX());
+                }
+                if (rushHour.get(i).getY() < 0) {
+                    rushHourHandlers.get(i).setVelocityY(-rushHourHandlers.get(i).getVelocityY());
+                }
+                if (rushHour.get(i).getY() > CAMERA_HEIGHT - (int) ballSprite.getHeight()) {
+                    rushHourHandlers.get(i).setVelocityY(-rushHourHandlers.get(i).getVelocityY());
+                }
+            }
+        }
     }
 
     @Override
@@ -367,7 +409,7 @@ public class GamePongTwoPlayer extends GamePong {
     private void sendBluetoothMessage(AppMessage message) {
         Log.d("SendReceived", "Send Message Type: " + message.TYPE);
         if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -418,6 +460,20 @@ public class GamePongTwoPlayer extends GamePong {
                         x >= cutBar50Sprite.getX() &&
                         y >= cutBar50Sprite.getY() &&
                         y <= cutBar50Sprite.getY() + cutBar50Sprite.getHeight())
+                    checkTouchSpriteStatus = true;
+                break;
+            case REVERTEDBAR:
+                if(x <= revertedBarSprite.getX() + revertedBarSprite.getWidth() &&
+                        x >= revertedBarSprite.getX() &&
+                        y >= revertedBarSprite.getY() &&
+                        y <= revertedBarSprite.getY() + revertedBarSprite.getHeight())
+                    checkTouchSpriteStatus = true;
+                break;
+            case RUSHHOUR:
+                if(x <= rushHourSprite.getX() + rushHourSprite.getWidth() &&
+                        x >= rushHourSprite.getX() &&
+                        y >= rushHourSprite.getY() &&
+                        y <= rushHourSprite.getY() + rushHourSprite.getHeight())
                     checkTouchSpriteStatus = true;
                 break;
             default:
@@ -487,6 +543,7 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X4.setY((CAMERA_HEIGHT/2) - (speedSprite_X4.getHeight()/2));
 
         // LOCK FIELD INITIALIZING
+
         lockFieldSprite = new Sprite(0, 0, lockFieldTextureRegion, getVertexBufferObjectManager()){
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -504,6 +561,7 @@ public class GamePongTwoPlayer extends GamePong {
         lockFieldSprite.setY((CAMERA_HEIGHT / 2) - (lockFieldSprite.getHeight() / 2));
 
         // CUT BAR 30 INITIALIZING
+
         cutBar30Sprite = new Sprite(0, 0, cutBar30TextureRegion, getVertexBufferObjectManager()){
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
@@ -521,10 +579,11 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar30Sprite.setY((CAMERA_HEIGHT / 2) - (cutBar30Sprite.getHeight() / 2));
 
         // CUT BAR 50 INITIALIZING
+
         cutBar50Sprite = new Sprite(0, 0, cutBar50TextureRegion, getVertexBufferObjectManager()){
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite CUTBAR30 Touched");
+                Log.d("Sprite", "Sprite CUTBAR50 Touched");
                 detachSprite(CUTBAR50);
                 Random rand = new Random();
                 int randNum = rand.nextInt(5) + 1;
@@ -536,6 +595,42 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar50Sprite.setScale(cutBar50Sprite.getScaleX()/2);
         cutBar50Sprite.setX((CAMERA_WIDTH / 2) - (cutBar50Sprite.getWidth() / 2));
         cutBar50Sprite.setY((CAMERA_HEIGHT / 2) - (cutBar50Sprite.getHeight() / 2));
+
+        // REVERTED BAR INITIALIZING
+
+        revertedBarSprite = new Sprite(0, 0, revertedBarTextureRegion, getVertexBufferObjectManager()){
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                Log.d("Sprite", "Sprite REVERTEDBAR Touched");
+                detachSprite(REVERTEDBAR);
+                Random rand = new Random();
+                int randNum = rand.nextInt(5) + 1;
+                AppMessage revertedBarMessage = new AppMessage(Constants.MSG_TYPE_BONUS_REVERTEDBAR, randNum);
+                sendBluetoothMessage(revertedBarMessage);
+                return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+            }
+        };
+        revertedBarSprite.setScale(revertedBarSprite.getScaleX()/2);
+        revertedBarSprite.setX((CAMERA_WIDTH / 2) - (revertedBarSprite.getWidth() / 2));
+        revertedBarSprite.setY((CAMERA_HEIGHT / 2) - (revertedBarSprite.getHeight() / 2));
+        
+        // RUSH-HOUR INITIALIZING
+
+        rushHourSprite = new Sprite(0, 0, rushHourTextureRegion, getVertexBufferObjectManager()){
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                Log.d("Sprite", "Sprite RUSHHOUR Touched");
+                detachSprite(RUSHHOUR);
+                Random rand = new Random();
+                int randNum = rand.nextInt(5) + 1;
+                AppMessage rushHourMessage = new AppMessage(Constants.MSG_TYPE_BONUS_RUSHHOUR, randNum);
+                sendBluetoothMessage(rushHourMessage);
+                return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
+            }
+        };
+        rushHourSprite.setScale(rushHourSprite.getScaleX()/2);
+        rushHourSprite.setX((CAMERA_WIDTH / 2) - (rushHourSprite.getWidth() / 2));
+        rushHourSprite.setY((CAMERA_HEIGHT / 2) - (rushHourSprite.getHeight() / 2));
     }
 
     //----------------------------------------------
@@ -695,6 +790,17 @@ public class GamePongTwoPlayer extends GamePong {
                                     Log.d("SendReceived", "MSG_TYPE_BONUS_CUTBAR50");
                                     bonusManager.addBonus(CUTBAR50, recMsg.OP1);
                                     break;
+                                //------------------------BONUS REVERTEDBAR------------------------
+                                case Constants.MSG_TYPE_BONUS_REVERTEDBAR:
+                                    Log.d("SendReceived", "MSG_TYPE_BONUS_REVERTEDBAR");
+                                    bonusManager.addBonus(REVERTEDBAR, recMsg.OP1);
+                                    break;
+                                //------------------------BONUS RUSH-HOUR------------------------
+                                case Constants.MSG_TYPE_BONUS_RUSHHOUR:
+                                    Log.d("SendReceived", "MSG_TYPE_BONUS_RUSHHOUR");
+                                    bonusManager.addBonus(RUSHHOUR, recMsg.OP1);
+                                    break;
+
                                 default:
                                     Log.e("SendReceived", "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                             }
@@ -735,7 +841,7 @@ public class GamePongTwoPlayer extends GamePong {
                             case FSMGame.STATE_IN_GAME_WAITING:
                                 handler.setVelocity(0, 0);
                                 GAME_VELOCITY = 0;
-                                textInfo.setText(getApplicationContext().getString(R.string.text_waiting));
+                                textInfo.setText(getResources().getString(R.string.text_waiting));
                                 break;
                             case FSMGame.STATE_GAME_PAUSED:
                                 textInfo.setText(getResources().getString(R.string.text_pause));
@@ -770,12 +876,15 @@ public class GamePongTwoPlayer extends GamePong {
                                 isConnected = false;
                                 handler.setVelocity(0, 0);
                                 GAME_VELOCITY = 0;
-                                textInfo.setText(getApplicationContext().getString(R.string.text_disconnected));
+                                textInfo.setText(getResources().getString(R.string.text_disconnected));
                                 break;
                             case FSMGame.STATE_OPPONENT_LEFT:
                                 handler.setVelocity(0, 0);
                                 GAME_VELOCITY = 0;
-                                textInfo.setText(getApplicationContext().getString(R.string.text_opponent_left));
+                                if(rush_hour){
+                                    clearRushHour();
+                                }
+                                textInfo.setText(getResources().getString(R.string.text_opponent_left));
                                 break;
                             default:
                         }
@@ -816,6 +925,19 @@ public class GamePongTwoPlayer extends GamePong {
                             Log.d("BONUSCREATED", "CUTBAR50");
                             barSprite.setWidth(BARWIDTH*0.5f);
                             break;
+                        case REVERTEDBAR:
+                            Log.d("BONUSCREATED", "REVERTEDBAR");
+                            if(Math.signum(GAME_VELOCITY) > 0)
+                                GAME_VELOCITY = -GAME_VELOCITY;
+                            break;
+                        case RUSHHOUR:
+                            Log.d("BONUSCREATED", "RUSHHOUR");
+                            if(!rush_hour) {
+                                rush_hour = true;
+                                rushHourLogic();
+                            }
+                            break;
+
                         default:
                             Log.e("Bonus", "Error - Invalid Bonus ID Created");
                             break;
@@ -847,6 +969,17 @@ public class GamePongTwoPlayer extends GamePong {
                             Log.d("BONUSEXPIRED", "CUTBAR50");
                             barSprite.setWidth(BARWIDTH);
                             break;
+                        case REVERTEDBAR:
+                            Log.d("BONUSEXPIRED", "REVERTEDBAR");
+                            if(Math.signum(GAME_VELOCITY) < 0)
+                                GAME_VELOCITY = -GAME_VELOCITY;
+                            break;
+                        case RUSHHOUR:
+                            Log.d("BONUSEXPIRED", "RUSHHOUR");
+                            clearRushHour();
+                            rush_hour = false;
+                            break;
+
                         default:
                             Log.e("Bonus", "Error - Invalid Bonus ID Expired");
                             break;
@@ -857,6 +990,34 @@ public class GamePongTwoPlayer extends GamePong {
             }
         }
     };
+
+    private void rushHourLogic() {
+        Random random = new Random();
+        int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
+        for (int i = 0; i < RUSH_HOUR_NUM; i++) {
+            Sprite rush = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
+            rushHour.add(rush);
+            rush.setWidth(CAMERA_WIDTH * 0.1f);
+            rush.setHeight(CAMERA_WIDTH * 0.1f);
+            rush.setPosition((int) rush.getWidth() + random.nextInt(CAMERA_WIDTH - (int) rush.getWidth() * 2), (int) rush.getHeight() + random.nextInt(CAMERA_HEIGHT - (int) rush.getHeight() * 2));
+
+            PhysicsHandler physicsHandler = new PhysicsHandler(rushHour.get(i));
+            physicsHandler.setVelocity(BALL_SPEED * (random.nextFloat() - random.nextFloat()), BALL_SPEED * (random.nextFloat() - random.nextFloat()));
+            rushHourHandlers.add(physicsHandler);
+
+            rushHour.get(i).registerUpdateHandler(rushHourHandlers.get(i));
+
+            scene.attachChild(rushHour.get(i));
+        }
+    }
+
+    private void clearRushHour() {
+        do {
+            rushHour.get(0).detachSelf();
+            rushHour.remove(0);
+            rushHourHandlers.remove(0);
+        } while (rushHour.size() > 0);
+    }
 
     private void setVelocityFromPrevious(int previousBonus, int nextBonus){
 //        Log.d("BonusVelocity", "Previous Module: " + myModule);
@@ -881,7 +1042,7 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public void run() {
             Random rand = new Random();
-            int bonusChoice = rand.nextInt(( CUTBAR50 - SPEEDX2) + 1) + SPEEDX2;
+            int bonusChoice = rand.nextInt(( RUSHHOUR - SPEEDX2) + 1) + SPEEDX2;
             if(deletedSprite){
                 Log.d("Sprite", "First One Is None");
                 attachSprite(bonusChoice);
@@ -956,6 +1117,22 @@ public class GamePongTwoPlayer extends GamePong {
                 deletedSprite = false;
                 break;
 
+            case REVERTEDBAR:
+                Log.d("AttachSprite", "Attaching REVERTEDBAR");
+                scene.registerTouchArea(revertedBarSprite);
+                scene.attachChild(revertedBarSprite);
+                activedSprite = REVERTEDBAR;
+                deletedSprite = false;
+                break;
+
+            case RUSHHOUR:
+                Log.d("AttachSprite", "Attaching RUSHHOUR");
+                scene.registerTouchArea(rushHourSprite);
+                scene.attachChild(rushHourSprite);
+                activedSprite = RUSHHOUR;
+                deletedSprite = false;
+                break;
+
             default:
                 Log.e(TAG, "Error in attachSprite(). Invalid ID");
                 break;
@@ -1008,6 +1185,22 @@ public class GamePongTwoPlayer extends GamePong {
                 Log.d("DetachSprite", "Deattaching CUTBAR50");
                 scene.unregisterTouchArea(cutBar50Sprite);
                 scene.detachChild(cutBar50Sprite);
+                activedSprite = SPRITE_NONE;
+                deletedSprite = true;
+                break;
+
+            case REVERTEDBAR:
+                Log.d("DetachSprite", "Deattaching REVERTEDBAR");
+                scene.unregisterTouchArea(revertedBarSprite);
+                scene.detachChild(revertedBarSprite);
+                activedSprite = SPRITE_NONE;
+                deletedSprite = true;
+                break;
+
+            case RUSHHOUR:
+                Log.d("DetachSprite", "Deattaching RUSHHOUR");
+                scene.unregisterTouchArea(rushHourSprite);
+                scene.detachChild(rushHourSprite);
                 activedSprite = SPRITE_NONE;
                 deletedSprite = true;
                 break;
