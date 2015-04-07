@@ -127,6 +127,14 @@
         <item>x2</item>
         <item>x3</item>
     </string-array>
+    <string-array name="event_spinner">
+        <item>No event</item>
+        <item>Cut bar 30%</item>
+        <item>Cut bar 50%</item>
+        <item>Rush Hour</item>
+        <item>Reverse</item>
+        <item>First Enemy</item>
+    </string-array>
 
     <string name="hello_world">Hello world!</string>
 

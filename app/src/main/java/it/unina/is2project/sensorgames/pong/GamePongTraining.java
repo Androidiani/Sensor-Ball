@@ -4,12 +4,17 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import it.unina.is2project.sensorgames.R;
 
@@ -33,6 +38,24 @@ public class GamePongTraining extends GamePong {
     // Events
     private long secondTap;
 
+    // Game events
+    private int event;
+    private static final int NO_EVENT = 0;
+    private static final int CUT_30 = 1;
+    private static final int CUT_50 = 2;
+    private static final int RUSH_HOUR = 3;
+    private static final int REVERSE = 4;
+    private static final int FIRST_ENEMY = 5;
+
+    // Rush Hour
+    private List<Sprite> rushHour = new ArrayList<>();
+    private List<PhysicsHandler> rushHourHandlers = new ArrayList<>();
+    private static final int RUSH_HOUR_MIN_NUM = 15;
+    private static final int RUSH_HOUR_MAX_NUM = 30;
+
+    // First enemy
+    private Sprite firstEnemy;
+
     @Override
     protected Scene onCreateScene() {
         super.onCreateScene();
@@ -46,6 +69,7 @@ public class GamePongTraining extends GamePong {
         settingSprite = new Sprite(0, 0, settingTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                if(event != NO_EVENT) clearEvents();
                 Intent intent = new Intent(getBaseContext(), TrainingSettings.class);
                 startActivity(intent);
                 finish();
@@ -65,17 +89,158 @@ public class GamePongTraining extends GamePong {
         Intent i = getIntent();
         int ballSpeed = i.getIntExtra("ballspeed", 1);
         int barSpeed = i.getIntExtra("barspeed", 1);
-        int event = i.getIntExtra("event", 0);
+        event = i.getIntExtra("event", 0);
 
-        setTrainingMode(ballSpeed, barSpeed, event);
+        setTrainingMode(ballSpeed, barSpeed);
 
         return scene;
     }
 
-    private void setTrainingMode(int ball_speed, int bar_speed, int event){
+    private void setTrainingMode(int ball_speed, int bar_speed){
+        // Setting up the ball speed
         handler.setVelocity(ball_speed * BALL_SPEED, -ball_speed * BALL_SPEED);
+
+        // Setting up the bar speed
         GAME_VELOCITY = bar_speed * GAME_VELOCITY;
-        //TODO logica con event una volta creata la classe dei bonus
+
+        // Setting up the game events
+        switch(event){
+            case CUT_30:
+                cutBar30Logic();
+                break;
+            case CUT_50:
+                cutBar50Logic();
+                break;
+            case RUSH_HOUR:
+                rushHourLogic();
+                break;
+            case REVERSE:
+                reverseLogic();
+                break;
+            case FIRST_ENEMY:
+                firstEnemyLogic();
+                break;
+        }
+    }
+
+    private void cutBar30Logic(){
+        barSprite.setWidth(0.21f * CAMERA_WIDTH);
+    }
+
+    private void clearCutBar30(){
+        barSprite.setWidth(0.3f * CAMERA_WIDTH);
+    }
+
+    private void cutBar50Logic() {
+        barSprite.setWidth(0.15f * CAMERA_WIDTH);
+    }
+
+    private void clearCutBar50() {
+        barSprite.setWidth(0.3f * CAMERA_WIDTH);
+    }
+
+    private void rushHourLogic() {
+        Random random = new Random();
+        int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
+
+        for (int i = 0; i < RUSH_HOUR_NUM; i++) {
+            Sprite rush = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
+            rushHour.add(rush);
+            rush.setWidth(CAMERA_WIDTH * 0.1f);
+            rush.setHeight(CAMERA_WIDTH * 0.1f);
+            rush.setPosition((int) rush.getWidth() + random.nextInt(CAMERA_WIDTH - (int) rush.getWidth() * 2), (int) rush.getHeight() + random.nextInt(CAMERA_HEIGHT - (int) rush.getHeight() * 2));
+
+            PhysicsHandler physicsHandler = new PhysicsHandler(rushHour.get(i));
+            physicsHandler.setVelocity(BALL_SPEED * (random.nextFloat() - random.nextFloat()), BALL_SPEED * (random.nextFloat() - random.nextFloat()));
+            rushHourHandlers.add(physicsHandler);
+
+            rushHour.get(i).registerUpdateHandler(rushHourHandlers.get(i));
+
+            scene.attachChild(rushHour.get(i));
+        }
+        Log.d(TAG, "RUSH_HOUR_NUM: " + RUSH_HOUR_NUM + " rushHour.size(): " + rushHour.size());
+    }
+
+    private void clearRushHour() {
+        do {
+            rushHour.get(0).detachSelf();
+            rushHour.remove(0);
+            rushHourHandlers.remove(0);
+        } while (rushHour.size() > 0);
+    }
+
+    private void reverseLogic() {
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+    }
+
+    private void clearReverse() {
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+    }
+
+    private void firstEnemyLogic() {
+        firstEnemy = new Sprite(0, CAMERA_HEIGHT / 3, barTextureRegion, getVertexBufferObjectManager());
+        firstEnemy.setWidth(CAMERA_WIDTH);
+        scene.attachChild(firstEnemy);
+    }
+
+    private void clearFirstEnemy() {
+        firstEnemy.detachSelf();
+    }
+
+    private void firstEnemyCollisions() {
+        if (ballSprite.collidesWith(firstEnemy) && ballSprite.getY() < CAMERA_HEIGHT / 2 && previous_event != TOP) {
+            previous_event = TOP;
+            handler.setVelocityY(-handler.getVelocityY());
+            touch.play();
+        }
+    }
+
+    private void rushHourCollisions() {
+        for (int i = 0; i < rushHour.size(); i++) {
+            if (rushHour.get(i).getX() < 0) {
+                rushHourHandlers.get(i).setVelocityX(-rushHourHandlers.get(i).getVelocityX());
+            }
+            if (rushHour.get(i).getX() > CAMERA_WIDTH - (int) ballSprite.getWidth()) {
+                rushHourHandlers.get(i).setVelocityX(-rushHourHandlers.get(i).getVelocityX());
+            }
+            if (rushHour.get(i).getY() < 0) {
+                rushHourHandlers.get(i).setVelocityY(-rushHourHandlers.get(i).getVelocityY());
+            }
+            if (rushHour.get(i).getY() > CAMERA_HEIGHT - (int) ballSprite.getHeight()) {
+                rushHourHandlers.get(i).setVelocityY(-rushHourHandlers.get(i).getVelocityY());
+            }
+        }
+    }
+
+    private void gameEventsCollisionLogic() {
+        switch (event) {
+            case FIRST_ENEMY:
+                firstEnemyCollisions();
+                break;
+            case RUSH_HOUR:
+                rushHourCollisions();
+                break;
+        }
+    }
+
+    private void clearEvents(){
+        switch(event){
+            case CUT_30:
+                clearCutBar30();
+                break;
+            case CUT_50:
+                clearCutBar50();
+                break;
+            case RUSH_HOUR:
+                clearRushHour();
+                break;
+            case REVERSE:
+                clearReverse();
+                break;
+            case FIRST_ENEMY:
+                clearFirstEnemy();
+                break;
+        }
     }
 
 
@@ -131,7 +296,7 @@ public class GamePongTraining extends GamePong {
 
     @Override
     protected void gameEvents() {
-        //do nothing
+        gameEventsCollisionLogic();
     }
 
     @Override

@@ -24,15 +24,18 @@ public class TrainingSettings extends ActionBarActivity {
     // Spinner
     Spinner ball_speed_spinner;
     Spinner bar_speed_spinner;
+    Spinner event_spinner;
 
     // TextView
     TextView title;
     TextView ball_speed_textview;
     TextView bar_speed_textview;
+    TextView event_textview;
 
     // Array adapter
     ArrayAdapter ball_speed_adapter;
     ArrayAdapter bar_speed_adapter;
+    ArrayAdapter event_adapter;
 
     // Button
     Button back;
@@ -68,6 +71,7 @@ public class TrainingSettings extends ActionBarActivity {
                 Intent intent = new Intent(getBaseContext(), GamePongTraining.class);
                 intent.putExtra("ballspeed", ball_speed);
                 intent.putExtra("barspeed", bar_speed);
+                intent.putExtra("event", event);
                 startActivity(intent);
                 finish();
             }
@@ -79,10 +83,12 @@ public class TrainingSettings extends ActionBarActivity {
         // Spinner
         ball_speed_spinner = (Spinner) findViewById(R.id.spinner_ball_speed);
         bar_speed_spinner = (Spinner) findViewById(R.id.spinner_bar_speed);
+        event_spinner = (Spinner) findViewById(R.id.spinner_event);
 
         // TextView
         ball_speed_textview = (TextView) findViewById(R.id.txt_ball_speed);
         bar_speed_textview = (TextView) findViewById(R.id.txt_bar_speed);
+        event_textview = (TextView) findViewById(R.id.txt_event_selection);
         title = (TextView) findViewById(R.id.title_setting_training);
 
         // Button
@@ -96,6 +102,7 @@ public class TrainingSettings extends ActionBarActivity {
         /** Set the typeface */
         ball_speed_textview.setTypeface(typeFace);
         bar_speed_textview.setTypeface(typeFace);
+        event_textview.setTypeface(typeFace);
         title.setTypeface(typeFace);
     }
 
@@ -127,6 +134,21 @@ public class TrainingSettings extends ActionBarActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 bar_speed = 1;
+            }
+        });
+
+        // Event Spinner
+        event_adapter = ArrayAdapter.createFromResource(this, R.array.event_spinner, android.R.layout.simple_spinner_item);
+        event_spinner.setAdapter(event_adapter);
+        event_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                event = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                event = 0;
             }
         });
     }

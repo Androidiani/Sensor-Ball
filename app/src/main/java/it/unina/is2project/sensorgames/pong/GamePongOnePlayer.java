@@ -719,7 +719,7 @@ public class GamePongOnePlayer extends GamePong {
         GAME_VELOCITY = (-1) * GAME_VELOCITY;
     }
 
-    private void clearReverseLogic() {
+    private void clearReverse() {
         GAME_VELOCITY = (-1) * GAME_VELOCITY;
         reverse = false;
     }
@@ -863,7 +863,7 @@ public class GamePongOnePlayer extends GamePong {
                 clearBigBar();
                 break;
             case REVERSE:
-                clearReverseLogic();
+                clearReverse();
                 break;
             case FREEZE:
                 clearFreeze();
