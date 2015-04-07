@@ -23,7 +23,6 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" >
-
         </activity>
         <activity
             android:name=".AboutActivity"
@@ -36,8 +35,9 @@
             android:screenOrientation="portrait" />
         <activity android:name=".pong.GamePongTwoPlayer" >
         </activity>
-        <activity android:name=".pong.GamePongOnePlayer"
-            android:exported="true">
+        <activity
+            android:name=".pong.GamePongOnePlayer"
+            android:exported="true" >
         </activity>
         <activity android:name=".pong.GamePongTraining" >
         </activity>
@@ -47,14 +47,21 @@
             android:parentActivityName=".splash.SplashScreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.unina.is2project.sensorgames.splash.SplashScreen" />
         </activity>
-        <activity android:name=".pong.GamePongOnePlayerAutomatedTest"
-            android:exported="true"></activity>
+        <activity
+            android:name=".pong.GamePongOnePlayerAutomatedTest"
+            android:exported="true" />
+        <activity
+            android:name=".pong.TrainingSettings"
+            android:label="@string/title_activity_training_settings" >
+        </activity>
     </application>
 
 </manifest>
