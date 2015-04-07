@@ -70,14 +70,26 @@ public class GamePongTwoPlayer extends GamePong {
     private BitmapTextureAtlas speedTexture_X2;
     private ITextureRegion speedTextureRegion_X2;
     private Sprite speedSprite_X2;
+    // Speed X2 Icon
+    private BitmapTextureAtlas speedIconTexture_X2;
+    private ITextureRegion speedIconTextureRegion_X2;
+    private Sprite speedIconSprite_X2;
     // Speed X3 Bonus
     private BitmapTextureAtlas speedTexture_X3;
     private ITextureRegion speedTextureRegion_X3;
     private Sprite speedSprite_X3;
+    // Speed X3 Icon
+    private BitmapTextureAtlas speedIconTexture_X3;
+    private ITextureRegion speedIconTextureRegion_X3;
+    private Sprite speedIconSprite_X3;
     // Speed X4 Bonus
     private BitmapTextureAtlas speedTexture_X4;
     private ITextureRegion speedTextureRegion_X4;
     private Sprite speedSprite_X4;
+    // Speed X4 Icon
+    private BitmapTextureAtlas speedIconTexture_X4;
+    private ITextureRegion speedIconTextureRegion_X4;
+    private Sprite speedIconSprite_X4;
     // Lock Field Bonus
     private BitmapTextureAtlas lockFieldTexture;
     private ITextureRegion lockFieldTextureRegion;
@@ -119,6 +131,9 @@ public class GamePongTwoPlayer extends GamePong {
     TimerTask task;
     Timer timer;
     private boolean locksField = false;
+    private boolean speedx2_bonus = false;
+    private boolean speedx3_bonus = false;
+    private boolean speedx4_bonus = false;
     private float BARWIDTH;
 
 
@@ -139,8 +154,6 @@ public class GamePongTwoPlayer extends GamePong {
         }
 
         super.onCreateScene();
-
-        initializeSprite();
 
         Log.d(TAG, "Ho la palla : " + haveBall);
 
@@ -188,48 +201,65 @@ public class GamePongTwoPlayer extends GamePong {
         barSprite.setY(CAMERA_HEIGHT-textPoint.getHeight()-barSprite.getHeight());
         BARWIDTH = barSprite.getWidth();
 
+        initializeSprite();
+
         return scene;
     }
 
     @Override
     protected void loadGraphics() {
         super.loadGraphics();
-        // Speed X2
+        // Speed X2 Bonus
         Drawable speedDrawable_X2 = getResources().getDrawable(R.drawable.speedx2);
         speedTexture_X2 = new BitmapTextureAtlas(getTextureManager(), speedDrawable_X2.getIntrinsicWidth(), speedDrawable_X2.getIntrinsicHeight());
         speedTextureRegion_X2 = createFromResource(speedTexture_X2, this, R.drawable.speedx2, 0, 0);
         speedTexture_X2.load();
-        // Speed X3
+        // Speed X2 Icon
+        Drawable speedIconDrawable_X2 = getResources().getDrawable(R.drawable.speedx2_icon);
+        speedIconTexture_X2 = new BitmapTextureAtlas(getTextureManager(), speedIconDrawable_X2.getIntrinsicWidth(), speedIconDrawable_X2.getIntrinsicHeight());
+        speedIconTextureRegion_X2 = createFromResource(speedIconTexture_X2, this, R.drawable.speedx2_icon, 0, 0);
+        speedIconTexture_X2.load();
+        // Speed X3 Bonus
         Drawable speedDrawable_X3 = getResources().getDrawable(R.drawable.speedx3);
         speedTexture_X3 = new BitmapTextureAtlas(getTextureManager(), speedDrawable_X3.getIntrinsicWidth(), speedDrawable_X3.getIntrinsicHeight());
         speedTextureRegion_X3 = createFromResource(speedTexture_X3, this, R.drawable.speedx3, 0, 0);
         speedTexture_X3.load();
-        // Speed X4
+        // Speed X3 Icon
+        Drawable speedIconDrawable_X3 = getResources().getDrawable(R.drawable.speedx3_icon);
+        speedIconTexture_X3 = new BitmapTextureAtlas(getTextureManager(), speedIconDrawable_X3.getIntrinsicWidth(), speedIconDrawable_X3.getIntrinsicHeight());
+        speedIconTextureRegion_X3 = createFromResource(speedIconTexture_X3, this, R.drawable.speedx3_icon, 0, 0);
+        speedIconTexture_X3.load();
+        // Speed X4 Bonus
         Drawable speedDrawable_X4 = getResources().getDrawable(R.drawable.speedx4);
         speedTexture_X4 = new BitmapTextureAtlas(getTextureManager(), speedDrawable_X4.getIntrinsicWidth(), speedDrawable_X4.getIntrinsicHeight());
         speedTextureRegion_X4 = createFromResource(speedTexture_X4, this, R.drawable.speedx4, 0, 0);
         speedTexture_X4.load();
-        // Lock Screen
+        // Speed X4 Icon
+        Drawable speedIconDrawable_X4 = getResources().getDrawable(R.drawable.speedx4_icon);
+        speedIconTexture_X4 = new BitmapTextureAtlas(getTextureManager(), speedIconDrawable_X4.getIntrinsicWidth(), speedIconDrawable_X4.getIntrinsicHeight());
+        speedIconTextureRegion_X4 = createFromResource(speedIconTexture_X4, this, R.drawable.speedx4_icon, 0, 0);
+        speedIconTexture_X4.load();
+        // Lock Screen Bonus
         Drawable lockFieldDrawable = getResources().getDrawable(R.drawable.firstenemy);
         lockFieldTexture = new BitmapTextureAtlas(getTextureManager(), lockFieldDrawable.getIntrinsicWidth(), lockFieldDrawable.getIntrinsicHeight());
         lockFieldTextureRegion = createFromResource(lockFieldTexture, this, R.drawable.firstenemy, 0, 0);
         lockFieldTexture.load();
-        // Cut Bar 30%
+        // Cut Bar 30% Bonus
         Drawable cutBar30Drawable = getResources().getDrawable(R.drawable.reduce30);
         cutBar30Texture = new BitmapTextureAtlas(getTextureManager(), cutBar30Drawable.getIntrinsicWidth(), cutBar30Drawable.getIntrinsicHeight());
         cutBar30TextureRegion = createFromResource(cutBar30Texture, this, R.drawable.reduce30, 0, 0);
         cutBar30Texture.load();
-        // Cut Bar 50%
+        // Cut Bar 50% Bonus
         Drawable cutBar50Drawable = getResources().getDrawable(R.drawable.reduce50);
         cutBar50Texture = new BitmapTextureAtlas(getTextureManager(), cutBar50Drawable.getIntrinsicWidth(), cutBar50Drawable.getIntrinsicHeight());
         cutBar50TextureRegion = createFromResource(cutBar50Texture, this, R.drawable.reduce50, 0, 0);
         cutBar50Texture.load();
-        // Reverted Bar
+        // Reverted Bar Bonus
         Drawable revertedBarDrawable = getResources().getDrawable(R.drawable.revert);
         revertedBarTexture = new BitmapTextureAtlas(getTextureManager(), revertedBarDrawable.getIntrinsicWidth(), revertedBarDrawable.getIntrinsicHeight());
         revertedBarTextureRegion = createFromResource(revertedBarTexture, this, R.drawable.revert, 0, 0);
         revertedBarTexture.load();
-        // Rush Hour
+        // Rush Hour Bonus
         Drawable rushHourDrawable = getResources().getDrawable(R.drawable.rush_hour);
         rushHourTexture = new BitmapTextureAtlas(getTextureManager(), rushHourDrawable.getIntrinsicWidth(), rushHourDrawable.getIntrinsicHeight());
         rushHourTextureRegion = createFromResource(rushHourTexture, this, R.drawable.rush_hour, 0, 0);
@@ -485,7 +515,7 @@ public class GamePongTwoPlayer extends GamePong {
 
     private void initializeSprite(){
 
-        // SPEED X2 INITIALIZING
+        // SPEED X2 BONUS INITIALIZING
 
         speedSprite_X2 = new Sprite(0, 0, speedTextureRegion_X2, getVertexBufferObjectManager()){
             @Override
@@ -503,8 +533,14 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X2.setScale(speedSprite_X2.getScaleX()/2);
         speedSprite_X2.setX((CAMERA_WIDTH/2) - (speedSprite_X2.getWidth()/2));
         speedSprite_X2.setY((CAMERA_HEIGHT/2) - (speedSprite_X2.getHeight()/2));
-        
-        // SPEED X3 INITIALIZING
+
+        // SPEED X2 ICON INITIALIZING
+
+        speedIconSprite_X2 = new Sprite(0, 0, speedIconTextureRegion_X2, getVertexBufferObjectManager());
+        speedIconSprite_X2.setX(CAMERA_WIDTH/2);
+        speedIconSprite_X2.setY(textPoint.getY());
+
+        // SPEED X3 BONUS INITIALIZING
 
         speedSprite_X3 = new Sprite(0, 0, speedTextureRegion_X3, getVertexBufferObjectManager()){
             @Override
@@ -522,8 +558,14 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X3.setScale(speedSprite_X3.getScaleX()/2);
         speedSprite_X3.setX((CAMERA_WIDTH/2) - (speedSprite_X3.getWidth()/2));
         speedSprite_X3.setY((CAMERA_HEIGHT/2) - (speedSprite_X3.getHeight()/2));
+
+        // SPEED X3 ICON INITIALIZING
+
+        speedIconSprite_X3 = new Sprite(0, 0, speedIconTextureRegion_X3, getVertexBufferObjectManager());
+        speedIconSprite_X3.setX(speedIconSprite_X2.getX() + speedIconSprite_X2.getWidth());
+        speedIconSprite_X3.setY(textPoint.getY());
         
-        // SPEED X4 INITIALIZING
+        // SPEED X4 BONUS INITIALIZING
 
         speedSprite_X4 = new Sprite(0, 0, speedTextureRegion_X4, getVertexBufferObjectManager()){
             @Override
@@ -541,6 +583,12 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X4.setScale(speedSprite_X4.getScaleX()/2);
         speedSprite_X4.setX((CAMERA_WIDTH/2) - (speedSprite_X4.getWidth()/2));
         speedSprite_X4.setY((CAMERA_HEIGHT/2) - (speedSprite_X4.getHeight()/2));
+
+        // SPEED X4 ICON INITIALIZING
+
+        speedIconSprite_X4 = new Sprite(0, 0, speedIconTextureRegion_X4, getVertexBufferObjectManager());
+        speedIconSprite_X4.setX(speedIconSprite_X3.getX() + speedIconSprite_X3.getWidth());
+        speedIconSprite_X4.setY(textPoint.getY());
 
         // LOCK FIELD INITIALIZING
 
@@ -887,6 +935,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 textInfo.setText(getResources().getString(R.string.text_opponent_left));
                                 break;
                             default:
+                                Log.e("FSMGame", "Invalid State : " + msg.arg1);
                         }
                     default:
                 }
@@ -904,14 +953,23 @@ public class GamePongTwoPlayer extends GamePong {
                         case SPEEDX2:
                             Log.d("BONUSCREATED", "SPEEDX2");
                             setVelocityFromPrevious(msg.arg2, SPEEDX2);
+                            removePreviuousSpeedSpriteIcons();
+                            speedx2_bonus = true;
+                            scene.attachChild(speedIconSprite_X2);
                             break;
                         case SPEEDX3:
                             Log.d("BONUSCREATED", "SPEEDX3");
                             setVelocityFromPrevious(msg.arg2, SPEEDX3);
+                            removePreviuousSpeedSpriteIcons();
+                            speedx3_bonus = true;
+                            scene.attachChild(speedIconSprite_X3);
                             break;
                         case SPEEDX4:
                             Log.d("BONUSCREATED", "SPEEDX4");
                             setVelocityFromPrevious(msg.arg2, SPEEDX4);
+                            removePreviuousSpeedSpriteIcons();
+                            speedx4_bonus = true;
+                            scene.attachChild(speedIconSprite_X4);
                             break;
                         case LOCKFIELD:
                             Log.d("BONUSCREATED", "LOCKFIELD");
@@ -948,14 +1006,20 @@ public class GamePongTwoPlayer extends GamePong {
                         case SPEEDX2:
                             Log.d("BONUSEXPIRED", "SPEEDX2");
                             setVelocityFromPrevious(SPEEDX2, NOBONUS);
+                            speedx2_bonus = false;
+                            scene.detachChild(speedIconSprite_X2);
                             break;
                         case SPEEDX3:
                             Log.d("BONUSEXPIRED", "SPEEDX3");
                             setVelocityFromPrevious(SPEEDX3, NOBONUS);
+                            speedx3_bonus = false;
+                            scene.detachChild(speedIconSprite_X3);
                             break;
                         case SPEEDX4:
                             Log.d("BONUSEXPIRED", "SPEEDX4");
                             setVelocityFromPrevious(SPEEDX4, NOBONUS);
+                            speedx4_bonus = false;
+                            scene.detachChild(speedIconSprite_X4);
                             break;
                         case LOCKFIELD:
                             Log.d("BONUSEXPIRED", "LOCKFIELD");
@@ -990,6 +1054,21 @@ public class GamePongTwoPlayer extends GamePong {
             }
         }
     };
+
+    private void removePreviuousSpeedSpriteIcons() {
+        if(speedx2_bonus){
+            scene.detachChild(speedIconSprite_X2);
+            speedx2_bonus = false;
+        }
+        if(speedx3_bonus){
+            scene.detachChild(speedIconSprite_X3);
+            speedx3_bonus = false;
+        }
+        if(speedx4_bonus){
+            scene.detachChild(speedIconSprite_X4);
+            speedx4_bonus = false;
+        }
+    }
 
     private void rushHourLogic() {
         Random random = new Random();

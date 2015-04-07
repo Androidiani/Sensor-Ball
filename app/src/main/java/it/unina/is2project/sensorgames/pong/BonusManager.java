@@ -44,7 +44,9 @@ public class BonusManager {
 
     public void addBonus(int bonusID, int reachCount){
         if (reachCount <= 0) reachCount = DEFAULT_BONUS_COUNT;
+
         int previousBonus = GamePongTwoPlayer.NOBONUS;
+
         if(bonusID == GamePongTwoPlayer.SPEEDX2 ||
                 bonusID == GamePongTwoPlayer.SPEEDX3 ||
                 bonusID == GamePongTwoPlayer.SPEEDX4){
