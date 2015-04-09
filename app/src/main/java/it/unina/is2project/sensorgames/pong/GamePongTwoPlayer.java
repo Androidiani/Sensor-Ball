@@ -1040,8 +1040,15 @@ public class GamePongTwoPlayer extends GamePong {
                             break;
                         case RUSHHOUR:
                             Log.d("BONUSEXPIRED", "RUSHHOUR");
-                            clearRushHour();
-                            rush_hour = false;
+                            runOnUpdateThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(rush_hour) {
+                                        clearRushHour();
+                                        rush_hour = false;
+                                    }
+                                }
+                            });
                             break;
 
                         default:
