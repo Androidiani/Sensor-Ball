@@ -64,6 +64,7 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean isConnected;
     // Score variables
     private int score;
+    private int opponentScore;
     // Constant Utils
     private final int SPRITE_NONE = -1;
     // Speed X2 Bonus
@@ -196,6 +197,7 @@ public class GamePongTwoPlayer extends GamePong {
         transferringBall = false;
         game_over = false;
         score = 0;
+        opponentScore = 0;
         myModule = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
         COS_X = COS_45;
         SIN_X = SIN_45;
@@ -221,7 +223,7 @@ public class GamePongTwoPlayer extends GamePong {
         scene.attachChild(textInfo);
 
         // Attachning textPoint
-        textPoint = new Text(10, CAMERA_HEIGHT-textInfo.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score, 30, getVertexBufferObjectManager());
+        textPoint = new Text(10, CAMERA_HEIGHT-textInfo.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore, 30, getVertexBufferObjectManager());
         scene.attachChild(textPoint);
 
         // Traslating bar
@@ -394,6 +396,8 @@ public class GamePongTwoPlayer extends GamePong {
         super.collidesBottom();
         AppMessage pointToEnemyMessage = new AppMessage(Constants.MSG_TYPE_POINT_UP);
         sendBluetoothMessage(pointToEnemyMessage);
+        opponentScore++;
+        textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore);
     }
 
     @Override
@@ -441,7 +445,7 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     public void addScore() {
         score++;
-        textPoint.setText(getResources().getString(R.string.sts_score) + " " + score);
+        textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore);
     }
 
     @Override
@@ -1248,15 +1252,23 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     private void clearRushHour() {
-        int i = 0;
-        int size = rushHour.size();
-        while (rushHour.size() > 0){
-            rushHour.get(0).detachSelf();
-            rushHourHandlers.remove(0);
-            rushHour.remove(0);
-            Log.d("RushHourClear", "Detach " + i++ + " of " + size);
-            Log.d("RushHourClear", "Current size is " + rushHour.size());
+//        while (rushHour.size() > 0){
+//            rushHour.get(0).detachSelf();
+//            rushHourHandlers.remove(0);
+//            rushHour.remove(0);
+//        }
+        List<Sprite> rushHourCopy = new ArrayList<>();
+        List<PhysicsHandler> rushHourHandlersCopy = new ArrayList<>();
+        for(int i = 0; i < rushHour.size(); i++){
+            rushHourCopy.add(rushHour.get(i));
+            rushHour.get(i).detachSelf();
         }
+        for(int j = 0; j < rushHourHandlers.size(); j++){
+            rushHourHandlersCopy.add(rushHourHandlers.get(j));
+            scene.unregisterUpdateHandler(rushHourHandlers.get(j));
+        }
+        rushHour.removeAll(rushHourCopy);
+        rushHourHandlers.removeAll(rushHourHandlersCopy);
     }
 
     private void setVelocityFromPrevious(int previousBonus, int nextBonus){
