@@ -1062,7 +1062,9 @@ public class GamePongTwoPlayer extends GamePong {
                         case LOCKFIELD:
                             Log.d("BONUSCREATED", "LOCKFIELD");
                             safeAttachSpriteIcon(LOCKFIELD_ICON);
-                            locksField = true;
+                            synchronized (this) {
+                                locksField = true;
+                            }
                             break;
                         case CUTBAR30:
                             Log.d("BONUSCREATED", "CUTBAR30");
@@ -1116,7 +1118,9 @@ public class GamePongTwoPlayer extends GamePong {
                             break;
                         case LOCKFIELD:
                             Log.d("BONUSEXPIRED", "LOCKFIELD");
-                            locksField = false;
+                            synchronized (this) {
+                                locksField = false;
+                            }
                             scene.detachChild(lockFieldIconSprite);
                             bonusStatusArray.remove(new Integer(LOCKFIELD_ICON));
                             break;
@@ -1144,12 +1148,10 @@ public class GamePongTwoPlayer extends GamePong {
                             runOnUpdateThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(rush_hour) {
-                                        clearRushHour();
-                                        rush_hour = false;
-                                    }
+                                    clearRushHour();
                                 }
                             });
+
                             scene.detachChild(rushHourIconSprite);
                             bonusStatusArray.remove(new Integer(RUSHHOUR_ICON));
                             break;
@@ -1257,13 +1259,14 @@ public class GamePongTwoPlayer extends GamePong {
 //            rushHourHandlers.remove(0);
 //            rushHour.remove(0);
 //        }
+        rush_hour = false;
         List<Sprite> rushHourCopy = new ArrayList<>();
         List<PhysicsHandler> rushHourHandlersCopy = new ArrayList<>();
-        for(int i = 0; i < rushHour.size(); i++){
+        for (int i = 0; i < rushHour.size(); i++) {
             rushHourCopy.add(rushHour.get(i));
             rushHour.get(i).detachSelf();
         }
-        for(int j = 0; j < rushHourHandlers.size(); j++){
+        for (int j = 0; j < rushHourHandlers.size(); j++) {
             rushHourHandlersCopy.add(rushHourHandlers.get(j));
             scene.unregisterUpdateHandler(rushHourHandlers.get(j));
         }
@@ -1294,8 +1297,7 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public void run() {
             Random rand = new Random();
-//            int bonusChoice = rand.nextInt(( RUSHHOUR - SPEEDX2) + 1) + SPEEDX2;
-            int bonusChoice = LOCKFIELD;
+            int bonusChoice = rand.nextInt(( RUSHHOUR - SPEEDX2) + 1) + SPEEDX2;
             if(deletedBonusSprite){
                 Log.d("Sprite", "First One Is None");
                 attachSprite(bonusChoice);
