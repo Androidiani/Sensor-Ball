@@ -881,7 +881,7 @@ public class GamePongTwoPlayer extends GamePong {
                             case FSMGame.STATE_IN_GAME:
                                 handler.setVelocity(old_x_speed, old_y_speed);
                                 GAME_VELOCITY = old_game_speed;
-                                textInfo.setText("");
+                                textInfo.setText(" ");
                                 task = new TimerBonusTask();
                                 timer = new Timer();
                                 timer.schedule(task, 2000, 10000);
@@ -1075,10 +1075,10 @@ public class GamePongTwoPlayer extends GamePong {
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
             Sprite rush = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
-            rushHour.add(rush);
             rush.setWidth(CAMERA_WIDTH * 0.1f);
             rush.setHeight(CAMERA_WIDTH * 0.1f);
             rush.setPosition((int) rush.getWidth() + random.nextInt(CAMERA_WIDTH - (int) rush.getWidth() * 2), (int) rush.getHeight() + random.nextInt(CAMERA_HEIGHT - (int) rush.getHeight() * 2));
+            rushHour.add(rush);
 
             PhysicsHandler physicsHandler = new PhysicsHandler(rushHour.get(i));
             physicsHandler.setVelocity(BALL_SPEED * (random.nextFloat() - random.nextFloat()), BALL_SPEED * (random.nextFloat() - random.nextFloat()));
@@ -1088,13 +1088,18 @@ public class GamePongTwoPlayer extends GamePong {
 
             scene.attachChild(rushHour.get(i));
         }
+        Log.d("RushHour", "Created " + rushHour.size());
     }
 
     private void clearRushHour() {
+        int i = 0;
+        int size = rushHour.size();
         while (rushHour.size() > 0){
             rushHour.get(0).detachSelf();
             rushHourHandlers.remove(0);
             rushHour.remove(0);
+            Log.d("RushHourClear", "Detach " + i++ + " of " + size);
+            Log.d("RushHourClear", "Current size is " + rushHour.size());
         }
     }
 
