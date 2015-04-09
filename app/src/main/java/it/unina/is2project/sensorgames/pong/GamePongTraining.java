@@ -35,9 +35,6 @@ public class GamePongTraining extends GamePong {
     // Hit count
     private int hit_count = 0;
 
-    // Events
-    private long secondTap;
-
     // Game events
     private int event;
     private static final int NO_EVENT = 0;
@@ -69,7 +66,8 @@ public class GamePongTraining extends GamePong {
         settingSprite = new Sprite(0, 0, settingTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(event != NO_EVENT) clearEvents();
+                if (event != NO_EVENT)
+                    clearEvents();
                 Intent intent = new Intent(getBaseContext(), TrainingSettings.class);
                 startActivity(intent);
                 finish();
@@ -87,8 +85,8 @@ public class GamePongTraining extends GamePong {
 
         // Get options by training settings
         Intent i = getIntent();
-        int ballSpeed = i.getIntExtra("ballspeed", 1);
-        int barSpeed = i.getIntExtra("barspeed", 1);
+        int ballSpeed = i.getIntExtra("ballSpeed", 1);
+        int barSpeed = i.getIntExtra("barSpeed", 1);
         event = i.getIntExtra("event", 0);
 
         setTrainingMode(ballSpeed, barSpeed);
@@ -96,7 +94,69 @@ public class GamePongTraining extends GamePong {
         return scene;
     }
 
-    private void setTrainingMode(int ball_speed, int bar_speed){
+    @Override
+    protected void loadGraphics() {
+        super.loadGraphics();
+
+        // Setting Button texture loading
+        Drawable settingDrawable = getResources().getDrawable(R.drawable.setting);
+        settingTexture = new BitmapTextureAtlas(getTextureManager(), settingDrawable.getIntrinsicWidth(), settingDrawable.getIntrinsicHeight());
+        settingTextureRegion = createFromResource(settingTexture, this, R.drawable.setting, 0, 0);
+        settingTexture.load();
+    }
+
+    @Override
+    protected void collidesBottom() {
+        super.collidesBottom();
+        hit_count = 0;
+        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+    }
+
+    @Override
+    protected void collidesOverBar() {
+        super.collidesOverBar();
+        hit_count++;
+        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+    }
+
+    @Override
+    protected void bluetoothExtra() {
+        //do nothing
+    }
+
+    @Override
+    protected void addScore() {
+        //do nothing
+    }
+
+    @Override
+    protected void gameLevels() {
+        //do nothing
+    }
+
+    @Override
+    protected void gameEvents() {
+        gameEventsCollisionLogic();
+    }
+
+    @Override
+    protected void gameOver() {
+        //do nothing
+    }
+
+    @Override
+    protected void saveGame(String s) {
+        //do nothing
+    }
+
+    private boolean checkTouchOnSettingSprite(float x, float y) {
+        boolean checkTouchSpriteStatus = false;
+        if (x <= settingSprite.getX() + settingSprite.getWidth() && x >= settingSprite.getX() && y >= settingSprite.getY() && y <= settingSprite.getY() + settingSprite.getHeight())
+            checkTouchSpriteStatus = true;
+        return checkTouchSpriteStatus;
+    }
+
+    private void setTrainingMode(int ball_speed, int bar_speed) {
         // Setting up the ball speed
         handler.setVelocity(ball_speed * BALL_SPEED, -ball_speed * BALL_SPEED);
 
@@ -104,30 +164,40 @@ public class GamePongTraining extends GamePong {
         GAME_VELOCITY = bar_speed * GAME_VELOCITY;
 
         // Setting up the game events
-        switch(event){
+        switch (event) {
+            case FIRST_ENEMY:
+                firstEnemyLogic();
+                break;
             case CUT_30:
                 cutBar30Logic();
                 break;
             case CUT_50:
                 cutBar50Logic();
                 break;
-            case RUSH_HOUR:
-                rushHourLogic();
-                break;
             case REVERSE:
                 reverseLogic();
                 break;
-            case FIRST_ENEMY:
-                firstEnemyLogic();
+            case RUSH_HOUR:
+                rushHourLogic();
                 break;
         }
     }
 
-    private void cutBar30Logic(){
+    private void firstEnemyLogic() {
+        firstEnemy = new Sprite(0, CAMERA_HEIGHT / 3, barTextureRegion, getVertexBufferObjectManager());
+        firstEnemy.setWidth(CAMERA_WIDTH);
+        scene.attachChild(firstEnemy);
+    }
+
+    private void clearFirstEnemy() {
+        firstEnemy.detachSelf();
+    }
+
+    private void cutBar30Logic() {
         barSprite.setWidth(0.21f * CAMERA_WIDTH);
     }
 
-    private void clearCutBar30(){
+    private void clearCutBar30() {
         barSprite.setWidth(0.3f * CAMERA_WIDTH);
     }
 
@@ -137,6 +207,14 @@ public class GamePongTraining extends GamePong {
 
     private void clearCutBar50() {
         barSprite.setWidth(0.3f * CAMERA_WIDTH);
+    }
+
+    private void reverseLogic() {
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
+    }
+
+    private void clearReverse() {
+        GAME_VELOCITY = (-1) * GAME_VELOCITY;
     }
 
     private void rushHourLogic() {
@@ -167,24 +245,6 @@ public class GamePongTraining extends GamePong {
             rushHour.remove(0);
             rushHourHandlers.remove(0);
         } while (rushHour.size() > 0);
-    }
-
-    private void reverseLogic() {
-        GAME_VELOCITY = (-1) * GAME_VELOCITY;
-    }
-
-    private void clearReverse() {
-        GAME_VELOCITY = (-1) * GAME_VELOCITY;
-    }
-
-    private void firstEnemyLogic() {
-        firstEnemy = new Sprite(0, CAMERA_HEIGHT / 3, barTextureRegion, getVertexBufferObjectManager());
-        firstEnemy.setWidth(CAMERA_WIDTH);
-        scene.attachChild(firstEnemy);
-    }
-
-    private void clearFirstEnemy() {
-        firstEnemy.detachSelf();
     }
 
     private void firstEnemyCollisions() {
@@ -223,97 +283,24 @@ public class GamePongTraining extends GamePong {
         }
     }
 
-    private void clearEvents(){
-        switch(event){
+    private void clearEvents() {
+        switch (event) {
+            case FIRST_ENEMY:
+                clearFirstEnemy();
+                break;
             case CUT_30:
                 clearCutBar30();
                 break;
             case CUT_50:
                 clearCutBar50();
                 break;
-            case RUSH_HOUR:
-                clearRushHour();
-                break;
             case REVERSE:
                 clearReverse();
                 break;
-            case FIRST_ENEMY:
-                clearFirstEnemy();
+            case RUSH_HOUR:
+                clearRushHour();
                 break;
         }
-    }
-
-
-    @Override
-    protected void loadGraphics() {
-        super.loadGraphics();
-
-        // Setting
-        Drawable settingDrawable = getResources().getDrawable(R.drawable.setting);
-        settingTexture = new BitmapTextureAtlas(getTextureManager(), settingDrawable.getIntrinsicWidth(), settingDrawable.getIntrinsicHeight());
-        settingTextureRegion = createFromResource(settingTexture, this, R.drawable.setting, 0, 0);
-        settingTexture.load();
-    }
-
-    @Override
-    protected void collidesBottom() {
-        super.collidesBottom();
-        hit_count = 0;
-        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
-    }
-
-    @Override
-    protected void collidesOverBar() {
-        super.collidesOverBar();
-        hit_count++;
-        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
-    }
-
-    @Override
-    protected void actionDownEvent(float x, float y) {
-        if (!pause) {
-            pauseGame();
-        }
-        if (pause && (System.currentTimeMillis() - firstTap > 500) && !checkTouchOnSettingSprite(x, y)) {
-            restartGameAfterPause();
-        }
-    }
-
-    @Override
-    protected void bluetoothExtra() {
-        //do nothing
-    }
-
-    @Override
-    protected void addScore() {
-        //do nothing
-    }
-
-    @Override
-    protected void gameLevels() {
-        //do nothing
-    }
-
-    @Override
-    protected void gameEvents() {
-        gameEventsCollisionLogic();
-    }
-
-    @Override
-    protected void gameOver() {
-        //do nothing
-    }
-
-    @Override
-    protected void saveGame(String s) {
-        //do nothing
-    }
-
-    private boolean checkTouchOnSettingSprite(float x, float y) {
-        boolean checkTouchSpriteStatus = false;
-        if (x <= settingSprite.getX() + settingSprite.getWidth() && x >= settingSprite.getX() && y >= settingSprite.getY() && y <= settingSprite.getY() + settingSprite.getHeight())
-            checkTouchSpriteStatus = true;
-        return checkTouchSpriteStatus;
     }
 
 }

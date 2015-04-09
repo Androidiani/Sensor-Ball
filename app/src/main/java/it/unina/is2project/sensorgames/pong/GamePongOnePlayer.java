@@ -214,10 +214,9 @@ public class GamePongOnePlayer extends GamePong {
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
             handler.setVelocityY(-handler.getVelocityY());
             attachBall();
-            if (game_event == LIFE_BONUS) {
-                clearEvent();
-                callEvent();
-            }
+            clearEvent();
+            game_event = NO_EVENT;
+            reach_count = 1;
         }
 
     }

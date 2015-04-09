@@ -51,26 +51,25 @@ public class TrainingSettings extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training_settings);
 
-        /** Set the fullscreen window */
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // Set the fullscreen window
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-        /** Find view */
+        // Find view
         findView();
 
-        /** Populate spinner */
+        // Populate spinner
         populateSpinner();
 
-        /** Set-up the typeface */
+        // Set-up the typeface
         setTypeface();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getBaseContext(), GamePongTraining.class);
-                intent.putExtra("ballspeed", ball_speed);
-                intent.putExtra("barspeed", bar_speed);
+                intent.putExtra("ballSpeed", ball_speed);
+                intent.putExtra("barSpeed", bar_speed);
                 intent.putExtra("event", event);
                 startActivity(intent);
                 finish();
@@ -96,10 +95,10 @@ public class TrainingSettings extends ActionBarActivity {
     }
 
     private void setTypeface(){
-        /** Load the font */
+        // Load the font
         typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
 
-        /** Set the typeface */
+        // Set the typeface
         ball_speed_textview.setTypeface(typeFace);
         bar_speed_textview.setTypeface(typeFace);
         event_textview.setTypeface(typeFace);
