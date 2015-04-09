@@ -1093,9 +1093,9 @@ public class GamePongTwoPlayer extends GamePong {
     private void clearRushHour() {
         while (rushHour.size() > 0){
             rushHour.get(0).detachSelf();
+            rushHourHandlers.remove(0);
+            rushHour.remove(0);
         }
-        rushHour.clear();
-        rushHourHandlers.clear();
     }
 
     private void setVelocityFromPrevious(int previousBonus, int nextBonus){
