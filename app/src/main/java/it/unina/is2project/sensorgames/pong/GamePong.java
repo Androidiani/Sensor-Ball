@@ -304,7 +304,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
                         }
                     }
 
-                    Log.d("RisoluzioneBug1", "Game Velocity = " + GAME_VELOCITY + ", Ball Speed = " + BALL_SPEED + ", DeviceRatio = " + DEVICE_RATIO);
                     // Game levels section
                     gameLevels();
                     // Game events section
@@ -313,8 +312,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             }
 
             @Override
-            public void reset() {
-            }
+            public void reset() {}
         });
     }
 

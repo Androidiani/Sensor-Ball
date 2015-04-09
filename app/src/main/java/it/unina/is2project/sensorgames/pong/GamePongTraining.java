@@ -36,9 +36,6 @@ public class GamePongTraining extends GamePong {
     // Hit count
     private int hit_count = 0;
 
-    // Events
-    private long secondTap;
-
     // Game events
     private int event;
     private static final int NO_EVENT = 0;
@@ -96,6 +93,78 @@ public class GamePongTraining extends GamePong {
         setTrainingMode(ballSpeed, barSpeed);
 
         return scene;
+    }
+
+    @Override
+    protected void loadGraphics() {
+        super.loadGraphics();
+
+        // Setting
+        Drawable settingDrawable = getResources().getDrawable(R.drawable.setting);
+        settingTexture = new BitmapTextureAtlas(getTextureManager(), settingDrawable.getIntrinsicWidth(), settingDrawable.getIntrinsicHeight());
+        settingTextureRegion = createFromResource(settingTexture, this, R.drawable.setting, 0, 0);
+        settingTexture.load();
+    }
+
+    @Override
+    protected void collidesBottom() {
+        super.collidesBottom();
+        hit_count = 0;
+        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+    }
+
+    @Override
+    protected void collidesOverBar() {
+        super.collidesOverBar();
+        hit_count++;
+        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+    }
+
+    @Override
+    protected void actionDownEvent(float x, float y) {
+        if (!pause) {
+            pauseGame();
+        }
+        if (pause && (System.currentTimeMillis() - firstTap > 500) && !checkTouchOnSettingSprite(x, y)) {
+            restartGameAfterPause();
+        }
+    }
+
+    @Override
+    protected void bluetoothExtra() {
+        //do nothing
+    }
+
+    @Override
+    protected void addScore() {
+        //do nothing
+    }
+
+    @Override
+    protected void gameLevels() {
+        //do nothing
+    }
+
+    @Override
+    protected void gameEvents() {
+        gameEventsCollisionLogic();
+    }
+
+    @Override
+    protected void gameOver() {
+        //do nothing
+    }
+
+    @Override
+    protected void saveGame(String s) {
+        //do nothing
+    }
+
+    private boolean checkTouchOnSettingSprite(float x, float y) {
+        boolean checkTouchSpriteStatus = false;
+        if (x <= settingSprite.getX() + settingSprite.getWidth() && x >= settingSprite.getX() && y >= settingSprite.getY() && y <= settingSprite.getY() + settingSprite.getHeight())
+            checkTouchSpriteStatus = true;
+        return checkTouchSpriteStatus;
     }
 
     private void setTrainingMode(int ball_speed, int bar_speed){
@@ -245,76 +314,5 @@ public class GamePongTraining extends GamePong {
         }
     }
 
-    @Override
-    protected void loadGraphics() {
-        super.loadGraphics();
-
-        // Setting
-        Drawable settingDrawable = getResources().getDrawable(R.drawable.setting);
-        settingTexture = new BitmapTextureAtlas(getTextureManager(), settingDrawable.getIntrinsicWidth(), settingDrawable.getIntrinsicHeight());
-        settingTextureRegion = createFromResource(settingTexture, this, R.drawable.setting, 0, 0);
-        settingTexture.load();
-    }
-
-    @Override
-    protected void collidesBottom() {
-        super.collidesBottom();
-        hit_count = 0;
-        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
-    }
-
-    @Override
-    protected void collidesOverBar() {
-        super.collidesOverBar();
-        hit_count++;
-        textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
-    }
-
-    @Override
-    protected void actionDownEvent(float x, float y) {
-        if (!pause) {
-            pauseGame();
-        }
-        if (pause && (System.currentTimeMillis() - firstTap > 500) && !checkTouchOnSettingSprite(x, y)) {
-            restartGameAfterPause();
-        }
-    }
-
-    @Override
-    protected void bluetoothExtra() {
-        //do nothing
-    }
-
-    @Override
-    protected void addScore() {
-        //do nothing
-    }
-
-    @Override
-    protected void gameLevels() {
-        //do nothing
-    }
-
-    @Override
-    protected void gameEvents() {
-        gameEventsCollisionLogic();
-    }
-
-    @Override
-    protected void gameOver() {
-        //do nothing
-    }
-
-    @Override
-    protected void saveGame(String s) {
-        //do nothing
-    }
-
-    private boolean checkTouchOnSettingSprite(float x, float y) {
-        boolean checkTouchSpriteStatus = false;
-        if (x <= settingSprite.getX() + settingSprite.getWidth() && x >= settingSprite.getX() && y >= settingSprite.getY() && y <= settingSprite.getY() + settingSprite.getHeight())
-            checkTouchSpriteStatus = true;
-        return checkTouchSpriteStatus;
-    }
 
 }
