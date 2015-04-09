@@ -8,6 +8,7 @@ import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
+import org.andengine.input.sensor.acceleration.AccelerationData;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
@@ -162,11 +163,11 @@ public class GamePongTraining extends GamePong {
     }
 
     private void clearRushHour() {
-        do {
+        while (rushHour.size() > 0 ) {
             rushHour.get(0).detachSelf();
             rushHour.remove(0);
             rushHourHandlers.remove(0);
-        } while (rushHour.size() > 0);
+        }
     }
 
     private void reverseLogic() {
