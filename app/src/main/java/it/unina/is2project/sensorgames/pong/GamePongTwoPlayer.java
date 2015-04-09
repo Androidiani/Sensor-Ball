@@ -1294,7 +1294,8 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public void run() {
             Random rand = new Random();
-            int bonusChoice = rand.nextInt(( RUSHHOUR - SPEEDX2) + 1) + SPEEDX2;
+//            int bonusChoice = rand.nextInt(( RUSHHOUR - SPEEDX2) + 1) + SPEEDX2;
+            int bonusChoice = LOCKFIELD;
             if(deletedBonusSprite){
                 Log.d("Sprite", "First One Is None");
                 attachSprite(bonusChoice);
