@@ -9,6 +9,11 @@
     android:orientation="vertical"
     android:weightSum="1">
 
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,7 +21,13 @@
         android:id="@+id/title_setting_training"
         android:layout_gravity="center_horizontal"
         android:textSize="@dimen/home_font"
-        android:textColor="#ffffffff" />
+        android:textColor="#ffffffff"
+        />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,13 +35,20 @@
         android:text="@string/text_ball_speed"
         android:id="@+id/txt_ball_speed"
         android:textColor="#ffffffff"
-        android:textSize="@dimen/medium_font" />
+        android:textSize="@dimen/medium_font"
+        android:layout_weight="0.05"/>
 
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/spinner_ball_speed"
-        android:background="#ffffffff" />
+        android:background="#ffffffff"
+        android:layout_weight="0.05"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -38,13 +56,20 @@
         android:text="@string/text_bar_speed"
         android:id="@+id/txt_bar_speed"
         android:textColor="#ffffffff"
-        android:textSize="@dimen/medium_font" />
+        android:textSize="@dimen/medium_font"
+        android:layout_weight="0.05"/>
 
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/spinner_bar_speed"
-        android:background="#ffffffff" />
+        android:background="#ffffffff"
+        android:layout_weight="0.05"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -52,18 +77,26 @@
         android:text="@string/text_active_events"
         android:id="@+id/txt_event_selection"
         android:textColor="#ffffffff"
-        android:textSize="@dimen/medium_font" />
+        android:textSize="@dimen/medium_font"
+        android:layout_weight="0.05"/>
 
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/spinner_event"
-        android:background="#ffffffff" />
+        android:background="#ffffffff"
+        android:layout_weight="0.05"/>
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/back"
         android:id="@+id/btn_back"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:textColor="#FFFFFF"/>
 </LinearLayout>

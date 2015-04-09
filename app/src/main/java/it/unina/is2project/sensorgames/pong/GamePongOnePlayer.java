@@ -196,6 +196,8 @@ public class GamePongOnePlayer extends GamePong {
         // Setting up the physics of the game
         settingPhysics();
 
+        super.clearGame();
+
         return scene;
     }
 
@@ -214,10 +216,9 @@ public class GamePongOnePlayer extends GamePong {
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
             handler.setVelocityY(-handler.getVelocityY());
             attachBall();
-            if (game_event == LIFE_BONUS) {
-                clearEvent();
-                callEvent();
-            }
+            clearEvent();
+            game_event = NO_EVENT;
+            reach_count = 1;
         }
 
     }
@@ -547,7 +548,6 @@ public class GamePongOnePlayer extends GamePong {
                 // Game over dialog
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
-
                 alert.setTitle(getApplicationContext().getResources().getString(R.string.text_ttl_oneplayer_savegame));
                 alert.setMessage(getApplicationContext().getResources().getString(R.string.text_msg_oneplayer_savegame));
 
@@ -562,7 +562,6 @@ public class GamePongOnePlayer extends GamePong {
 
                         if (!user_input_name.equals("")) {
                             saveGame(user_input_name);
-
                             restart_game = true;
                             game_over = false;
                         } else {
@@ -884,6 +883,7 @@ public class GamePongOnePlayer extends GamePong {
             random_int = random.nextInt(level + 1);
         }
         game_event = random_int;
+//        game_event = CUT_BAR_30;
         Log.d(TAG, "Game Event " + game_event);
     }
 }

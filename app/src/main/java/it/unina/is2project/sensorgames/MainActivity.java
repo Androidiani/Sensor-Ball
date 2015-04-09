@@ -262,6 +262,7 @@ public class MainActivity extends ActionBarActivity {
      */
     private void btnTrainingClick() {
         Intent i = new Intent(MainActivity.this, GamePongTraining.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
