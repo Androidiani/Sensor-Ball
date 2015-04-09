@@ -1,5 +1,7 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -55,9 +57,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected boolean pause = false;
     protected boolean game_over = false;
     protected int previous_event = 0;
-    protected static float GAME_VELOCITY;
-    protected static float BALL_SPEED;
-    protected static float DEVICE_RATIO;
+    protected float GAME_VELOCITY;
+    protected float BALL_SPEED;
+    protected float DEVICE_RATIO;
     protected static final int NO_EVENT = 0;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
@@ -302,6 +304,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
                         }
                     }
 
+                    Log.d("RisoluzioneBug1", "Game Velocity = " + GAME_VELOCITY + ", Ball Speed = " + BALL_SPEED + ", DeviceRatio = " + DEVICE_RATIO);
                     // Game levels section
                     gameLevels();
                     // Game events section

@@ -72,6 +72,7 @@ public class GamePongTraining extends GamePong {
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
                 if(event != NO_EVENT) clearEvents();
                 Intent intent = new Intent(getBaseContext(), TrainingSettings.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
                 return true;
@@ -146,10 +147,10 @@ public class GamePongTraining extends GamePong {
 
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
             Sprite rush = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
-            rushHour.add(rush);
             rush.setWidth(CAMERA_WIDTH * 0.1f);
             rush.setHeight(CAMERA_WIDTH * 0.1f);
             rush.setPosition((int) rush.getWidth() + random.nextInt(CAMERA_WIDTH - (int) rush.getWidth() * 2), (int) rush.getHeight() + random.nextInt(CAMERA_HEIGHT - (int) rush.getHeight() * 2));
+            rushHour.add(rush);
 
             PhysicsHandler physicsHandler = new PhysicsHandler(rushHour.get(i));
             physicsHandler.setVelocity(BALL_SPEED * (random.nextFloat() - random.nextFloat()), BALL_SPEED * (random.nextFloat() - random.nextFloat()));
@@ -242,11 +243,6 @@ public class GamePongTraining extends GamePong {
                 clearFirstEnemy();
                 break;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 
     @Override
