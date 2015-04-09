@@ -362,14 +362,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected boolean overBarCondition() {
-        /** Condition variable who understand if the ball hit the bar side or the over side
-         * - yBall: is the relative position of the ball according to the CAMERA_HEIGHT
-         * - yBar: is the relative position of the bar according to the CAMERA_HEIGHT
-         */
-        //float yBall = ballSprite.getY() + ballSprite.getHeight();
-        //float yBar = barSprite.getY();
-
-        return /*(yBall < yBar + barSprite.getHeight() / 2) &&*/ (previous_event != OVER) && (previous_event != SIDE);
+        return (ballSprite.getY() + ballSprite.getHeight() < barSprite.getY() + barSprite.getHeight()) && (previous_event != OVER) && (previous_event != SIDE);
     }
 
     protected boolean sideBarCondition() {
