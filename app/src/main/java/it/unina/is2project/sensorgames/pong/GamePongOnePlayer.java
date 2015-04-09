@@ -2,6 +2,7 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.Gravity;
@@ -59,6 +60,10 @@ public class GamePongOnePlayer extends GamePong {
     // Rush Hour
     private List<Sprite> rushHour = new ArrayList<>();
     private List<PhysicsHandler> rushHourHandlers = new ArrayList<>();
+
+    // Rush Hour Pause Utils
+    private List<Float> oldRushSpeed_x = new ArrayList<>();
+    private List<Float> oldRushSpeed_y = new ArrayList<>();
 
     /**
      * Game data
@@ -287,6 +292,28 @@ public class GamePongOnePlayer extends GamePong {
         level_max = false;
         //Adding life sprites to the scene
         addLifeSpritesToScene();
+    }
+
+    @Override
+    protected void pauseGame() {
+        super.pauseGame();
+        if(rush_hour){
+            for( int i = 0 ; i < rushHour.size() ; i++ ) {
+                oldRushSpeed_x.add(rushHourHandlers.get(i).getVelocityX());
+                oldRushSpeed_y.add(rushHourHandlers.get(i).getVelocityY());
+                rushHourHandlers.get(i).setVelocity(0);
+            }
+        }
+    }
+
+    @Override
+    protected void restartGameAfterPause() {
+        super.restartGameAfterPause();
+        if(rush_hour) {
+            for (int i = 0; i < rushHour.size(); i++) {
+                rushHourHandlers.get(i).setVelocity(oldRushSpeed_x.get(i), oldRushSpeed_y.get(i));
+            }
+        }
     }
 
     @Override
