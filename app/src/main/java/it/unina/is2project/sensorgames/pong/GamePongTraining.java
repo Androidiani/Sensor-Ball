@@ -244,6 +244,10 @@ public class GamePongTraining extends GamePong {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
     @Override
     protected void loadGraphics() {

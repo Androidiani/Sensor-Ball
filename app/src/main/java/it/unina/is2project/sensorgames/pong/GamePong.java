@@ -55,9 +55,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected boolean pause = false;
     protected boolean game_over = false;
     protected int previous_event = 0;
-    protected static int GAME_VELOCITY;
-    protected static int BALL_SPEED;
-    protected static int DEVICE_RATIO;
+    protected static float GAME_VELOCITY;
+    protected static float BALL_SPEED;
+    protected static float DEVICE_RATIO;
     protected static final int NO_EVENT = 0;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
@@ -133,7 +133,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected static final int PAUSE = -1;
     protected float old_x_speed;
     protected float old_y_speed;
-    protected int old_game_speed;
+    protected float old_game_speed;
     protected long firstTap;
 
     @Override

@@ -54,9 +54,9 @@ public class GamePongTwoPlayer extends GamePong {
     public static String EXTRA_MASTER = "isMaster_boolean";
     public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
     // Pause Utils
-    private float old_x_speed;
-    private float old_y_speed;
-    private int old_game_speed;
+    //private float old_x_speed;
+    //private float old_y_speed;
+    //private float old_game_speed;
     private long tap;
     private boolean proximityRegion;
     private int PROXIMITY_ZONE;
