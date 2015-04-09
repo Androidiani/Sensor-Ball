@@ -94,18 +94,34 @@ public class GamePongTwoPlayer extends GamePong {
     private BitmapTextureAtlas lockFieldTexture;
     private ITextureRegion lockFieldTextureRegion;
     private Sprite lockFieldSprite;
+    // Lock Field Icon
+    private BitmapTextureAtlas lockFieldIconTexture;
+    private ITextureRegion lockFieldIconTextureRegion;
+    private Sprite lockFieldIconSprite;
     // Cut Bar 30 Bonus
     private BitmapTextureAtlas cutBar30Texture;
     private ITextureRegion cutBar30TextureRegion;
-    private Sprite cutBar30Sprite;
+    private Sprite cutBar30Sprite;    
+    // Cut Bar 30 Icon
+    private BitmapTextureAtlas cutBar30IconTexture;
+    private ITextureRegion cutBar30IconTextureRegion;
+    private Sprite cutBar30IconSprite;
     // Cut Bar 50 Bonus
     private BitmapTextureAtlas cutBar50Texture;
     private ITextureRegion cutBar50TextureRegion;
     private Sprite cutBar50Sprite;
+    // Cut Bar 50 Icon
+    private BitmapTextureAtlas cutBar50IconTexture;
+    private ITextureRegion cutBar50IconTextureRegion;
+    private Sprite cutBar50IconSprite;
     // Reverted Bar Bonus
     private BitmapTextureAtlas revertedBarTexture;
     private ITextureRegion revertedBarTextureRegion;
-    private Sprite revertedBarSprite;
+    private Sprite revertedBarSprite;    
+    // Reverted Bar Icon
+    private BitmapTextureAtlas revertedBarIconTexture;
+    private ITextureRegion revertedBarIconTextureRegion;
+    private Sprite revertedBarIconSprite;
     // Rush-Hour Bonus
     private BitmapTextureAtlas rushHourTexture;
     private ITextureRegion rushHourTextureRegion;
@@ -115,6 +131,10 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean rush_hour = false;
     private final int RUSH_HOUR_MIN_NUM = 15;
     private final int RUSH_HOUR_MAX_NUM = 30;
+    // Rush-Hour Icon
+    private BitmapTextureAtlas rushHourIconTexture;
+    private ITextureRegion rushHourIconTextureRegion;
+    private Sprite rushHourIconSprite;
     // Bonus Constants
     public final static int NOBONUS = 1; // Necessarily with value 1 -> If change see setVelocityFromPrevious
     public final static int SPEEDX2 = 2; // Necessarily with value 2 -> If change see setVelocityFromPrevious
@@ -125,15 +145,22 @@ public class GamePongTwoPlayer extends GamePong {
     public final static int CUTBAR50 = 7;
     public final static int REVERTEDBAR = 8;
     public final static int RUSHHOUR = 9;
+    // Bonus Icon Constants
+    public final static int SPEEDX2_ICON = 10;
+    public final static int SPEEDX3_ICON = 11;
+    public final static int SPEEDX4_ICON = 12;
+    public final static int LOCKFIELD_ICON = 13;
+    public final static int CUTBAR30_ICON = 14;
+    public final static int CUTBAR50_ICON = 15;
+    public final static int REVERTEDBAR_ICON = 16;
+    public final static int RUSHHOUR_ICON = 17;
     // Bonus Utils
-    private int activedSprite = SPRITE_NONE;
-    private boolean deletedSprite = true;
+    private int activedBonusSprite = SPRITE_NONE;
+    private boolean deletedBonusSprite = true;
+    private List bonusStatusArray = new ArrayList<Integer>();
     TimerTask task;
     Timer timer;
     private boolean locksField = false;
-    private boolean speedx2_bonus = false;
-    private boolean speedx3_bonus = false;
-    private boolean speedx4_bonus = false;
     private float BARWIDTH;
 
 
@@ -243,27 +270,52 @@ public class GamePongTwoPlayer extends GamePong {
         Drawable lockFieldDrawable = getResources().getDrawable(R.drawable.firstenemy);
         lockFieldTexture = new BitmapTextureAtlas(getTextureManager(), lockFieldDrawable.getIntrinsicWidth(), lockFieldDrawable.getIntrinsicHeight());
         lockFieldTextureRegion = createFromResource(lockFieldTexture, this, R.drawable.firstenemy, 0, 0);
-        lockFieldTexture.load();
+        lockFieldTexture.load();        
+        // Lock Screen Icon
+        Drawable lockFieldIconDrawable = getResources().getDrawable(R.drawable.lockfield_icon);
+        lockFieldIconTexture = new BitmapTextureAtlas(getTextureManager(), lockFieldIconDrawable.getIntrinsicWidth(), lockFieldIconDrawable.getIntrinsicHeight());
+        lockFieldIconTextureRegion = createFromResource(lockFieldIconTexture, this, R.drawable.lockfield_icon, 0, 0);
+        lockFieldIconTexture.load();
         // Cut Bar 30% Bonus
         Drawable cutBar30Drawable = getResources().getDrawable(R.drawable.reduce30);
         cutBar30Texture = new BitmapTextureAtlas(getTextureManager(), cutBar30Drawable.getIntrinsicWidth(), cutBar30Drawable.getIntrinsicHeight());
         cutBar30TextureRegion = createFromResource(cutBar30Texture, this, R.drawable.reduce30, 0, 0);
-        cutBar30Texture.load();
+        cutBar30Texture.load();        
+        // Cut Bar 30% Icon
+        Drawable cutBar30IconDrawable = getResources().getDrawable(R.drawable.cutbar30_icon);
+        cutBar30IconTexture = new BitmapTextureAtlas(getTextureManager(), cutBar30IconDrawable.getIntrinsicWidth(), cutBar30IconDrawable.getIntrinsicHeight());
+        cutBar30IconTextureRegion = createFromResource(cutBar30IconTexture, this, R.drawable.cutbar30_icon, 0, 0);
+        cutBar30IconTexture.load();
         // Cut Bar 50% Bonus
         Drawable cutBar50Drawable = getResources().getDrawable(R.drawable.reduce50);
         cutBar50Texture = new BitmapTextureAtlas(getTextureManager(), cutBar50Drawable.getIntrinsicWidth(), cutBar50Drawable.getIntrinsicHeight());
         cutBar50TextureRegion = createFromResource(cutBar50Texture, this, R.drawable.reduce50, 0, 0);
         cutBar50Texture.load();
+        // Cut Bar 50% Icon
+        Drawable cutBar50IconDrawable = getResources().getDrawable(R.drawable.cutbar50_icon);
+        cutBar50IconTexture = new BitmapTextureAtlas(getTextureManager(), cutBar50IconDrawable.getIntrinsicWidth(), cutBar50IconDrawable.getIntrinsicHeight());
+        cutBar50IconTextureRegion = createFromResource(cutBar50IconTexture, this, R.drawable.cutbar50_icon, 0, 0);
+        cutBar50IconTexture.load();
         // Reverted Bar Bonus
         Drawable revertedBarDrawable = getResources().getDrawable(R.drawable.revert);
         revertedBarTexture = new BitmapTextureAtlas(getTextureManager(), revertedBarDrawable.getIntrinsicWidth(), revertedBarDrawable.getIntrinsicHeight());
         revertedBarTextureRegion = createFromResource(revertedBarTexture, this, R.drawable.revert, 0, 0);
-        revertedBarTexture.load();
+        revertedBarTexture.load();        
+        // Reverted Bar Icon
+        Drawable revertedBarIconDrawable = getResources().getDrawable(R.drawable.revertbar_icon);
+        revertedBarIconTexture = new BitmapTextureAtlas(getTextureManager(), revertedBarIconDrawable.getIntrinsicWidth(), revertedBarIconDrawable.getIntrinsicHeight());
+        revertedBarIconTextureRegion = createFromResource(revertedBarIconTexture, this, R.drawable.revertbar_icon, 0, 0);
+        revertedBarIconTexture.load();
         // Rush Hour Bonus
         Drawable rushHourDrawable = getResources().getDrawable(R.drawable.rush_hour);
         rushHourTexture = new BitmapTextureAtlas(getTextureManager(), rushHourDrawable.getIntrinsicWidth(), rushHourDrawable.getIntrinsicHeight());
         rushHourTextureRegion = createFromResource(rushHourTexture, this, R.drawable.rush_hour, 0, 0);
-        rushHourTexture.load();
+        rushHourTexture.load();        
+        // Rush Hour Icon
+        Drawable rushHourIconDrawable = getResources().getDrawable(R.drawable.rushhour_icon);
+        rushHourIconTexture = new BitmapTextureAtlas(getTextureManager(), rushHourIconDrawable.getIntrinsicWidth(), rushHourIconDrawable.getIntrinsicHeight());
+        rushHourIconTextureRegion = createFromResource(rushHourIconTexture, this, R.drawable.rushhour_icon, 0, 0);
+        rushHourIconTexture.load();
     }
 
     @Override
@@ -394,7 +446,7 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     public void actionDownEvent(float x, float y) {
-        if(!checkTouchOnSprite(activedSprite, x, y)) {
+        if(!checkTouchOnSprite(activedBonusSprite, x, y)) {
             Log.d("Proximity", "Proximity:" + proximityRegion);
             if (fsmGame.getState() == FSMGame.STATE_IN_GAME && !proximityRegion) {
                 if (haveBall) {
@@ -538,7 +590,8 @@ public class GamePongTwoPlayer extends GamePong {
 
         speedIconSprite_X2 = new Sprite(0, 0, speedIconTextureRegion_X2, getVertexBufferObjectManager());
         speedIconSprite_X2.setX(CAMERA_WIDTH/2);
-        speedIconSprite_X2.setY(textPoint.getY());
+//        speedIconSprite_X2.setY(textPoint.getY());
+        speedIconSprite_X2.setY(textPoint.getY() + textPoint.getHeight()/2 - speedIconSprite_X2.getHeight()/2);
 
         // SPEED X3 BONUS INITIALIZING
 
@@ -563,8 +616,9 @@ public class GamePongTwoPlayer extends GamePong {
 
         speedIconSprite_X3 = new Sprite(0, 0, speedIconTextureRegion_X3, getVertexBufferObjectManager());
         speedIconSprite_X3.setX(speedIconSprite_X2.getX() + speedIconSprite_X2.getWidth());
-        speedIconSprite_X3.setY(textPoint.getY());
-        
+//        speedIconSprite_X3.setY(textPoint.getY());
+        speedIconSprite_X3.setY(textPoint.getY() + textPoint.getHeight()/2 - speedIconSprite_X3.getHeight()/2);
+
         // SPEED X4 BONUS INITIALIZING
 
         speedSprite_X4 = new Sprite(0, 0, speedTextureRegion_X4, getVertexBufferObjectManager()){
@@ -588,7 +642,8 @@ public class GamePongTwoPlayer extends GamePong {
 
         speedIconSprite_X4 = new Sprite(0, 0, speedIconTextureRegion_X4, getVertexBufferObjectManager());
         speedIconSprite_X4.setX(speedIconSprite_X3.getX() + speedIconSprite_X3.getWidth());
-        speedIconSprite_X4.setY(textPoint.getY());
+//        speedIconSprite_X4.setY(textPoint.getY());
+        speedIconSprite_X4.setY(textPoint.getY() + textPoint.getHeight()/2 - speedIconSprite_X4.getHeight()/2);
 
         // LOCK FIELD INITIALIZING
 
@@ -608,6 +663,13 @@ public class GamePongTwoPlayer extends GamePong {
         lockFieldSprite.setX((CAMERA_WIDTH / 2) - (lockFieldSprite.getWidth() / 2));
         lockFieldSprite.setY((CAMERA_HEIGHT / 2) - (lockFieldSprite.getHeight() / 2));
 
+        // LOCK FIELD ICON INITIALIZING
+
+        lockFieldIconSprite = new Sprite(0, 0, lockFieldIconTextureRegion, getVertexBufferObjectManager());
+        lockFieldIconSprite.setX(speedIconSprite_X4.getX() + speedIconSprite_X4.getWidth());
+//        lockFieldIconSprite.setY(textPoint.getY());
+        lockFieldIconSprite.setY(textPoint.getY() + textPoint.getHeight()/2 - lockFieldIconSprite.getHeight()/2);
+
         // CUT BAR 30 INITIALIZING
 
         cutBar30Sprite = new Sprite(0, 0, cutBar30TextureRegion, getVertexBufferObjectManager()){
@@ -625,6 +687,13 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar30Sprite.setScale(cutBar30Sprite.getScaleX()/2);
         cutBar30Sprite.setX((CAMERA_WIDTH / 2) - (cutBar30Sprite.getWidth() / 2));
         cutBar30Sprite.setY((CAMERA_HEIGHT / 2) - (cutBar30Sprite.getHeight() / 2));
+
+        // CUT BAR 30 ICON INITIALIZING
+
+        cutBar30IconSprite = new Sprite(0, 0, cutBar30IconTextureRegion, getVertexBufferObjectManager());
+        cutBar30IconSprite.setX(lockFieldIconSprite.getX() + lockFieldIconSprite.getWidth());
+//        cutBar30IconSprite.setY(textPoint.getY());
+        cutBar30IconSprite.setY(textPoint.getY() + textPoint.getHeight()/2 - cutBar30IconSprite.getHeight()/2);
 
         // CUT BAR 50 INITIALIZING
 
@@ -644,6 +713,13 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar50Sprite.setX((CAMERA_WIDTH / 2) - (cutBar50Sprite.getWidth() / 2));
         cutBar50Sprite.setY((CAMERA_HEIGHT / 2) - (cutBar50Sprite.getHeight() / 2));
 
+        // CUT BAR 50 ICON INITIALIZING
+
+        cutBar50IconSprite = new Sprite(0, 0, cutBar50IconTextureRegion, getVertexBufferObjectManager());
+        cutBar50IconSprite.setX(cutBar30IconSprite.getX() + cutBar30IconSprite.getWidth());
+//        cutBar50IconSprite.setY(textPoint.getY());
+        cutBar50IconSprite.setY(textPoint.getY() + textPoint.getHeight()/2 - cutBar50IconSprite.getHeight()/2);
+
         // REVERTED BAR INITIALIZING
 
         revertedBarSprite = new Sprite(0, 0, revertedBarTextureRegion, getVertexBufferObjectManager()){
@@ -661,7 +737,14 @@ public class GamePongTwoPlayer extends GamePong {
         revertedBarSprite.setScale(revertedBarSprite.getScaleX()/2);
         revertedBarSprite.setX((CAMERA_WIDTH / 2) - (revertedBarSprite.getWidth() / 2));
         revertedBarSprite.setY((CAMERA_HEIGHT / 2) - (revertedBarSprite.getHeight() / 2));
-        
+
+        // REVERTED ICON INITIALIZING
+
+        revertedBarIconSprite = new Sprite(0, 0, revertedBarIconTextureRegion, getVertexBufferObjectManager());
+        revertedBarIconSprite.setX(cutBar50IconSprite.getX() + cutBar50IconSprite.getWidth());
+//        revertedBarIconSprite.setY(textPoint.getY());
+        revertedBarIconSprite.setY(textPoint.getY() + textPoint.getHeight()/2 - revertedBarIconSprite.getHeight()/2);
+
         // RUSH-HOUR INITIALIZING
 
         rushHourSprite = new Sprite(0, 0, rushHourTextureRegion, getVertexBufferObjectManager()){
@@ -679,6 +762,13 @@ public class GamePongTwoPlayer extends GamePong {
         rushHourSprite.setScale(rushHourSprite.getScaleX()/2);
         rushHourSprite.setX((CAMERA_WIDTH / 2) - (rushHourSprite.getWidth() / 2));
         rushHourSprite.setY((CAMERA_HEIGHT / 2) - (rushHourSprite.getHeight() / 2));
+
+        // RUSH HOUR ICON INITIALIZING
+
+        rushHourIconSprite = new Sprite(0, 0, rushHourIconTextureRegion, getVertexBufferObjectManager());
+        rushHourIconSprite.setX(revertedBarIconSprite.getX() + revertedBarIconSprite.getWidth());
+//        rushHourIconSprite.setY(textPoint.getY());
+        rushHourIconSprite.setY(textPoint.getY() + textPoint.getHeight()/2 - rushHourIconSprite.getHeight()/2);
     }
 
     //----------------------------------------------
@@ -953,43 +1043,42 @@ public class GamePongTwoPlayer extends GamePong {
                         case SPEEDX2:
                             Log.d("BONUSCREATED", "SPEEDX2");
                             setVelocityFromPrevious(msg.arg2, SPEEDX2);
-                            removePreviuousSpeedSpriteIcons();
-                            speedx2_bonus = true;
-                            scene.attachChild(speedIconSprite_X2);
+                            safeAttachSpriteIcon(SPEEDX2_ICON);
                             break;
                         case SPEEDX3:
                             Log.d("BONUSCREATED", "SPEEDX3");
                             setVelocityFromPrevious(msg.arg2, SPEEDX3);
-                            removePreviuousSpeedSpriteIcons();
-                            speedx3_bonus = true;
-                            scene.attachChild(speedIconSprite_X3);
+                            safeAttachSpriteIcon(SPEEDX3_ICON);
                             break;
                         case SPEEDX4:
                             Log.d("BONUSCREATED", "SPEEDX4");
                             setVelocityFromPrevious(msg.arg2, SPEEDX4);
-                            removePreviuousSpeedSpriteIcons();
-                            speedx4_bonus = true;
-                            scene.attachChild(speedIconSprite_X4);
+                            safeAttachSpriteIcon(SPEEDX3_ICON);
                             break;
                         case LOCKFIELD:
                             Log.d("BONUSCREATED", "LOCKFIELD");
+                            safeAttachSpriteIcon(LOCKFIELD_ICON);
                             locksField = true;
                             break;
                         case CUTBAR30:
                             Log.d("BONUSCREATED", "CUTBAR30");
                             barSprite.setWidth(BARWIDTH*0.7f);
+                            safeAttachSpriteIcon(CUTBAR30_ICON);
                             break;
                         case CUTBAR50:
                             Log.d("BONUSCREATED", "CUTBAR50");
                             barSprite.setWidth(BARWIDTH*0.5f);
+                            safeAttachSpriteIcon(CUTBAR50_ICON);
                             break;
                         case REVERTEDBAR:
                             Log.d("BONUSCREATED", "REVERTEDBAR");
+                            safeAttachSpriteIcon(REVERTEDBAR_ICON);
                             if(Math.signum(GAME_VELOCITY) > 0)
                                 GAME_VELOCITY = -GAME_VELOCITY;
                             break;
                         case RUSHHOUR:
                             Log.d("BONUSCREATED", "RUSHHOUR");
+                            safeAttachSpriteIcon(RUSHHOUR_ICON);
                             if(!rush_hour) {
                                 rush_hour = true;
                                 rushHourLogic();
@@ -1006,37 +1095,45 @@ public class GamePongTwoPlayer extends GamePong {
                         case SPEEDX2:
                             Log.d("BONUSEXPIRED", "SPEEDX2");
                             setVelocityFromPrevious(SPEEDX2, NOBONUS);
-                            speedx2_bonus = false;
                             scene.detachChild(speedIconSprite_X2);
+                            bonusStatusArray.remove(new Integer(SPEEDX2_ICON));
                             break;
                         case SPEEDX3:
                             Log.d("BONUSEXPIRED", "SPEEDX3");
                             setVelocityFromPrevious(SPEEDX3, NOBONUS);
-                            speedx3_bonus = false;
                             scene.detachChild(speedIconSprite_X3);
+                            bonusStatusArray.remove(new Integer(SPEEDX3_ICON));
                             break;
                         case SPEEDX4:
                             Log.d("BONUSEXPIRED", "SPEEDX4");
                             setVelocityFromPrevious(SPEEDX4, NOBONUS);
-                            speedx4_bonus = false;
                             scene.detachChild(speedIconSprite_X4);
+                            bonusStatusArray.remove(new Integer(SPEEDX4_ICON));
                             break;
                         case LOCKFIELD:
                             Log.d("BONUSEXPIRED", "LOCKFIELD");
                             locksField = false;
+                            scene.detachChild(lockFieldIconSprite);
+                            bonusStatusArray.remove(new Integer(LOCKFIELD_ICON));
                             break;
                         case CUTBAR30:
                             Log.d("BONUSEXPIRED", "CUTBAR30");
                             barSprite.setWidth(BARWIDTH);
+                            scene.detachChild(cutBar30IconSprite);
+                            bonusStatusArray.remove(new Integer(CUTBAR30_ICON));
                             break;
                         case CUTBAR50:
                             Log.d("BONUSEXPIRED", "CUTBAR50");
                             barSprite.setWidth(BARWIDTH);
+                            scene.detachChild(cutBar50IconSprite);
+                            bonusStatusArray.remove(new Integer(CUTBAR50_ICON));
                             break;
                         case REVERTEDBAR:
                             Log.d("BONUSEXPIRED", "REVERTEDBAR");
                             if(Math.signum(GAME_VELOCITY) < 0)
                                 GAME_VELOCITY = -GAME_VELOCITY;
+                            scene.detachChild(revertedBarIconSprite);
+                            bonusStatusArray.remove(new Integer(REVERTEDBAR_ICON));
                             break;
                         case RUSHHOUR:
                             Log.d("BONUSEXPIRED", "RUSHHOUR");
@@ -1049,6 +1146,8 @@ public class GamePongTwoPlayer extends GamePong {
                                     }
                                 }
                             });
+                            scene.detachChild(rushHourIconSprite);
+                            bonusStatusArray.remove(new Integer(RUSHHOUR_ICON));
                             break;
 
                         default:
@@ -1062,18 +1161,68 @@ public class GamePongTwoPlayer extends GamePong {
         }
     };
 
-    private void removePreviuousSpeedSpriteIcons() {
-        if(speedx2_bonus){
-            scene.detachChild(speedIconSprite_X2);
-            speedx2_bonus = false;
+    private void safeAttachSpriteIcon(Integer spriteID){
+        if(spriteID == SPEEDX2_ICON || spriteID == SPEEDX3_ICON || spriteID == SPEEDX4_ICON){
+            if(bonusStatusArray.contains(SPEEDX2_ICON)){
+                scene.detachChild(speedIconSprite_X2);
+                bonusStatusArray.remove(new Integer(SPEEDX2_ICON));
+            }
+            if(bonusStatusArray.contains(SPEEDX3_ICON)){
+                scene.detachChild(speedIconSprite_X3);
+                bonusStatusArray.remove(new Integer(SPEEDX3_ICON));
+            }
+            if(bonusStatusArray.contains(SPEEDX3_ICON)){
+                scene.detachChild(speedIconSprite_X4);
+                bonusStatusArray.remove(new Integer(SPEEDX4_ICON));
+            }
+            if(spriteID == SPEEDX2_ICON){
+                scene.attachChild(speedIconSprite_X2);
+                bonusStatusArray.add(SPEEDX2_ICON);
+            }
+            if(spriteID == SPEEDX3_ICON){
+                scene.attachChild(speedIconSprite_X3);
+                bonusStatusArray.add(SPEEDX3_ICON);
+            }
+            if(spriteID == SPEEDX4_ICON){
+                scene.attachChild(speedIconSprite_X4);
+                bonusStatusArray.add(SPEEDX4_ICON);
+            }
         }
-        if(speedx3_bonus){
-            scene.detachChild(speedIconSprite_X3);
-            speedx3_bonus = false;
+        if(spriteID == LOCKFIELD_ICON){
+            if(!bonusStatusArray.contains(LOCKFIELD_ICON)){
+                scene.attachChild(lockFieldIconSprite);
+                bonusStatusArray.add(LOCKFIELD_ICON);
+            }
         }
-        if(speedx4_bonus){
-            scene.detachChild(speedIconSprite_X4);
-            speedx4_bonus = false;
+        if(spriteID == RUSHHOUR_ICON){
+            if(!bonusStatusArray.contains(RUSHHOUR_ICON)){
+                scene.attachChild(rushHourIconSprite);
+                bonusStatusArray.add(RUSHHOUR_ICON);
+            }
+        }
+        if(spriteID == CUTBAR30_ICON || spriteID == CUTBAR50_ICON){
+            if(bonusStatusArray.contains(CUTBAR30_ICON)){
+                scene.detachChild(cutBar30IconSprite);
+                bonusStatusArray.remove(new Integer(CUTBAR30_ICON));
+            }
+            if(bonusStatusArray.contains(CUTBAR50_ICON)){
+                scene.detachChild(cutBar50IconSprite);
+                bonusStatusArray.remove(new Integer(CUTBAR50_ICON));
+            }
+            if(spriteID == CUTBAR30_ICON) {
+                scene.attachChild(cutBar30IconSprite);
+                bonusStatusArray.add(CUTBAR30_ICON);
+            }
+            if(spriteID == CUTBAR50_ICON) {
+                scene.attachChild(cutBar50IconSprite);
+                bonusStatusArray.add(CUTBAR50_ICON);
+            }
+        }
+        if(spriteID == REVERTEDBAR_ICON){
+            if(!bonusStatusArray.contains(REVERTEDBAR_ICON)){
+                scene.attachChild(revertedBarIconSprite);
+                bonusStatusArray.add(REVERTEDBAR_ICON);
+            }
         }
     }
 
@@ -1134,21 +1283,21 @@ public class GamePongTwoPlayer extends GamePong {
         public void run() {
             Random rand = new Random();
             int bonusChoice = rand.nextInt(( RUSHHOUR - SPEEDX2) + 1) + SPEEDX2;
-            if(deletedSprite){
+            if(deletedBonusSprite){
                 Log.d("Sprite", "First One Is None");
                 attachSprite(bonusChoice);
             }else{
-                Log.d("Sprite", "Actived Is " + activedSprite);
-                detachSprite(activedSprite);
+                Log.d("Sprite", "Actived Is " + activedBonusSprite);
+                detachSprite(activedBonusSprite);
                 attachSprite(bonusChoice);
             }
         }
 
         @Override
         public boolean cancel() {
-            if(activedSprite != SPRITE_NONE){
-                detachSprite(activedSprite);
-                activedSprite = SPRITE_NONE;
+            if(activedBonusSprite != SPRITE_NONE){
+                detachSprite(activedBonusSprite);
+                activedBonusSprite = SPRITE_NONE;
             }
             return super.cancel();
         }
@@ -1164,64 +1313,64 @@ public class GamePongTwoPlayer extends GamePong {
                 Log.d("AttachSprite", "Attaching SPEEDX2");
                 scene.registerTouchArea(speedSprite_X2);
                 scene.attachChild(speedSprite_X2);
-                activedSprite = SPEEDX2;
-                deletedSprite = false;
+                activedBonusSprite = SPEEDX2;
+                deletedBonusSprite = false;
                 break;
 
             case SPEEDX3:
                 Log.d("AttachSprite", "Attaching SPEEDX3");
                 scene.registerTouchArea(speedSprite_X3);
                 scene.attachChild(speedSprite_X3);
-                activedSprite = SPEEDX3;
-                deletedSprite = false;
+                activedBonusSprite = SPEEDX3;
+                deletedBonusSprite = false;
                 break;
 
             case SPEEDX4:
                 Log.d("AttachSprite", "Attaching SPEEDX4");
                 scene.registerTouchArea(speedSprite_X4);
                 scene.attachChild(speedSprite_X4);
-                activedSprite = SPEEDX4;
-                deletedSprite = false;
+                activedBonusSprite = SPEEDX4;
+                deletedBonusSprite = false;
                 break;
 
             case LOCKFIELD:
                 Log.d("AttachSprite", "Attaching LOCKFIELD");
                 scene.registerTouchArea(lockFieldSprite);
                 scene.attachChild(lockFieldSprite);
-                activedSprite = LOCKFIELD;
-                deletedSprite = false;
+                activedBonusSprite = LOCKFIELD;
+                deletedBonusSprite = false;
                 break;
 
             case CUTBAR30:
                 Log.d("AttachSprite", "Attaching CUTBAR30");
                 scene.registerTouchArea(cutBar30Sprite);
                 scene.attachChild(cutBar30Sprite);
-                activedSprite = CUTBAR30;
-                deletedSprite = false;
+                activedBonusSprite = CUTBAR30;
+                deletedBonusSprite = false;
                 break;
 
             case CUTBAR50:
                 Log.d("AttachSprite", "Attaching CUTBAR50");
                 scene.registerTouchArea(cutBar50Sprite);
                 scene.attachChild(cutBar50Sprite);
-                activedSprite = CUTBAR50;
-                deletedSprite = false;
+                activedBonusSprite = CUTBAR50;
+                deletedBonusSprite = false;
                 break;
 
             case REVERTEDBAR:
                 Log.d("AttachSprite", "Attaching REVERTEDBAR");
                 scene.registerTouchArea(revertedBarSprite);
                 scene.attachChild(revertedBarSprite);
-                activedSprite = REVERTEDBAR;
-                deletedSprite = false;
+                activedBonusSprite = REVERTEDBAR;
+                deletedBonusSprite = false;
                 break;
 
             case RUSHHOUR:
                 Log.d("AttachSprite", "Attaching RUSHHOUR");
                 scene.registerTouchArea(rushHourSprite);
                 scene.attachChild(rushHourSprite);
-                activedSprite = RUSHHOUR;
-                deletedSprite = false;
+                activedBonusSprite = RUSHHOUR;
+                deletedBonusSprite = false;
                 break;
 
             default:
@@ -1236,64 +1385,64 @@ public class GamePongTwoPlayer extends GamePong {
                 Log.d("DetachSprite", "Deattaching SPEEDX2");
                 scene.unregisterTouchArea(speedSprite_X2);
                 scene.detachChild(speedSprite_X2);
-                activedSprite = SPRITE_NONE;
-                deletedSprite = true;
+                activedBonusSprite = SPRITE_NONE;
+                deletedBonusSprite = true;
                 break;
 
             case SPEEDX3:
                 Log.d("DetachSprite", "Deattaching SPEEDX3");
                 scene.unregisterTouchArea(speedSprite_X3);
                 scene.detachChild(speedSprite_X3);
-                activedSprite = SPRITE_NONE;
-                deletedSprite = true;
+                activedBonusSprite = SPRITE_NONE;
+                deletedBonusSprite = true;
                 break;
 
             case SPEEDX4:
                 Log.d("DetachSprite", "Deattaching SPEEDX4");
                 scene.unregisterTouchArea(speedSprite_X4);
                 scene.detachChild(speedSprite_X4);
-                activedSprite = SPRITE_NONE;
-                deletedSprite = true;
+                activedBonusSprite = SPRITE_NONE;
+                deletedBonusSprite = true;
                 break;
 
             case LOCKFIELD:
                 Log.d("DetachSprite", "Deattaching LOCKFIELD");
                 scene.unregisterTouchArea(lockFieldSprite);
                 scene.detachChild(lockFieldSprite);
-                activedSprite = SPRITE_NONE;
-                deletedSprite = true;
+                activedBonusSprite = SPRITE_NONE;
+                deletedBonusSprite = true;
                 break;
             
             case CUTBAR30:
                 Log.d("DetachSprite", "Deattaching CUTBAR30");
                 scene.unregisterTouchArea(cutBar30Sprite);
                 scene.detachChild(cutBar30Sprite);
-                activedSprite = SPRITE_NONE;
-                deletedSprite = true;
+                activedBonusSprite = SPRITE_NONE;
+                deletedBonusSprite = true;
                 break;
 
             case CUTBAR50:
                 Log.d("DetachSprite", "Deattaching CUTBAR50");
                 scene.unregisterTouchArea(cutBar50Sprite);
                 scene.detachChild(cutBar50Sprite);
-                activedSprite = SPRITE_NONE;
-                deletedSprite = true;
+                activedBonusSprite = SPRITE_NONE;
+                deletedBonusSprite = true;
                 break;
 
             case REVERTEDBAR:
                 Log.d("DetachSprite", "Deattaching REVERTEDBAR");
                 scene.unregisterTouchArea(revertedBarSprite);
                 scene.detachChild(revertedBarSprite);
-                activedSprite = SPRITE_NONE;
-                deletedSprite = true;
+                activedBonusSprite = SPRITE_NONE;
+                deletedBonusSprite = true;
                 break;
 
             case RUSHHOUR:
                 Log.d("DetachSprite", "Deattaching RUSHHOUR");
                 scene.unregisterTouchArea(rushHourSprite);
                 scene.detachChild(rushHourSprite);
-                activedSprite = SPRITE_NONE;
-                deletedSprite = true;
+                activedBonusSprite = SPRITE_NONE;
+                deletedBonusSprite = true;
                 break;
 
             default:
