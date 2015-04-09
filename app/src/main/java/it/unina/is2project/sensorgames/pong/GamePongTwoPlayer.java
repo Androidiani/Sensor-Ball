@@ -54,9 +54,9 @@ public class GamePongTwoPlayer extends GamePong {
     public static String EXTRA_MASTER = "isMaster_boolean";
     public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
     // Pause Utils
-    private float old_x_speed;
-    private float old_y_speed;
-    private int old_game_speed;
+    //private float old_x_speed;
+    //private float old_y_speed;
+    //private float old_game_speed;
     private long tap;
     private boolean proximityRegion;
     private int PROXIMITY_ZONE;
@@ -881,7 +881,7 @@ public class GamePongTwoPlayer extends GamePong {
                             case FSMGame.STATE_IN_GAME:
                                 handler.setVelocity(old_x_speed, old_y_speed);
                                 GAME_VELOCITY = old_game_speed;
-                                textInfo.setText("");
+                                textInfo.setText(" ");
                                 task = new TimerBonusTask();
                                 timer = new Timer();
                                 timer.schedule(task, 2000, 10000);
@@ -1040,8 +1040,15 @@ public class GamePongTwoPlayer extends GamePong {
                             break;
                         case RUSHHOUR:
                             Log.d("BONUSEXPIRED", "RUSHHOUR");
-                            clearRushHour();
-                            rush_hour = false;
+                            runOnUpdateThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(rush_hour) {
+                                        clearRushHour();
+                                        rush_hour = false;
+                                    }
+                                }
+                            });
                             break;
 
                         default:
@@ -1075,10 +1082,10 @@ public class GamePongTwoPlayer extends GamePong {
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
             Sprite rush = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
-            rushHour.add(rush);
             rush.setWidth(CAMERA_WIDTH * 0.1f);
             rush.setHeight(CAMERA_WIDTH * 0.1f);
             rush.setPosition((int) rush.getWidth() + random.nextInt(CAMERA_WIDTH - (int) rush.getWidth() * 2), (int) rush.getHeight() + random.nextInt(CAMERA_HEIGHT - (int) rush.getHeight() * 2));
+            rushHour.add(rush);
 
             PhysicsHandler physicsHandler = new PhysicsHandler(rushHour.get(i));
             physicsHandler.setVelocity(BALL_SPEED * (random.nextFloat() - random.nextFloat()), BALL_SPEED * (random.nextFloat() - random.nextFloat()));
@@ -1088,14 +1095,19 @@ public class GamePongTwoPlayer extends GamePong {
 
             scene.attachChild(rushHour.get(i));
         }
+        Log.d("RushHour", "Created " + rushHour.size());
     }
 
     private void clearRushHour() {
-        do {
+        int i = 0;
+        int size = rushHour.size();
+        while (rushHour.size() > 0){
             rushHour.get(0).detachSelf();
-            rushHour.remove(0);
             rushHourHandlers.remove(0);
-        } while (rushHour.size() > 0);
+            rushHour.remove(0);
+            Log.d("RushHourClear", "Detach " + i++ + " of " + size);
+            Log.d("RushHourClear", "Current size is " + rushHour.size());
+        }
     }
 
     private void setVelocityFromPrevious(int previousBonus, int nextBonus){

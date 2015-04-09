@@ -55,10 +55,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected boolean pause = false;
     protected boolean game_over = false;
     protected int previous_event = 0;
-    protected static int GAME_VELOCITY;
-    protected static int BALL_SPEED;
-    protected static int DEVICE_RATIO;
-    protected static final int NO_COLL = 0;
+    protected static float GAME_VELOCITY;
+    protected static float BALL_SPEED;
+    protected static float DEVICE_RATIO;
+    protected static final int NO_EVENT = 0;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
     protected static final int LEFT = 3;
@@ -133,7 +133,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected static final int PAUSE = -1;
     protected float old_x_speed;
     protected float old_y_speed;
-    protected int old_game_speed;
+    protected float old_game_speed;
     protected long firstTap;
 
     @Override
@@ -362,7 +362,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected boolean overBarCondition() {
-        return (ballSprite.getY() + ballSprite.getHeight() < barSprite.getY() + barSprite.getHeight()) && (previous_event != OVER) && (previous_event != SIDE);
+        /** Condition variable who understand if the ball hit the bar side or the over side
+         * - yBall: is the relative position of the ball according to the CAMERA_HEIGHT
+         * - yBar: is the relative position of the bar according to the CAMERA_HEIGHT
+         */
+        //float yBall = ballSprite.getY() + ballSprite.getHeight();
+        //float yBar = barSprite.getY();
+
+        return /*(yBall < yBar + barSprite.getHeight() / 2) &&*/ (previous_event != OVER) && (previous_event != SIDE);
     }
 
     protected boolean sideBarCondition() {
@@ -496,7 +503,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void clearGame() {
         GAME_VELOCITY = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
-        previous_event = NO_COLL;
+        previous_event = NO_EVENT;
         game_over = false;
         pause = false;
     }
