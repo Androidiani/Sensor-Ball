@@ -907,12 +907,11 @@ public class GamePongOnePlayer extends GamePong {
 
         // Generating a new event different from current event
         Random random = new Random();
-//        int random_int = random.nextInt(level + 1);
-//        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12)) {
-//            random_int = random.nextInt(level + 1);
-//        }
-//        game_event = random_int;
-        game_event = RUSH_HOUR;
+        int random_int = random.nextInt(level + 1);
+        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12)) {
+            random_int = random.nextInt(level + 1);
+        }
+        game_event = random_int;
         Log.d(TAG, "Game Event " + game_event);
     }
 }
