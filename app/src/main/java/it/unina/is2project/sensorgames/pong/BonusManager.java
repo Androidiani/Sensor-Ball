@@ -88,7 +88,7 @@ public class BonusManager {
             Map.Entry pair = (Map.Entry)it.next();
             value = (Integer)pair.getValue();
             value--;
-            Log.d("BonusManager", "Remain " + value + " of " + pair.getValue() + " ID: " + pair.getKey());
+            Log.d("BonusManager", "Remain " + value + " of ID: " + pair.getKey());
             if (value == 0){
 //                bonusMap.remove(pair.getKey());
                 it.remove();
