@@ -9,11 +9,12 @@
 
     <supports-screens
         android:anyDensity="true"
-        android:largeScreens="true"
-        android:normalScreens="true"
         android:resizeable="true"
         android:smallScreens="true"
-        android:xlargeScreens="true" />
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true" >
+    </supports-screens>
 
     <application
         android:allowBackup="true"
@@ -26,42 +27,47 @@
         </activity>
         <activity
             android:name=".AboutActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".TwoPlayerActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+        </activity>
         <activity
             android:name=".stats.activity.StatsActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name=".pong.GamePongTwoPlayer" >
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".TwoPlayerActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".pong.TrainingSettings"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".pong.GamePongTraining" >
+        </activity>
+        <activity
+            android:name=".pong.GamePongTwoPlayer" >
         </activity>
         <activity
             android:name=".pong.GamePongOnePlayer"
             android:exported="true" >
         </activity>
-        <activity android:name=".pong.GamePongTraining" >
+
+        <!--Activity for test-->
+        <activity
+            android:name=".pong.GamePongOnePlayerAutomatedTest"
+            android:exported="true" >
         </activity>
+
         <activity
             android:name=".splash.SplashScreenMain"
             android:label="@string/app_name"
-            android:parentActivityName=".splash.SplashScreen" >
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
 
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.unina.is2project.sensorgames.splash.SplashScreen" />
-        </activity>
-        <activity
-            android:name=".pong.GamePongOnePlayerAutomatedTest"
-            android:exported="true" />
-        <activity
-            android:name=".pong.TrainingSettings"
-            android:label="@string/title_activity_training_settings" >
-        </activity>
     </application>
 
 </manifest>

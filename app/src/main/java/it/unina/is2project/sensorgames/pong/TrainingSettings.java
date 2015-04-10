@@ -1,11 +1,9 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -16,26 +14,23 @@ import android.widget.TextView;
 
 import it.unina.is2project.sensorgames.R;
 
-public class TrainingSettings extends ActionBarActivity {
-
-    // Font typeface
-    private Typeface typeFace;
+public class TrainingSettings extends Activity {
 
     // Spinner
     Spinner ball_speed_spinner;
     Spinner bar_speed_spinner;
     Spinner event_spinner;
 
+    // Array adapter
+    ArrayAdapter ball_speed_adapter;
+    ArrayAdapter bar_speed_adapter;
+    ArrayAdapter event_adapter;
+
     // TextView
     TextView title;
     TextView ball_speed_textview;
     TextView bar_speed_textview;
     TextView event_textview;
-
-    // Array adapter
-    ArrayAdapter ball_speed_adapter;
-    ArrayAdapter bar_speed_adapter;
-    ArrayAdapter event_adapter;
 
     // Button
     Button back;
@@ -53,16 +48,12 @@ public class TrainingSettings extends ActionBarActivity {
 
         // Set the fullscreen window
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
-
         // Find view
         findView();
-
+        // Set-up typeface
+        setTypeface();
         // Populate spinner
         populateSpinner();
-
-        // Set-up the typeface
-        setTypeface();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,10 +66,9 @@ public class TrainingSettings extends ActionBarActivity {
                 finish();
             }
         });
-
     }
 
-    private void findView(){
+    private void findView() {
         // Spinner
         ball_speed_spinner = (Spinner) findViewById(R.id.spinner_ball_speed);
         bar_speed_spinner = (Spinner) findViewById(R.id.spinner_bar_speed);
@@ -94,25 +84,26 @@ public class TrainingSettings extends ActionBarActivity {
         back = (Button) findViewById(R.id.btn_back);
     }
 
-    private void setTypeface(){
+    private void setTypeface() {
         // Load the font
-        typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
 
         // Set the typeface
+        title.setTypeface(typeFace);
         ball_speed_textview.setTypeface(typeFace);
         bar_speed_textview.setTypeface(typeFace);
         event_textview.setTypeface(typeFace);
-        title.setTypeface(typeFace);
     }
 
-    private void populateSpinner(){
+    private void populateSpinner() {
         // Ball Speed Spinner
-        ball_speed_adapter = ArrayAdapter.createFromResource(this, R.array.ball_speed_spinner, android.R.layout.simple_spinner_item);
+        ball_speed_adapter = ArrayAdapter.createFromResource(this, R.array.ball_speed_spinner, R.layout.spinner_training_item);
+        ball_speed_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         ball_speed_spinner.setAdapter(ball_speed_adapter);
         ball_speed_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ball_speed = position+1;
+                ball_speed = position + 1;
             }
 
             @Override
@@ -122,12 +113,13 @@ public class TrainingSettings extends ActionBarActivity {
         });
 
         // Bar Speed Spinner
-        bar_speed_adapter = ArrayAdapter.createFromResource(this, R.array.bar_speed_spinner, android.R.layout.simple_spinner_item);
+        bar_speed_adapter = ArrayAdapter.createFromResource(this, R.array.bar_speed_spinner, R.layout.spinner_training_item);
+        bar_speed_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         bar_speed_spinner.setAdapter(bar_speed_adapter);
         bar_speed_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                bar_speed = position+1;
+                bar_speed = position + 1;
             }
 
             @Override
@@ -137,7 +129,8 @@ public class TrainingSettings extends ActionBarActivity {
         });
 
         // Event Spinner
-        event_adapter = ArrayAdapter.createFromResource(this, R.array.event_spinner, android.R.layout.simple_spinner_item);
+        event_adapter = ArrayAdapter.createFromResource(this, R.array.event_spinner, R.layout.spinner_training_item);
+        event_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         event_spinner.setAdapter(event_adapter);
         event_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -152,32 +145,8 @@ public class TrainingSettings extends ActionBarActivity {
         });
     }
 
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_training_settings, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        // do nothing
-    }
+//    @Override
+//    public void onBackPressed() {
+//        // do nothing
+//    }
 }

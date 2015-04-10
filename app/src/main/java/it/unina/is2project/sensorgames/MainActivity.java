@@ -1,5 +1,6 @@
 package it.unina.is2project.sensorgames;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,10 +14,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -34,7 +32,7 @@ import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
 import it.unina.is2project.sensorgames.pong.GamePongTraining;
 import it.unina.is2project.sensorgames.stats.activity.StatsActivity;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
     private int CAMERA_WIDTH;
 
@@ -48,9 +46,6 @@ public class MainActivity extends ActionBarActivity {
     private TextView txtAppName;
     private ImageView homeBar;
 
-    // Font typeface
-    private Typeface typeFace;
-
     // Ball
     private BallView mBallView;
     private Handler redrawHandler = new Handler();
@@ -59,47 +54,30 @@ public class MainActivity extends ActionBarActivity {
     private int x_pos;
     private int x_speed;
 
-    // Timer
-    private Timer mTmr;
-    private TimerTask mTsk;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /** Set the fullscreen window */
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
-
-        /** Load the font */
-        typeFace = Typeface.createFromAsset(getAssets(),"font/secrcode.ttf");
-
         setContentView(R.layout.activity_main);
 
+        // Set the fullscreen window
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // Find view
+        findViews();
+        // Set-up typeface
+        setTypeface();
+        // Set the listners
+        setListners();
+        // Place the ball
+        placeBall();
         // Get screen dimensions
         Point dim = getScreenDimensions();
         CAMERA_WIDTH = dim.x;
-
-        // Get the object id
-        findViews();
-
-        // Set the button fonts
-        buttonFonts();
-
-        // Set the listners
-        setListners();
-
-        // Place the ball
-        placeBall();
-
         // Move bar
         Animation animMove = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.movebar);
         homeBar.setAnimation(animMove);
 
         // Sensor Manager
-        ((SensorManager)getSystemService(Context.SENSOR_SERVICE)).registerListener(
+        ((SensorManager) getSystemService(Context.SENSOR_SERVICE)).registerListener(
                 new SensorEventListener() {
                     @Override
                     public void onSensorChanged(SensorEvent event) {
@@ -111,51 +89,30 @@ public class MainActivity extends ActionBarActivity {
                     }
                 },
                 ((SensorManager) getSystemService(Context.SENSOR_SERVICE))
-                        .getSensorList(Sensor.TYPE_ACCELEROMETER).get(0),
-                SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+                        .getSensorList(Sensor.TYPE_ACCELEROMETER).get(0), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     /**
-     * Find views in activity_main.xml routine.
+     * Find views in activity_main.xml
      */
-    public void findViews(){
-        txtAppName = (TextView)findViewById(R.id.txt_App_Name);
-        btnOnePlayer = (Button)findViewById(R.id.btn_p1);
-        btnTwoPlayer = (Button)findViewById(R.id.btn_p2);
-        btnTraining = (Button)findViewById(R.id.btn_trng);
-        btnStats = (Button)findViewById(R.id.btn_sts);
-        btnAboutUs = (Button)findViewById(R.id.btn_about);
+    public void findViews() {
+        txtAppName = (TextView) findViewById(R.id.txt_App_Name);
+        homeBar = (ImageView) findViewById(R.id.homeBar);
         mLinearLayout = (LinearLayout) findViewById(R.id.mLinearLayout);
-        homeBar = (ImageView)findViewById(R.id.homeBar);
+        btnOnePlayer = (Button) findViewById(R.id.btn_p1);
+        btnTwoPlayer = (Button) findViewById(R.id.btn_p2);
+        btnTraining = (Button) findViewById(R.id.btn_trng);
+        btnStats = (Button) findViewById(R.id.btn_sts);
+        btnAboutUs = (Button) findViewById(R.id.btn_about);
     }
 
     /**
-     * Set the font face to buttons
+     * Set the typeface
      */
-    public void buttonFonts(){
+    public void setTypeface() {
+        // Load the font
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
+        // Set the typeface
         txtAppName.setTypeface(typeFace);
         btnOnePlayer.setTypeface(typeFace);
         btnTwoPlayer.setTypeface(typeFace);
@@ -165,10 +122,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
-     * Set listners for buttons' event.
+     * Set listners for buttons
      */
-    public void setListners(){
-
+    public void setListners() {
         // 1 Player Button
         btnOnePlayer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,7 +132,6 @@ public class MainActivity extends ActionBarActivity {
                 btnOnePlayerClick();
             }
         });
-
         // 2 Player Button
         btnTwoPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,7 +139,6 @@ public class MainActivity extends ActionBarActivity {
                 btnTwoPlayerClick();
             }
         });
-
         // Training Button
         btnTraining.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,7 +146,6 @@ public class MainActivity extends ActionBarActivity {
                 btnTrainingClick();
             }
         });
-
         // Stats Button
         btnStats.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,7 +153,6 @@ public class MainActivity extends ActionBarActivity {
                 btnStatsClick();
             }
         });
-
         // About Us Button
         btnAboutUs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -213,14 +165,13 @@ public class MainActivity extends ActionBarActivity {
     /**
      * Place the ball over the layout
      */
-    private void placeBall(){
+    private void placeBall() {
         // Make the Ball View
-        mBallView = new BallView(this,x_pos,BALL_RADIUS,BALL_RADIUS,BALL_COLOR);
-
+        mBallView = new BallView(this, x_pos, BALL_RADIUS, BALL_RADIUS, BALL_COLOR);
         // Attach mBallView to mLinearLayout
         mLinearLayout.addView(mBallView);
-
-        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, BALL_RADIUS*2);
+        // Draw ball
+        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, BALL_RADIUS * 2);
         mLinearLayout.setLayoutParams(parms);
         mBallView.invalidate();
     }
@@ -228,12 +179,10 @@ public class MainActivity extends ActionBarActivity {
     /**
      * Get the screen dimensions
      */
-    private Point getScreenDimensions(){
+    private Point getScreenDimensions() {
         Point mPoint = new Point();
-
-        //get screen dimensions
+        // Get screen dimensions
         Display display = getWindowManager().getDefaultDisplay();
-
         display.getSize(mPoint);
 
         return mPoint;
@@ -279,40 +228,15 @@ public class MainActivity extends ActionBarActivity {
     /**
      * Manage click on aboutUs button.
      */
-    private void btnAboutUsClick(){
+    private void btnAboutUsClick() {
         Intent i = new Intent(MainActivity.this, AboutActivity.class);
         startActivity(i);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
     @Override
-    public void onResume() //app moved to foreground (also occurs at app startup)
-    {
-        //create timer to move ball to new position
-        mTmr = new Timer();
-        mTsk = new TimerTask() {
-            public void run() {
-
-                x_pos += x_speed;
-                if (x_pos > CAMERA_WIDTH + 2*BALL_RADIUS) x_pos = 0;
-                if (x_pos < -2*BALL_RADIUS) x_pos = CAMERA_WIDTH;
-
-                mBallView.x = x_pos;
-
-                //redraw ball
-                redrawHandler.post(new Runnable() {
-                    public void run() {
-                        mBallView.invalidate();
-                    }
-                });
-            }
-        };
-        mTmr.schedule(mTsk,10,10);
-        super.onResume();
-    }
-
-    @Override
-    public void onBackPressed() {AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+    public void onBackPressed() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 
         alert.setTitle(getApplicationContext().getResources().getString(R.string.ttl_main_adv));
         alert.setMessage(getApplicationContext().getResources().getString(R.string.txt_main_adv));
@@ -322,7 +246,6 @@ public class MainActivity extends ActionBarActivity {
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
         });
-
         alert.setNegativeButton(getApplicationContext().getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // do nothing
@@ -330,5 +253,31 @@ public class MainActivity extends ActionBarActivity {
         });
 
         alert.show();
+    }
+
+    @Override
+    public void onResume() {
+        // Create timer to move ball to new position
+        Timer mTmr = new Timer();
+        TimerTask mTsk = new TimerTask() {
+            public void run() {
+                x_pos += x_speed;
+                if (x_pos > CAMERA_WIDTH + 2 * BALL_RADIUS)
+                    x_pos = 0;
+                if (x_pos < -2 * BALL_RADIUS)
+                    x_pos = CAMERA_WIDTH;
+
+                mBallView.x = x_pos;
+
+                // Redraw ball
+                redrawHandler.post(new Runnable() {
+                    public void run() {
+                        mBallView.invalidate();
+                    }
+                });
+            }
+        };
+        mTmr.schedule(mTsk, 10, 10);
+        super.onResume();
     }
 }

@@ -110,11 +110,10 @@
 
     <!-- Training Game -->
     <string name="text_hit">Hit</string>
-    <string name="title_activity_training_settings">TrainingSettings</string>
     <string name="text_ball_speed">Ball Speed</string>
     <string name="text_bar_speed">Bar Speed</string>
-    <string name="text_active_events">Select event</string>
-    <string name="back">Back</string>
+    <string name="text_active_events">Select Event</string>
+    <string name="back">BACK</string>
     <string-array name="ball_speed_spinner">
         <item>x1</item>
         <item>x2</item>
@@ -129,11 +128,11 @@
     </string-array>
     <string-array name="event_spinner">
         <item>No event</item>
+        <item>First Enemy</item>
         <item>Cut bar 30%</item>
         <item>Cut bar 50%</item>
-        <item>Rush Hour</item>
         <item>Reverse</item>
-        <item>First Enemy</item>
+        <item>Rush Hour</item>
     </string-array>
 
     <string name="hello_world">Hello world!</string>

@@ -12,26 +12,21 @@ public class BallView extends View {
     private final int r;
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    //construct new ball object
-    public BallView(Context context, float x, float y, int r) {
-        super(context);
-        //color hex is [transparency][red][green][blue]
-        mPaint.setColor(0xFF00FF00);  //not transparent. color is green
-        this.x = x;
-        this.y = y;
-        this.r = r;  //radius
-    }
-
+    /**
+     * Build new ball object
+     */
     public BallView(Context context, float x, float y, int r, int color) {
         super(context);
         //color hex is [transparency][red][green][blue]
         mPaint.setColor(color);
         this.x = x;
         this.y = y;
-        this.r = r;  //radius
+        this.r = r;
     }
 
-    //called by invalidate()
+    /**
+     * Draw the circle
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);

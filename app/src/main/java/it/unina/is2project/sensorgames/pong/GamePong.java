@@ -1,7 +1,5 @@
 package it.unina.is2project.sensorgames.pong;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -57,10 +55,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected boolean pause = false;
     protected boolean game_over = false;
     protected int previous_event = 0;
-    protected float GAME_VELOCITY;
-    protected float BALL_SPEED;
-    protected float DEVICE_RATIO;
-    protected static final int NO_EVENT = 0;
+    protected static float BAR_SPEED;
+    protected static float BALL_SPEED;
+    protected static float DEVICE_RATIO;
+    protected static final int NO_COLL = 0;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
     protected static final int LEFT = 3;
@@ -135,7 +133,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected static final int PAUSE = -1;
     protected float old_x_speed;
     protected float old_y_speed;
-    protected float old_game_speed;
+    protected float old_bar_speed;
     protected long firstTap;
 
     @Override
@@ -198,7 +196,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         scene.attachChild(barSprite);
 
         //Set game velocity
-        GAME_VELOCITY = 2 * DEVICE_RATIO;
+        BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
 
         /** Enable the Acceleration Sensor
@@ -218,7 +216,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     @Override
     public void onAccelerationChanged(AccelerationData pAccelerationData) {
         // The bar is moving only on X
-        float new_position = barSprite.getX() + pAccelerationData.getX() * GAME_VELOCITY;
+        float new_position = barSprite.getX() + pAccelerationData.getX() * BAR_SPEED;
         // There's the edges' condition that do not hide the bar beyond the walls
         if (!(new_position > CAMERA_WIDTH - barSprite.getWidth() / 2 || new_position < -barSprite.getWidth() / 2))
             barSprite.setX(new_position);
@@ -304,15 +302,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
                         }
                     }
 
-                    // Game levels section
-                    gameLevels();
-                    // Game events section
-                    gameEvents();
+                    // Game events collision
+                    gameEventsCollisionLogic();
                 }
             }
 
             @Override
-            public void reset() {}
+            public void reset() {
+            }
         });
     }
 
@@ -495,9 +492,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void clearGame() {
-        GAME_VELOCITY = 2 * DEVICE_RATIO;
+        BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
-        previous_event = NO_EVENT;
+        previous_event = NO_COLL;
         game_over = false;
         pause = false;
     }
@@ -517,10 +514,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // Saving Game Data
         old_x_speed = handler.getVelocityX();
         old_y_speed = handler.getVelocityY();
-        old_game_speed = GAME_VELOCITY;
+        old_bar_speed = BAR_SPEED;
         // Stop the Game
         handler.setVelocity(0);
-        GAME_VELOCITY = 0;
+        BAR_SPEED = 0;
         firstTap = System.currentTimeMillis();
         previous_event = PAUSE;
         touch.stop();
@@ -532,14 +529,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         textPause.setText("");
         // Setting the old game velocity
         handler.setVelocity(old_x_speed, old_y_speed);
-        GAME_VELOCITY = old_game_speed;
+        BAR_SPEED = old_bar_speed;
         pause = false;
     }
 
     /**
      * Get the directions of the ball
-     *
-     * @return Point
      */
     protected Point getDirections() {
         Point mPoint = new Point();
@@ -553,11 +548,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     protected abstract void bluetoothExtra();
 
+    protected abstract void gameEventsCollisionLogic();
+
     protected abstract void addScore();
-
-    protected abstract void gameLevels();
-
-    protected abstract void gameEvents();
 
     protected abstract void gameOver();
 
