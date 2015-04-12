@@ -571,12 +571,14 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X2 = new Sprite(0, 0, speedTextureRegion_X2, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite SPEEDX2 Touched");
-                detachSprite(SPEEDX2);
-                Random rand = new Random();
-                int randNum = rand.nextInt(5) + 1;
-                AppMessage speedx2Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX2, randNum);
-                sendBluetoothMessage(speedx2Message);
+                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                    Log.d("Sprite", "Sprite SPEEDX2 Touched");
+                    detachSprite(SPEEDX2);
+                    Random rand = new Random();
+                    int randNum = rand.nextInt(5) + 1;
+                    AppMessage speedx2Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX2, randNum);
+                    sendBluetoothMessage(speedx2Message);
+                }
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -597,12 +599,14 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X3 = new Sprite(0, 0, speedTextureRegion_X3, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite SPEEDX3 Touched");
-                detachSprite(SPEEDX3);
-                Random rand = new Random();
-                int randNum = rand.nextInt(5) + 1;
-                AppMessage speedx3Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX3, randNum);
-                sendBluetoothMessage(speedx3Message);
+                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                    Log.d("Sprite", "Sprite SPEEDX3 Touched");
+                    detachSprite(SPEEDX3);
+                    Random rand = new Random();
+                    int randNum = rand.nextInt(5) + 1;
+                    AppMessage speedx3Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX3, randNum);
+                    sendBluetoothMessage(speedx3Message);
+                }
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -623,12 +627,14 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X4 = new Sprite(0, 0, speedTextureRegion_X4, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite SPEEDX4 Touched");
-                detachSprite(SPEEDX4);
-                Random rand = new Random();
-                int randNum = rand.nextInt(5) + 1;
-                AppMessage speedx4Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX4, randNum);
-                sendBluetoothMessage(speedx4Message);
+                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                    Log.d("Sprite", "Sprite SPEEDX4 Touched");
+                    detachSprite(SPEEDX4);
+                    Random rand = new Random();
+                    int randNum = rand.nextInt(5) + 1;
+                    AppMessage speedx4Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX4, randNum);
+                    sendBluetoothMessage(speedx4Message);
+                }
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -649,12 +655,14 @@ public class GamePongTwoPlayer extends GamePong {
         lockFieldSprite = new Sprite(0, 0, lockFieldTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite LOCKFIELD Touched");
-                detachSprite(LOCKFIELD);
-                Random rand = new Random();
-                int randNum = rand.nextInt(5) + 1;
-                AppMessage lockFieldMessage = new AppMessage(Constants.MSG_TYPE_BONUS_LOCKFIELD, randNum);
-                sendBluetoothMessage(lockFieldMessage);
+                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                    Log.d("Sprite", "Sprite LOCKFIELD Touched");
+                    detachSprite(LOCKFIELD);
+                    Random rand = new Random();
+                    int randNum = rand.nextInt(5) + 1;
+                    AppMessage lockFieldMessage = new AppMessage(Constants.MSG_TYPE_BONUS_LOCKFIELD, randNum);
+                    sendBluetoothMessage(lockFieldMessage);
+                }
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -674,12 +682,14 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar30Sprite = new Sprite(0, 0, cutBar30TextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite CUTBAR30 Touched");
-                detachSprite(CUTBAR30);
-                Random rand = new Random();
-                int randNum = rand.nextInt(5) + 1;
-                AppMessage cutBar30Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUTBAR30, randNum);
-                sendBluetoothMessage(cutBar30Message);
+                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                    Log.d("Sprite", "Sprite CUTBAR30 Touched");
+                    detachSprite(CUTBAR30);
+                    Random rand = new Random();
+                    int randNum = rand.nextInt(5) + 1;
+                    AppMessage cutBar30Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUTBAR30, randNum);
+                    sendBluetoothMessage(cutBar30Message);
+                }
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -699,12 +709,14 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar50Sprite = new Sprite(0, 0, cutBar50TextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite CUTBAR50 Touched");
-                detachSprite(CUTBAR50);
-                Random rand = new Random();
-                int randNum = rand.nextInt(5) + 1;
-                AppMessage cutBar50Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUTBAR50, randNum);
-                sendBluetoothMessage(cutBar50Message);
+                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                    Log.d("Sprite", "Sprite CUTBAR50 Touched");
+                    detachSprite(CUTBAR50);
+                    Random rand = new Random();
+                    int randNum = rand.nextInt(5) + 1;
+                    AppMessage cutBar50Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUTBAR50, randNum);
+                    sendBluetoothMessage(cutBar50Message);
+                }
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -724,12 +736,14 @@ public class GamePongTwoPlayer extends GamePong {
         revertedBarSprite = new Sprite(0, 0, revertedBarTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite REVERTEDBAR Touched");
-                detachSprite(REVERTEDBAR);
-                Random rand = new Random();
-                int randNum = rand.nextInt(5) + 1;
-                AppMessage revertedBarMessage = new AppMessage(Constants.MSG_TYPE_BONUS_REVERTEDBAR, randNum);
-                sendBluetoothMessage(revertedBarMessage);
+                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                    Log.d("Sprite", "Sprite REVERTEDBAR Touched");
+                    detachSprite(REVERTEDBAR);
+                    Random rand = new Random();
+                    int randNum = rand.nextInt(5) + 1;
+                    AppMessage revertedBarMessage = new AppMessage(Constants.MSG_TYPE_BONUS_REVERTEDBAR, randNum);
+                    sendBluetoothMessage(revertedBarMessage);
+                }
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -749,12 +763,14 @@ public class GamePongTwoPlayer extends GamePong {
         rushHourSprite = new Sprite(0, 0, rushHourTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                Log.d("Sprite", "Sprite RUSHHOUR Touched");
-                detachSprite(RUSHHOUR);
-                Random rand = new Random();
-                int randNum = rand.nextInt(5) + 1;
-                AppMessage rushHourMessage = new AppMessage(Constants.MSG_TYPE_BONUS_RUSHHOUR, randNum);
-                sendBluetoothMessage(rushHourMessage);
+                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                    Log.d("Sprite", "Sprite RUSHHOUR Touched");
+                    detachSprite(RUSHHOUR);
+                    Random rand = new Random();
+                    int randNum = rand.nextInt(5) + 1;
+                    AppMessage rushHourMessage = new AppMessage(Constants.MSG_TYPE_BONUS_RUSHHOUR, randNum);
+                    sendBluetoothMessage(rushHourMessage);
+                }
                 return super.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
             }
         };
@@ -1052,7 +1068,7 @@ public class GamePongTwoPlayer extends GamePong {
                         case SPEEDX4:
                             Log.d("BONUSCREATED", "SPEEDX4");
                             setVelocityFromPrevious(msg.arg2, SPEEDX4);
-                            safeAttachSpriteIcon(SPEEDX3_ICON);
+                            safeAttachSpriteIcon(SPEEDX4_ICON);
                             break;
                         case LOCKFIELD:
                             Log.d("BONUSCREATED", "LOCKFIELD");
@@ -1172,7 +1188,7 @@ public class GamePongTwoPlayer extends GamePong {
                 scene.detachChild(speedIconSprite_X3);
                 bonusStatusArray.remove(new Integer(SPEEDX3_ICON));
             }
-            if (bonusStatusArray.contains(SPEEDX3_ICON)) {
+            if (bonusStatusArray.contains(SPEEDX4_ICON)) {
                 scene.detachChild(speedIconSprite_X4);
                 bonusStatusArray.remove(new Integer(SPEEDX4_ICON));
             }
