@@ -322,23 +322,25 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     public void onBackPressed() {
-        if (!pause)
-            pauseGame();
+        if (!animActive) {
+            if (!pause)
+                pauseGame();
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(getResources().getString(R.string.text_ttl_oneplayer_leavegame));
-        alert.setMessage(getResources().getString(R.string.text_msg_oneplayer_leavegame));
-        alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                finish();
-            }
-        });
-        alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                restartGameAfterPause();
-            }
-        });
-        alert.show();
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(getResources().getString(R.string.text_ttl_oneplayer_leavegame));
+            alert.setMessage(getResources().getString(R.string.text_msg_oneplayer_leavegame));
+            alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    finish();
+                }
+            });
+            alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    restartGameAfterPause();
+                }
+            });
+            alert.show();
+        }
     }
 
     @Override

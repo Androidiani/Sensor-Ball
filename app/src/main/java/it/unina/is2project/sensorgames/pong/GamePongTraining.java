@@ -153,23 +153,25 @@ public class GamePongTraining extends GamePong {
 
     @Override
     public void onBackPressed() {
-        if (!pause)
-            pauseGame();
+        if (!animActive) {
+            if (!pause)
+                pauseGame();
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(getResources().getString(R.string.text_ttl_training_leave));
-        alert.setMessage(getResources().getString(R.string.text_msg_training_leave));
-        alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                finish();
-            }
-        });
-        alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                restartGameAfterPause();
-            }
-        });
-        alert.show();
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(getResources().getString(R.string.text_ttl_training_leave));
+            alert.setMessage(getResources().getString(R.string.text_msg_training_leave));
+            alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    finish();
+                }
+            });
+            alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    restartGameAfterPause();
+                }
+            });
+            alert.show();
+        }
     }
 
     @Override
@@ -206,7 +208,7 @@ public class GamePongTraining extends GamePong {
 
     private void setTrainingMode(int ball_speed, int bar_speed) {
         // Setting up the ball speed
-        handler.setVelocity(ball_speed * BALL_SPEED, -ball_speed * BALL_SPEED);
+        handler.setVelocity(0, -ball_speed * BALL_SPEED);
         Log.d(TAG, "Ball Speed Selected: " + ball_speed * BALL_SPEED);
 
         // Setting up the bar speed

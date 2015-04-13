@@ -3,6 +3,7 @@ package it.unina.is2project.sensorgames.pong;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 
@@ -46,6 +47,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected Camera camera;
     protected int CAMERA_WIDTH;
     protected int CAMERA_HEIGHT;
+    protected float DEVICE_RATIO;
+    protected float density;
 
     /**
      * Graphics
@@ -84,7 +87,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected PhysicsHandler handler;
     protected float BAR_SPEED;
     protected float BALL_SPEED;
-    protected float DEVICE_RATIO;
 
     /**
      * Collision Events
@@ -132,8 +134,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
      */
     protected Text textPause;
     protected Text textPause_util;
-    protected boolean pause = false;
     protected static final int PAUSE = -1;
+    protected boolean pause = false;
     protected float old_x_speed;
     protected float old_y_speed;
     protected float old_bar_speed;
@@ -142,20 +144,24 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     /**
      * Animation Utils
      */
-    private long ms = 0;
-    private long splashTime = 3000;
-    private boolean splashActive = true;
+    protected long ms = 0;
+    protected long animTime = 3000;
+    protected boolean animActive = false;
 
     @Override
     public EngineOptions onCreateEngineOptions() {
+        Display display = getWindow().getWindowManager().getDefaultDisplay();
+        // Understanding the device display's density
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
+        density = displayMetrics.density;
         // Understanding the device display's dimensions
-        Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         CAMERA_WIDTH = size.x;
         CAMERA_HEIGHT = size.y;
         DEVICE_RATIO = CAMERA_WIDTH / 480;
-        Log.d("Camera", "Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
+        Log.d("Camera", "Density = " + density + ", Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
         // Setting up the andEngine options
@@ -195,14 +201,16 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         scene.attachChild(textPause);
 
         // Adding the ballSprite to the scene
-        ballSprite = new Sprite((CAMERA_WIDTH - ballTexture.getWidth()) / 2, (CAMERA_HEIGHT - ballTexture.getHeight()) / 2, ballTextureRegion, getVertexBufferObjectManager());
+        ballSprite = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
         ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
         ballSprite.setHeight(CAMERA_WIDTH * 0.1f);
+        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 3);
         attachBall();
 
         // Adding the barSprite to the scene
-        barSprite = new Sprite((CAMERA_WIDTH - barTexture.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barTexture.getHeight()), barTextureRegion, getVertexBufferObjectManager());
+        barSprite = new Sprite(0, 0, barTextureRegion, getVertexBufferObjectManager());
         barSprite.setWidth(CAMERA_WIDTH * 0.3f);
+        barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
         scene.attachChild(barSprite);
 
         //Set game velocity
@@ -256,8 +264,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // Setting the Asset Base Path for fonts
         FontFactory.setAssetBasePath("font/");
         // "secrcode.ttf" texture loading
+        int fontSize = (int) (30 * density);
         fontTexture = new BitmapTextureAtlas(getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-        font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", 40, true, Color.WHITE);
+        font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", fontSize, true, Color.WHITE);
         font.load();
     }
 
@@ -276,9 +285,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         Thread physicsThread = new Thread() {
             public void run() {
                 try {
-                    while (splashActive && ms < splashTime) {
+                    animActive = true;
+                    while (ms < animTime) {
                         ms = ms + 100;
-
                         if (ms < 1000) {
                             Log.d("Animation", "3 - " + ms);
                             textPause.setText("  3  ");
@@ -291,12 +300,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
                             Log.d("Animation", "1 - " + ms);
                             textPause.setText("  1  ");
                         }
-
                         sleep(100);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
+                    animActive = false;
                     textPause.setText("");
                     doPhysics();
                 }
@@ -362,7 +371,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void setBallVeloctity() {
-        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
+        handler.setVelocity(0, -BALL_SPEED);
     }
 
     protected boolean leftCondition() {
@@ -542,7 +551,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void actionDownEvent(float x, float y) {
-        if (!pause) {
+        if (!pause && !animActive) {
             pauseGame();
         }
         if (pause && (System.currentTimeMillis() - firstTap > 500)) {
