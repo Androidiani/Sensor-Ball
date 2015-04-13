@@ -285,6 +285,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
                     if (topCondition()) {
                         collidesTop();
                     }
+
                     // Extra action relative to the TOP side, needed for two player game
                     bluetoothExtra();
 
@@ -353,9 +354,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void collidesBottom() {
         Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
+        barSprite.detachSelf();
         ballSprite.detachSelf();
+        barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
         handler.setVelocityY(-handler.getVelocityY());
+        scene.attachChild(barSprite);
         attachBall();
     }
 

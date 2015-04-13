@@ -1,5 +1,7 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -86,6 +88,8 @@ public class GamePongTraining extends GamePong {
         // Setting up the physics of the game
         settingPhysics();
 
+        clearGame();
+
         // Get options by training settings
         Intent i = getIntent();
         int ballSpeed = i.getIntExtra("ballSpeed", 1);
@@ -93,8 +97,6 @@ public class GamePongTraining extends GamePong {
         event = i.getIntExtra("event", 0);
 
         setTrainingMode(ballSpeed, barSpeed);
-
-        clearGame();
 
         return scene;
     }
@@ -144,6 +146,27 @@ public class GamePongTraining extends GamePong {
                 rushHourHandlers.get(i).setVelocity(oldRushSpeed_x.get(i), oldRushSpeed_y.get(i));
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!pause)
+            pauseGame();
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(getResources().getString(R.string.text_ttl_training_leave));
+        alert.setMessage(getResources().getString(R.string.text_msg_training_leave));
+        alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        });
+        alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                restartGameAfterPause();
+            }
+        });
+        alert.show();
     }
 
     @Override
