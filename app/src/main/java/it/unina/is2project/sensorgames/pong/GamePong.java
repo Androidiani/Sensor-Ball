@@ -139,6 +139,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected float old_bar_speed;
     protected long firstTap;
 
+    /**
+     * Animation Utils
+     */
+    private long ms = 0;
+    private long splashTime = 3000;
+    private boolean splashActive = true;
+    private boolean paused = false;
+
     @Override
     public EngineOptions onCreateEngineOptions() {
         // Understanding the device display's dimensions
@@ -266,6 +274,43 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void settingPhysics() {
+        Thread physicsThread = new Thread() {
+            public void run() {
+                try {
+                    while (splashActive && ms < splashTime) {
+                        if(!paused)
+                            ms=ms+100;
+
+                        if(ms < 1000){
+                            Log.d("Animation", "3 - " + ms);
+                            textPause.setText("  3  ");
+                        }
+
+                        if(ms > 1000 && ms < 2000){
+                            Log.d("Animation", "2 - " + ms);
+                            textPause.setText("  2  ");
+                        }
+
+                        if(ms > 2000 && ms < 3000){
+                            Log.d("Animation", "1 - " + ms);
+                            textPause.setText("  1  ");
+                        }
+
+                        sleep(100);
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    textPause.setText(" ");
+                    doPhysics();
+                }
+            }
+        };
+        physicsThread.start();
+    }
+
+    private void doPhysics(){
         // A physics handler is linked to the ballSprite
         handler = new PhysicsHandler(ballSprite);
         ballSprite.registerUpdateHandler(handler);

@@ -57,12 +57,6 @@ public class GamePongTraining extends GamePong {
     private List<Float> oldRushSpeed_x = new ArrayList<>();
     private List<Float> oldRushSpeed_y = new ArrayList<>();
 
-    // Ball Speed Set Up Variables
-    private long ms = 0;
-    private long splashTime = 700;
-    private boolean splashActive = true;
-    private boolean paused = false;
-
     @Override
     protected Scene onCreateScene() {
         super.onCreateScene();
@@ -96,6 +90,11 @@ public class GamePongTraining extends GamePong {
 
         clearGame();
 
+        return scene;
+    }
+
+    @Override
+    protected void setBallVeloctity() {
         // Get options by training settings
         Intent i = getIntent();
         int ballSpeed = i.getIntExtra("ballSpeed", 1);
@@ -103,8 +102,6 @@ public class GamePongTraining extends GamePong {
         event = i.getIntExtra("event", 0);
 
         setTrainingMode(ballSpeed, barSpeed);
-
-        return scene;
     }
 
     @Override
@@ -209,25 +206,8 @@ public class GamePongTraining extends GamePong {
 
     private void setTrainingMode(int ball_speed, int bar_speed) {
         // Setting up the ball speed
-        final int ballSpeed = ball_speed;
-        Thread setUpSpeed = new Thread() {
-            public void run() {
-                try {
-                    while (splashActive && ms < splashTime) {
-                        if(!paused)
-                            ms=ms+100;
-                        sleep(100);
-                    }
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    handler.setVelocity(ballSpeed * BALL_SPEED, -ballSpeed * BALL_SPEED);
-                    Log.d(TAG, "Ball Speed Selected: " + ballSpeed * BALL_SPEED);
-                }
-            }
-        };
-        setUpSpeed.start();
+        handler.setVelocity(ball_speed * BALL_SPEED, -ball_speed * BALL_SPEED);
+        Log.d(TAG, "Ball Speed Selected: " + ball_speed * BALL_SPEED);
 
         // Setting up the bar speed
         BAR_SPEED = bar_speed * BAR_SPEED;
