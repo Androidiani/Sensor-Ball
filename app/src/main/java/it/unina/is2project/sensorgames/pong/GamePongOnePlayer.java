@@ -261,8 +261,6 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     protected void clearGame() {
         super.clearGame();
-//        if (BAR_SPEED < 0)
-//            BAR_SPEED *= -1;
         // Clear game data
         life = MAX_LIFE - 1;
         old_life = 0;
@@ -424,7 +422,6 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     protected void gameOver() {
-        game_over = true;
         handler.setVelocity(0f);
         BAR_SPEED = 0f;
         textEvnt.setText(getResources().getString(R.string.text_gameover));

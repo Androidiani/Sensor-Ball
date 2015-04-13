@@ -195,7 +195,6 @@ public class GamePongTwoPlayer extends GamePong {
         isConnected = true;
         proximityRegion = false;
         transferringBall = false;
-        game_over = false;
         score = 0;
         opponentScore = 0;
         myModule = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));

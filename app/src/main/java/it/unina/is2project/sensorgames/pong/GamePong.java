@@ -43,28 +43,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     /**
      * Camera
      */
-    protected static int CAMERA_WIDTH;
-    protected static int CAMERA_HEIGHT;
     protected Camera camera;
-
-    /**
-     * Scene
-     */
-    protected Scene scene;
-    protected PhysicsHandler handler;
-    protected boolean pause = false;
-    protected boolean game_over = false;
-    protected int previous_event = 0;
-    protected static float BAR_SPEED;
-    protected static float BALL_SPEED;
-    protected static float DEVICE_RATIO;
-    protected static final int NO_COLL = 0;
-    protected static final int BOTTOM = 1;
-    protected static final int TOP = 2;
-    protected static final int LEFT = 3;
-    protected static final int RIGHT = 4;
-    protected static final int OVER = 5;
-    protected static final int SIDE = 6;
+    protected int CAMERA_WIDTH;
+    protected int CAMERA_HEIGHT;
 
     /**
      * Graphics
@@ -97,7 +78,28 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected AccelerationSensorOptions mAccelerationOptions;
 
     /**
-     * Bounce bar constraint
+     * Scene
+     */
+    protected Scene scene;
+    protected PhysicsHandler handler;
+    protected float BAR_SPEED;
+    protected float BALL_SPEED;
+    protected float DEVICE_RATIO;
+
+    /**
+     * Collision Events
+     */
+    protected int previous_event = 0;
+    protected static final int NO_COLL = 0;
+    protected static final int BOTTOM = 1;
+    protected static final int TOP = 2;
+    protected static final int LEFT = 3;
+    protected static final int RIGHT = 4;
+    protected static final int OVER = 5;
+    protected static final int SIDE = 6;
+
+    /**
+     * Bounce bar angles
      */
     protected float COS_20 = 0.93969262078590838405410927732473f;
     protected float SIN_20 = 0.34202014332566873304409961468226f;
@@ -130,6 +132,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
      */
     protected Text textPause;
     protected Text textPause_util;
+    protected boolean pause = false;
     protected static final int PAUSE = -1;
     protected float old_x_speed;
     protected float old_y_speed;
@@ -218,7 +221,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // The bar is moving only on X
         float new_position = barSprite.getX() + pAccelerationData.getX() * BAR_SPEED;
         // There's the edges' condition that do not hide the bar beyond the walls
-        if (!(new_position > CAMERA_WIDTH - barSprite.getWidth() / 2 || new_position < -barSprite.getWidth() / 2))
+        if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 && new_position > -barSprite.getWidth() / 2)
             barSprite.setX(new_position);
     }
 
@@ -274,8 +277,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         scene.registerUpdateHandler(new IUpdateHandler() {
             @Override
             public void onUpdate(float pSecondsElapsed) {
-                // Edge's condition - The direction of the ball changes depending on the affected side
-                if (!game_over && !pause) {
+                // Edge collision
+                if (!pause) {
                     if (leftCondition()) {
                         collidesLeft();
                     }
@@ -488,10 +491,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void setBallVeloctity() {
-        /** The ball has the initial speed
-         * - vx = + BALL_SPEED
-         * - vy = - BALL_SPEED
-         */
         handler.setVelocity(BALL_SPEED, -BALL_SPEED);
     }
 
@@ -499,7 +498,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
         previous_event = NO_COLL;
-        game_over = false;
         pause = false;
     }
 
