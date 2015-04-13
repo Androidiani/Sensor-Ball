@@ -57,6 +57,12 @@ public class GamePongTraining extends GamePong {
     private List<Float> oldRushSpeed_x = new ArrayList<>();
     private List<Float> oldRushSpeed_y = new ArrayList<>();
 
+    // Ball Speed Set Up Variables
+    private long ms = 0;
+    private long splashTime = 700;
+    private boolean splashActive = true;
+    private boolean paused = false;
+
     @Override
     protected Scene onCreateScene() {
         super.onCreateScene();
@@ -203,8 +209,25 @@ public class GamePongTraining extends GamePong {
 
     private void setTrainingMode(int ball_speed, int bar_speed) {
         // Setting up the ball speed
-        handler.setVelocity(ball_speed * BALL_SPEED, -ball_speed * BALL_SPEED);
-        Log.d(TAG, "Ball Speed Selected: " + ball_speed * BALL_SPEED);
+        final int ballSpeed = ball_speed;
+        Thread setUpSpeed = new Thread() {
+            public void run() {
+                try {
+                    while (splashActive && ms < splashTime) {
+                        if(!paused)
+                            ms=ms+100;
+                        sleep(100);
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    handler.setVelocity(ballSpeed * BALL_SPEED, -ballSpeed * BALL_SPEED);
+                    Log.d(TAG, "Ball Speed Selected: " + ballSpeed * BALL_SPEED);
+                }
+            }
+        };
+        setUpSpeed.start();
 
         // Setting up the bar speed
         BAR_SPEED = bar_speed * BAR_SPEED;
