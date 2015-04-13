@@ -571,7 +571,7 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X2 = new Sprite(0, 0, speedTextureRegion_X2, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                     Log.d("Sprite", "Sprite SPEEDX2 Touched");
                     detachSprite(SPEEDX2);
                     Random rand = new Random();
@@ -599,7 +599,7 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X3 = new Sprite(0, 0, speedTextureRegion_X3, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                     Log.d("Sprite", "Sprite SPEEDX3 Touched");
                     detachSprite(SPEEDX3);
                     Random rand = new Random();
@@ -627,7 +627,7 @@ public class GamePongTwoPlayer extends GamePong {
         speedSprite_X4 = new Sprite(0, 0, speedTextureRegion_X4, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                     Log.d("Sprite", "Sprite SPEEDX4 Touched");
                     detachSprite(SPEEDX4);
                     Random rand = new Random();
@@ -655,7 +655,7 @@ public class GamePongTwoPlayer extends GamePong {
         lockFieldSprite = new Sprite(0, 0, lockFieldTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                     Log.d("Sprite", "Sprite LOCKFIELD Touched");
                     detachSprite(LOCKFIELD);
                     Random rand = new Random();
@@ -682,7 +682,7 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar30Sprite = new Sprite(0, 0, cutBar30TextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                     Log.d("Sprite", "Sprite CUTBAR30 Touched");
                     detachSprite(CUTBAR30);
                     Random rand = new Random();
@@ -709,7 +709,7 @@ public class GamePongTwoPlayer extends GamePong {
         cutBar50Sprite = new Sprite(0, 0, cutBar50TextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                     Log.d("Sprite", "Sprite CUTBAR50 Touched");
                     detachSprite(CUTBAR50);
                     Random rand = new Random();
@@ -736,7 +736,7 @@ public class GamePongTwoPlayer extends GamePong {
         revertedBarSprite = new Sprite(0, 0, revertedBarTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                     Log.d("Sprite", "Sprite REVERTEDBAR Touched");
                     detachSprite(REVERTEDBAR);
                     Random rand = new Random();
@@ -763,7 +763,7 @@ public class GamePongTwoPlayer extends GamePong {
         rushHourSprite = new Sprite(0, 0, rushHourTextureRegion, getVertexBufferObjectManager()) {
             @Override
             public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
-                if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED && fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                if(fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                     Log.d("Sprite", "Sprite RUSHHOUR Touched");
                     detachSprite(RUSHHOUR);
                     Random rand = new Random();
