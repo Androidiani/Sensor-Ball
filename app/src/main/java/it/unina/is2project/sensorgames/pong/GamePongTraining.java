@@ -94,17 +94,6 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
-    protected void setBallVeloctity() {
-        // Get options by training settings
-        Intent i = getIntent();
-        int ballSpeed = i.getIntExtra("ballSpeed", 1);
-        int barSpeed = i.getIntExtra("barSpeed", 1);
-        event = i.getIntExtra("event", 0);
-
-        setTrainingMode(ballSpeed, barSpeed);
-    }
-
-    @Override
     protected void loadGraphics() {
         super.loadGraphics();
 
@@ -113,6 +102,17 @@ public class GamePongTraining extends GamePong {
         settingTexture = new BitmapTextureAtlas(getTextureManager(), settingDrawable.getIntrinsicWidth(), settingDrawable.getIntrinsicHeight());
         settingTextureRegion = createFromResource(settingTexture, this, R.drawable.setting, 0, 0);
         settingTexture.load();
+    }
+
+    @Override
+    protected void setBallVeloctity() {
+        // Get options by training settings
+        Intent i = getIntent();
+        int ballSpeed = i.getIntExtra("ballSpeed", 1);
+        int barSpeed = i.getIntExtra("barSpeed", 1);
+        event = i.getIntExtra("event", 0);
+
+        setTrainingMode(ballSpeed, barSpeed);
     }
 
     @Override

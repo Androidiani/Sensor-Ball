@@ -153,23 +153,6 @@ public class GamePongOnePlayer extends GamePong {
     private boolean allBonusDetached = false;
 
     @Override
-    protected void loadGraphics() {
-        super.loadGraphics();
-
-        // Life texture loading
-        Drawable starDraw = getResources().getDrawable(R.drawable.life);
-        lifeTexture = new BitmapTextureAtlas(getTextureManager(), starDraw.getIntrinsicWidth(), starDraw.getIntrinsicHeight());
-        lifeTextureRegion = createFromResource(lifeTexture, this, R.drawable.life, 0, 0);
-        lifeTexture.load();
-        // Bonus ball loading
-        Drawable bonusBallDraw = getResources().getDrawable(R.drawable.ball_petrol);
-        bonusBallTexture = new BitmapTextureAtlas(getTextureManager(), bonusBallDraw.getIntrinsicWidth(), bonusBallDraw.getIntrinsicHeight());
-        bonusBallTextureRegion = createFromResource(bonusBallTexture, this, R.drawable.ball_petrol, 0, 0);
-        bonusBallTexture.load();
-
-    }
-
-    @Override
     protected Scene onCreateScene() {
         super.onCreateScene();
 
@@ -201,6 +184,22 @@ public class GamePongOnePlayer extends GamePong {
         clearGame();
 
         return scene;
+    }
+
+    @Override
+    protected void loadGraphics() {
+        super.loadGraphics();
+
+        // Life texture loading
+        Drawable starDraw = getResources().getDrawable(R.drawable.life);
+        lifeTexture = new BitmapTextureAtlas(getTextureManager(), starDraw.getIntrinsicWidth(), starDraw.getIntrinsicHeight());
+        lifeTextureRegion = createFromResource(lifeTexture, this, R.drawable.life, 0, 0);
+        lifeTexture.load();
+        // Bonus ball loading
+        Drawable bonusBallDraw = getResources().getDrawable(R.drawable.ball_petrol);
+        bonusBallTexture = new BitmapTextureAtlas(getTextureManager(), bonusBallDraw.getIntrinsicWidth(), bonusBallDraw.getIntrinsicHeight());
+        bonusBallTextureRegion = createFromResource(bonusBallTexture, this, R.drawable.ball_petrol, 0, 0);
+        bonusBallTexture.load();
     }
 
     @Override

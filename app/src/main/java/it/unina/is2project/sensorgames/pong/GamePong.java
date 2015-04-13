@@ -145,7 +145,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     private long ms = 0;
     private long splashTime = 3000;
     private boolean splashActive = true;
-    private boolean paused = false;
 
     @Override
     public EngineOptions onCreateEngineOptions() {
@@ -278,31 +277,27 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             public void run() {
                 try {
                     while (splashActive && ms < splashTime) {
-                        if(!paused)
-                            ms=ms+100;
+                        ms = ms + 100;
 
-                        if(ms < 1000){
+                        if (ms < 1000) {
                             Log.d("Animation", "3 - " + ms);
                             textPause.setText("  3  ");
                         }
-
-                        if(ms > 1000 && ms < 2000){
+                        if (ms > 1000 && ms < 2000) {
                             Log.d("Animation", "2 - " + ms);
                             textPause.setText("  2  ");
                         }
-
-                        if(ms > 2000 && ms < 3000){
+                        if (ms > 2000 && ms < 3000) {
                             Log.d("Animation", "1 - " + ms);
                             textPause.setText("  1  ");
                         }
 
                         sleep(100);
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                }
-                finally {
-                    textPause.setText(" ");
+                } finally {
+                    textPause.setText("");
                     doPhysics();
                 }
             }
@@ -310,7 +305,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         physicsThread.start();
     }
 
-    private void doPhysics(){
+    protected void doPhysics() {
         // A physics handler is linked to the ballSprite
         handler = new PhysicsHandler(ballSprite);
         ballSprite.registerUpdateHandler(handler);
@@ -360,6 +355,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             public void reset() {
             }
         });
+    }
+
+    protected void attachBall() {
+        scene.attachChild(ballSprite);
+    }
+
+    protected void setBallVeloctity() {
+        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
     }
 
     protected boolean leftCondition() {
@@ -529,14 +532,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         previous_event = SIDE;
         handler.setVelocityX(-handler.getVelocityX());
         touch.play();
-    }
-
-    protected void attachBall() {
-        scene.attachChild(ballSprite);
-    }
-
-    protected void setBallVeloctity() {
-        handler.setVelocity(BALL_SPEED, -BALL_SPEED);
     }
 
     protected void clearGame() {

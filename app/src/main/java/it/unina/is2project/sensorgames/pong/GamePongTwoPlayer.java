@@ -320,6 +320,11 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
+    protected void settingPhysics() {
+        doPhysics();
+    }
+
+    @Override
     protected void attachBall() {
         Log.i(TAG, "Call drawBall() with haveBall = " + haveBall);
         if (haveBall) super.attachBall();
