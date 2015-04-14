@@ -6,13 +6,4 @@
             android:summary="@string/settings_nickname_info"
             android:key="prefNickname"/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/two_player">
-        <ListPreference
-            android:key="pref2PGoal"
-            android:title="@string/settings_2p_win"
-            android:summary="@string/settings_2p_goal_info"
-            android:entries="@array/reachGoal"
-            android:entryValues="@array/reachGoalValues"
-            />
-    </PreferenceCategory>
 </PreferenceScreen>
