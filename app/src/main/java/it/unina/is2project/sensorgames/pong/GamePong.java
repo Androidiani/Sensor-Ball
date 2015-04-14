@@ -216,6 +216,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         //Set game velocity
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
+        myModule = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
 
         /** Enable the Acceleration Sensor
          * - Option: SensorDelay.GAME */
