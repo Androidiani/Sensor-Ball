@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.bluetooth.Constants;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.entity.Player;
@@ -439,7 +440,7 @@ public class GamePongOnePlayer extends GamePong {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                        String user_input_name = sharedPreferences.getString("prefNickname", getString(R.string.txt_no_name));
+                        String user_input_name = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
 
                         if (!user_input_name.equals("")) {
                             saveGame(user_input_name);

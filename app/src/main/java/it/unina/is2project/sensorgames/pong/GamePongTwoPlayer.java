@@ -50,6 +50,8 @@ public class GamePongTwoPlayer extends GamePong {
     // Text information
     private Text textInfo;
     private Text textPoint;
+    // Points to reach
+    private int points;
     // Return intent extra
     public static String EXTRA_MASTER = "isMaster_boolean";
     public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
@@ -184,7 +186,7 @@ public class GamePongTwoPlayer extends GamePong {
 
         super.onCreateScene();
 
-        Log.d(TAG, "Ho la palla : " + haveBall);
+        points = i.getIntExtra("points", 0);
 
         // Set result in case of failure
         setResult(Activity.RESULT_CANCELED);
@@ -220,8 +222,6 @@ public class GamePongTwoPlayer extends GamePong {
             fsmGame.setState(FSMGame.STATE_IN_GAME);
         }
 
-        Log.d(TAG, "Sono master : " + isMaster);
-
         // Attaching textInfo
         textInfo = new Text(10, 10, font, "", 30, getVertexBufferObjectManager());
         scene.attachChild(textInfo);
@@ -229,7 +229,7 @@ public class GamePongTwoPlayer extends GamePong {
         Text textPointUtils = new Text(10, 10, font, "Score", 30, getVertexBufferObjectManager());
 
         // Attachning textPoint
-        textPoint = new Text(10, CAMERA_HEIGHT - textPointUtils.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore, 30, getVertexBufferObjectManager());
+        textPoint = new Text(10, CAMERA_HEIGHT - textPointUtils.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore + " [" + points + "]", 30, getVertexBufferObjectManager());
         scene.attachChild(textPoint);
 
         // Traslating bar
@@ -333,7 +333,6 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected void attachBall() {
-        Log.i(TAG, "Call drawBall() with haveBall = " + haveBall);
         if (haveBall) super.attachBall();
     }
 
@@ -382,7 +381,7 @@ public class GamePongTwoPlayer extends GamePong {
         sendBluetoothMessage(pointToEnemyMessage);
         opponentScore++;
         bonusManager.clearAll();
-        textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore);
+        textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore + " [" + points + "]");
     }
 
     @Override
@@ -452,7 +451,7 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     public void addScore() {
         score++;
-        textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore);
+        textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore + " [" + points + "]");
     }
 
     @Override
@@ -898,8 +897,8 @@ public class GamePongTwoPlayer extends GamePong {
                                     }
                                     break;
                                 //------------------------INTEGER------------------------
-                                case Constants.MSG_TYPE_INTEGER:
-                                    Log.d("SendReceived", "MSG_TYPE_INTEGER");
+                                case Constants.MSG_TYPE_FIRST_START:
+                                    Log.d("SendReceived", "MSG_TYPE_FIRST_START");
                                     //TODO
                                     break;
                                 //------------------------ALERT------------------------

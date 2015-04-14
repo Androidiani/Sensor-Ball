@@ -11,7 +11,7 @@ public interface Constants {
 
     // Message Types
     public static final int MSG_TYPE_COORDS = 6;
-    public static final int MSG_TYPE_INTEGER = 7;
+    public static final int MSG_TYPE_FIRST_START = 7;
     public static final int MSG_TYPE_SYNC = 8;
     public static final int MSG_TYPE_FAIL = 9;
     public static final int MSG_TYPE_PAUSE = 10;
@@ -35,4 +35,7 @@ public interface Constants {
     // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
+
+    // Keys for shared preferences
+    public static final String PREF_NICKNAME = "prefNickname";
 }

@@ -9,6 +9,7 @@ public class AppMessage implements Serializable {
     public float OP2;   //              //              //                      // COS_X
     public float OP3;   //              //              //                      // SIN_X
     public float OP4;   //              //              //                      // X Ratio
+    public int OP5;     //              // Points       //                      //
 
     public AppMessage(int TYPE) {
         this.TYPE = TYPE;
@@ -18,6 +19,12 @@ public class AppMessage implements Serializable {
     public AppMessage(int TYPE, int OP1) {
         this.TYPE = TYPE;
         this.OP1 = OP1;
+    }
+
+    public AppMessage(int TYPE, int OP1, int OP5){
+        this.TYPE = TYPE;
+        this.OP1 = OP1;
+        this.OP5 = OP5;
     }
 
     /**

@@ -51,28 +51,25 @@ public class TwoPlayerActivity extends ActionBarActivity {
 
     // Connected device name
     private String mConnectedDeviceName = null;
-
     // Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
-
     // Bluetooth service
     private BluetoothService mBluetoothService = null;
-
     // Adapter state
     private boolean mStatus = false;
-
     // Paired devices
     private Set<BluetoothDevice> pairedDevice;
-
     // Scanned devices
     private ArrayAdapter<String> stringArrayAdapter;
-
     // Peer role
     private boolean isMaster = false;
-
     // Synchronization's number
     private Integer privateNumber = null;
-
+    // Points to reach bounds
+    private final Integer LOWER_BOUND_POINT = 8;
+    private final Integer UPPER_BOUND_POINT = 14;
+    // Points to reach
+    private Integer points = null;
     // Intents code
     public static final int REQUEST_ENABLE_BT = 1;
 
@@ -82,23 +79,18 @@ public class TwoPlayerActivity extends ActionBarActivity {
 
     // Font typeface
     private Typeface typeFace;
-
     // TextView
     private TextView lblBluetooth;
     private TextView lblEnemy;
     private TextView txtEnemy;
-
     // Button
     private Button btnPlay;
     private Button btnScan;
     private Button btnPaired;
-
     // Switch
     private Switch switchBluetooth;
-
     // ListView
     private ListView listDevice;
-
     // Request Code
     private final int GAME_START = 200;
 
@@ -413,10 +405,14 @@ public class TwoPlayerActivity extends ActionBarActivity {
             Random rand = new Random();
             privateNumber = rand.nextInt(1000);
             privateNumber = privateNumber % 2;
-            AppMessage ballChoise = new AppMessage(Constants.MSG_TYPE_INTEGER, privateNumber);
+            // Creo un numero casuale per definire i punti da raggiungere.
+            points = rand.nextInt((UPPER_BOUND_POINT - LOWER_BOUND_POINT) + 1) + LOWER_BOUND_POINT;
+            // Mando messaggio
+            AppMessage ballChoise = new AppMessage(Constants.MSG_TYPE_FIRST_START, privateNumber, points);
             sendBluetoothMessage(ballChoise);
         }
         Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
+        mIntent.putExtra("points", points);
         mIntent.putExtra("ball", privateNumber);
         mIntent.putExtra("master", intMaster);
         startActivityForResult(mIntent, GAME_START);
@@ -557,6 +553,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
     //----------------------------------------------
     // HANDLERS
     //----------------------------------------------
+
+    @SuppressWarnings("all")
     private final Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -589,8 +587,9 @@ public class TwoPlayerActivity extends ActionBarActivity {
                         AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
                         if (recMsg != null) {
                             switch (recMsg.TYPE){
-                                case Constants.MSG_TYPE_INTEGER:
+                                case Constants.MSG_TYPE_FIRST_START:
                                     privateNumber = recMsg.OP1 == 0 ? new Integer(1) : new Integer(0);
+                                    points = recMsg.OP5;
                                     btnPlay.setEnabled(true);
                                     break;
                                 case Constants.MSG_TYPE_SYNC:
