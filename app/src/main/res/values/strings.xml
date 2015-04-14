@@ -139,12 +139,16 @@
 
     <!-- Settings text -->
     <string name="settings_title">Settings</string>
+    <string name="general_settings">General Settings</string>
     <string name="settings_nickname">Nickname</string>
     <string name="settings_nickname_info">Set Your Nickname</string>
+    <string name="settings_2p_win">2P Goals to win</string>
+    <string name="settings_2p_goal_info">Set the number of goals to win a game in 2P mode</string>
     <string name="txt_no_name">No Name</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="txt_hi">Hi</string>
+
 
 
 </resources>
