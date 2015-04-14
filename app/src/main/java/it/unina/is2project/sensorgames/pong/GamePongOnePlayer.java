@@ -153,24 +153,6 @@ public class GamePongOnePlayer extends GamePong {
     private boolean allBonusDetached = false;
 
     @Override
-    protected void loadGraphics() {
-        super.loadGraphics();
-
-        // Life texture loading
-        Drawable starDraw = getResources().getDrawable(R.drawable.life);
-        lifeTexture = new BitmapTextureAtlas(getTextureManager(), starDraw.getIntrinsicWidth(), starDraw.getIntrinsicHeight());
-        lifeTextureRegion = createFromResource(lifeTexture, this, R.drawable.life, 0, 0);
-        lifeTexture.load();
-
-        // Bonus ball loading
-        Drawable bonusBallDraw = getResources().getDrawable(R.drawable.ball_petrol);
-        bonusBallTexture = new BitmapTextureAtlas(getTextureManager(), bonusBallDraw.getIntrinsicWidth(), bonusBallDraw.getIntrinsicHeight());
-        bonusBallTextureRegion = createFromResource(bonusBallTexture, this, R.drawable.ball_petrol, 0, 0);
-        bonusBallTexture.load();
-
-    }
-
-    @Override
     protected Scene onCreateScene() {
         super.onCreateScene();
 
@@ -205,10 +187,27 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     @Override
+    protected void loadGraphics() {
+        super.loadGraphics();
+
+        // Life texture loading
+        Drawable starDraw = getResources().getDrawable(R.drawable.life);
+        lifeTexture = new BitmapTextureAtlas(getTextureManager(), starDraw.getIntrinsicWidth(), starDraw.getIntrinsicHeight());
+        lifeTextureRegion = createFromResource(lifeTexture, this, R.drawable.life, 0, 0);
+        lifeTexture.load();
+        // Bonus ball loading
+        Drawable bonusBallDraw = getResources().getDrawable(R.drawable.ball_petrol);
+        bonusBallTexture = new BitmapTextureAtlas(getTextureManager(), bonusBallDraw.getIntrinsicWidth(), bonusBallDraw.getIntrinsicHeight());
+        bonusBallTextureRegion = createFromResource(bonusBallTexture, this, R.drawable.ball_petrol, 0, 0);
+        bonusBallTexture.load();
+    }
+
+    @Override
     protected void collidesBottom() {
         Log.d(TAG, "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
 
+        barSprite.detachSelf();
         ballSprite.detachSelf();
         lifeSprites.get(life).detachSelf();
         life--;
@@ -216,8 +215,10 @@ public class GamePongOnePlayer extends GamePong {
         if (life < 0) {
             gameOver();
         } else {
+            barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
             handler.setVelocityY(-handler.getVelocityY());
+            scene.attachChild(barSprite);
             attachBall();
             clearEvent();
             game_event = NO_EVENT;
@@ -235,9 +236,11 @@ public class GamePongOnePlayer extends GamePong {
         addScore();
         textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
         Log.d(TAG, "Score: " + score);
+
         // Game levels section
         gameLevels();
         Log.d(TAG, "Level " + level);
+
         // Game events section
         reach_count--;
         Log.d(TAG, "Reach count " + reach_count);
@@ -257,8 +260,6 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     protected void clearGame() {
         super.clearGame();
-        if (BAR_SPEED < 0)
-            BAR_SPEED *= -1;
         // Clear game data
         life = MAX_LIFE - 1;
         old_life = 0;
@@ -321,23 +322,25 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     public void onBackPressed() {
-        if (!pause)
-            pauseGame();
+        if (!animActive) {
+            if (!pause)
+                pauseGame();
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(getResources().getString(R.string.text_msg_oneplayer_leavegame));
-        alert.setMessage(getResources().getString(R.string.text_msg_oneplayer_dialog));
-        alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                finish();
-            }
-        });
-        alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                restartGameAfterPause();
-            }
-        });
-        alert.show();
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(getResources().getString(R.string.text_ttl_oneplayer_leavegame));
+            alert.setMessage(getResources().getString(R.string.text_msg_oneplayer_leavegame));
+            alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    finish();
+                }
+            });
+            alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    restartGameAfterPause();
+                }
+            });
+            alert.show();
+        }
     }
 
     @Override
@@ -365,43 +368,43 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     public void addScore() {
-        if (score < BARRIER_ONE && level_one) {
+        if (score >= 0 && score < BARRIER_ONE && level_one) {
             score += 10;
             gain = 10;
-        } else if (score < BARRIER_TWO && level_two) {
+        } else if (score >= BARRIER_ONE && score < BARRIER_TWO && level_two) {
             score += 15;
             gain = 15;
-        } else if (score < BARRIER_THREE && level_three) {
+        } else if (score >= BARRIER_TWO && score < BARRIER_THREE && level_three) {
             score += 20;
             gain = 20;
-        } else if (score < BARRIER_FOUR && level_four) {
+        } else if (score >= BARRIER_THREE && score < BARRIER_FOUR && level_four) {
             score += 30;
             gain = 30;
-        } else if (score < BARRIER_FIVE && level_five) {
+        } else if (score >= BARRIER_FOUR && score < BARRIER_FIVE && level_five) {
             score += 40;
             gain = 40;
-        } else if (score < BARRIER_SIX && level_six) {
+        } else if (score >= BARRIER_FIVE && score < BARRIER_SIX && level_six) {
             score += 50;
             gain = 50;
-        } else if (score < BARRIER_SEVEN && level_seven) {
+        } else if (score >= BARRIER_SIX && score < BARRIER_SEVEN && level_seven) {
             score += 100;
             gain = 100;
-        } else if (score < BARRIER_EIGHT && level_eight) {
+        } else if (score >= BARRIER_SEVEN && score < BARRIER_EIGHT && level_eight) {
             score += 200;
             gain = 200;
-        } else if (score < BARRIER_NINE && level_nine) {
+        } else if (score >= BARRIER_EIGHT && score < BARRIER_NINE && level_nine) {
             score += 300;
             gain = 300;
-        } else if (score < BARRIER_TEN && level_ten) {
+        } else if (score >= BARRIER_NINE && score < BARRIER_TEN && level_ten) {
             score += 600;
             gain = 600;
-        } else if (score < BARRIER_ELEVEN && level_eleven) {
+        } else if (score >= BARRIER_TEN && score < BARRIER_ELEVEN && level_eleven) {
             score += 1000;
             gain = 1000;
-        } else if (score < BARRIER_TWELVE && level_twelve) {
+        } else if (score >= BARRIER_ELEVEN && score < BARRIER_TWELVE && level_twelve) {
             score += 2000;
             gain = 2000;
-        } else if (score > BARRIER_TWELVE && level_max) {
+        } else if (score >= BARRIER_TWELVE && level_max) {
             score += 3000;
             gain = 3000;
         }
@@ -420,10 +423,8 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     protected void gameOver() {
-        game_over = true;
         handler.setVelocity(0f);
-        BAR_SPEED = 0;
-        touch.stop();
+        BAR_SPEED = 0f;
         textEvnt.setText(getResources().getString(R.string.text_gameover));
 
         runOnUiThread(new Runnable() {
@@ -729,7 +730,7 @@ public class GamePongOnePlayer extends GamePong {
         lifeBonus = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
         lifeBonus.setWidth(CAMERA_WIDTH * 0.1f);
         lifeBonus.setHeight(CAMERA_WIDTH * 0.1f);
-        lifeBonus.setPosition((int) lifeBonus.getWidth() + random.nextInt(CAMERA_WIDTH - ((int) lifeBonus.getWidth()) * 2), (int) lifeBonus.getHeight() + random.nextInt(CAMERA_HEIGHT - ((int) lifeBonus.getHeight()) * 4));
+        lifeBonus.setPosition((int) lifeBonus.getWidth() + random.nextInt(CAMERA_WIDTH - ((int) lifeBonus.getWidth()) * 4), (int) lifeBonus.getHeight() + random.nextInt(CAMERA_HEIGHT - ((int) lifeBonus.getHeight()) * 4));
         scene.attachChild(lifeBonus);
     }
 
@@ -826,6 +827,16 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
+    private void lifeBonusCollisions() {
+        if (ballSprite.collidesWith(lifeBonus) && old_life == life) {
+            lifeBonus.detachSelf();
+            life++;
+            scene.attachChild(lifeSprites.get(life));
+            life_detached = true;
+            Log.d(TAG, "Life Collision. Current Life: " + life);
+        }
+    }
+
     private void rushHourCollisions() {
         for (int i = 0; i < rushHour.size(); i++) {
             if (rushHour.get(i).getX() < 0) {
@@ -840,16 +851,6 @@ public class GamePongOnePlayer extends GamePong {
             if (rushHour.get(i).getY() > CAMERA_HEIGHT - (int) ballSprite.getHeight()) {
                 rushHourHandlers.get(i).setVelocityY(-rushHourHandlers.get(i).getVelocityY());
             }
-        }
-    }
-
-    private void lifeBonusCollisions() {
-        if (ballSprite.collidesWith(lifeBonus) && old_life == life) {
-            lifeBonus.detachSelf();
-            life++;
-            scene.attachChild(lifeSprites.get(life));
-            life_detached = true;
-            Log.d(TAG, "Life Collision. Current Life: " + life);
         }
     }
 }
