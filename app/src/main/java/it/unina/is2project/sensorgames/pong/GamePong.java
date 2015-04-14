@@ -232,9 +232,15 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // There's the edges' condition that do not hide the bar beyond the walls
 //        if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 && new_position > -barSprite.getWidth() / 2)
 //            barSprite.setX(new_position);
-        if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
-            if(new_position > -barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
-                barSprite.setX(new_position);
+        if(BAR_SPEED > 0) {
+            if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
+                if (new_position > -barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
+                    barSprite.setX(new_position);
+        }else{
+            if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
+                if (new_position > -barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
+                    barSprite.setX(new_position);
+        }
 
     }
 
