@@ -54,9 +54,6 @@ public class GamePongTwoPlayer extends GamePong {
     public static String EXTRA_MASTER = "isMaster_boolean";
     public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
     // Pause Utils
-    //private float old_x_speed;
-    //private float old_y_speed;
-    //private float old_bar_speed;
     private long tap;
     private boolean proximityRegion;
     private int PROXIMITY_ZONE;
@@ -137,10 +134,10 @@ public class GamePongTwoPlayer extends GamePong {
     private ITextureRegion rushHourIconTextureRegion;
     private Sprite rushHourIconSprite;
     // Bonus Constants
-    public final static int NOBONUS = 1; // Necessarily with value 1 -> If change see setVelocityFromPrevious
-    public final static int SPEEDX2 = 2; // Necessarily with value 2 -> If change see setVelocityFromPrevious
-    public final static int SPEEDX3 = 3; // Necessarily with value 3 -> If change see setVelocityFromPrevious
-    public final static int SPEEDX4 = 4; // Necessarily with value 4 -> If change see setVelocityFromPrevious
+    public final static int NOBONUS = 1;
+    public final static int SPEEDX2 = 2;
+    public final static int SPEEDX3 = 3;
+    public final static int SPEEDX4 = 4;
     public final static int LOCKFIELD = 5;
     public final static int CUTBAR30 = 6;
     public final static int CUTBAR50 = 7;
@@ -163,6 +160,10 @@ public class GamePongTwoPlayer extends GamePong {
     Timer timer;
     private boolean locksField = false;
     private float BARWIDTH;
+    private float SPEED_X1;
+    private float SPEED_X2;
+    private float SPEED_X3;
+    private float SPEED_X4;
 
 
     @Override
@@ -198,7 +199,11 @@ public class GamePongTwoPlayer extends GamePong {
         game_over = false;
         score = 0;
         opponentScore = 0;
-        myModule = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
+        SPEED_X1 = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
+        myModule = SPEED_X1;
+        SPEED_X2 = SPEED_X1 * 2;
+        SPEED_X3 = SPEED_X1 * 3;
+        SPEED_X4 = SPEED_X1 * 4;
         COS_X = COS_45;
         SIN_X = SIN_45;
         PROXIMITY_ZONE = CAMERA_HEIGHT / 8;
@@ -1057,17 +1062,17 @@ public class GamePongTwoPlayer extends GamePong {
                     switch (msg.arg1) {
                         case SPEEDX2:
                             Log.d("BONUSCREATED", "SPEEDX2");
-                            setVelocityFromPrevious(msg.arg2, SPEEDX2);
+                            setVelocityBonus(SPEEDX2);
                             safeAttachSpriteIcon(SPEEDX2_ICON);
                             break;
                         case SPEEDX3:
                             Log.d("BONUSCREATED", "SPEEDX3");
-                            setVelocityFromPrevious(msg.arg2, SPEEDX3);
+                            setVelocityBonus(SPEEDX3);
                             safeAttachSpriteIcon(SPEEDX3_ICON);
                             break;
                         case SPEEDX4:
                             Log.d("BONUSCREATED", "SPEEDX4");
-                            setVelocityFromPrevious(msg.arg2, SPEEDX4);
+                            setVelocityBonus(SPEEDX4);
                             safeAttachSpriteIcon(SPEEDX4_ICON);
                             break;
                         case LOCKFIELD:
@@ -1111,19 +1116,19 @@ public class GamePongTwoPlayer extends GamePong {
                     switch (msg.arg1) {
                         case SPEEDX2:
                             Log.d("BONUSEXPIRED", "SPEEDX2");
-                            setVelocityFromPrevious(SPEEDX2, NOBONUS);
+                            setVelocityBonus(NOBONUS);
                             scene.detachChild(speedIconSprite_X2);
                             bonusStatusArray.remove(new Integer(SPEEDX2_ICON));
                             break;
                         case SPEEDX3:
                             Log.d("BONUSEXPIRED", "SPEEDX3");
-                            setVelocityFromPrevious(SPEEDX3, NOBONUS);
+                            setVelocityBonus(NOBONUS);
                             scene.detachChild(speedIconSprite_X3);
                             bonusStatusArray.remove(new Integer(SPEEDX3_ICON));
                             break;
                         case SPEEDX4:
                             Log.d("BONUSEXPIRED", "SPEEDX4");
-                            setVelocityFromPrevious(SPEEDX4, NOBONUS);
+                            setVelocityBonus(NOBONUS);
                             scene.detachChild(speedIconSprite_X4);
                             bonusStatusArray.remove(new Integer(SPEEDX4_ICON));
                             break;
@@ -1285,12 +1290,27 @@ public class GamePongTwoPlayer extends GamePong {
         rushHourHandlers.removeAll(rushHourHandlersCopy);
     }
 
-    private void setVelocityFromPrevious(int previousBonus, int nextBonus) {
+    private void setVelocityBonus(int nextBonus) {
 //        Log.d("BonusVelocity", "Previous Module: " + myModule);
 //        Log.d("BonusVelocity", "Previous Velx: " + handler.getVelocityX());
 //        Log.d("BonusVelocity", "Previous Vely: " + handler.getVelocityY());
 
-        myModule = (myModule / previousBonus) * nextBonus;
+        switch (nextBonus){
+            case NOBONUS:
+                myModule = SPEED_X1;
+                break;
+            case SPEEDX2:
+                myModule = SPEED_X2;
+                break;
+            case SPEEDX3:
+                myModule = SPEED_X3;
+                break;
+            case SPEEDX4:
+                myModule = SPEED_X4;
+                break;
+            default:
+                break;
+        }
         if (haveBall) {
             handler.setVelocityX(Math.signum(handler.getVelocityX()) * myModule * COS_X);
             handler.setVelocityY(Math.signum(handler.getVelocityY()) * myModule * SIN_X);
