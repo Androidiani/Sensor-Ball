@@ -68,6 +68,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".Settings"
+            android:theme="@style/Base.ThemeOverlay.AppCompat.Dark">
+        </activity>
+
     </application>
 
 </manifest>

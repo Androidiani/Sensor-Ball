@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -14,7 +15,10 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -24,6 +28,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,6 +39,8 @@ import it.unina.is2project.sensorgames.stats.activity.StatsActivity;
 
 public class MainActivity extends Activity {
 
+    private final String TAG = "MainActivity";
+
     private int CAMERA_WIDTH;
 
     // Views on screen declaration
@@ -41,6 +48,7 @@ public class MainActivity extends Activity {
     private Button btnTwoPlayer;
     private Button btnTraining;
     private Button btnStats;
+    private Button btnSettings;
     private Button btnAboutUs;
     private LinearLayout mLinearLayout;
     private TextView txtAppName;
@@ -53,6 +61,10 @@ public class MainActivity extends Activity {
     private static final int BALL_COLOR = Color.WHITE;
     private int x_pos;
     private int x_speed;
+
+    private Toast toast;
+
+    private int SETTINGS_RESULT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +87,12 @@ public class MainActivity extends Activity {
         // Move bar
         Animation animMove = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.movebar);
         homeBar.setAnimation(animMove);
+
+        // User info
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String user = sharedPreferences.getString("prefNickname",getString(R.string.txt_no_name));
+        Log.d(TAG, "User: " + user);
+        toast.makeText(this, getString(R.string.txt_hi) + " " + user, Toast.LENGTH_LONG).show();
 
         // Sensor Manager
         ((SensorManager) getSystemService(Context.SENSOR_SERVICE)).registerListener(
@@ -103,6 +121,7 @@ public class MainActivity extends Activity {
         btnTwoPlayer = (Button) findViewById(R.id.btn_p2);
         btnTraining = (Button) findViewById(R.id.btn_trng);
         btnStats = (Button) findViewById(R.id.btn_sts);
+        btnSettings = (Button) findViewById(R.id.btn_settings);
         btnAboutUs = (Button) findViewById(R.id.btn_about);
     }
 
@@ -118,6 +137,7 @@ public class MainActivity extends Activity {
         btnTwoPlayer.setTypeface(typeFace);
         btnTraining.setTypeface(typeFace);
         btnStats.setTypeface(typeFace);
+        btnSettings.setTypeface(typeFace);
         btnAboutUs.setTypeface(typeFace);
     }
 
@@ -151,6 +171,13 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 btnStatsClick();
+            }
+        });
+        // Settings Button
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnSettingsClick();
             }
         });
         // About Us Button
@@ -222,6 +249,15 @@ public class MainActivity extends Activity {
     private void btnStatsClick() {
         Intent i = new Intent(MainActivity.this, StatsActivity.class);
         startActivity(i);
+        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
+    /**
+     * Manage click on settings button.
+     */
+    private void btnSettingsClick() {
+        Intent i = new Intent(MainActivity.this, Settings.class);
+        startActivityForResult(i, SETTINGS_RESULT);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 

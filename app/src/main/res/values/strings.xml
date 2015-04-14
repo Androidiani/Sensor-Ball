@@ -137,6 +137,14 @@
         <item>Rush Hour</item>
     </string-array>
 
+    <!-- Settings text -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_nickname">Nickname</string>
+    <string name="settings_nickname_info">Set Your Nickname</string>
+    <string name="txt_no_name">No Name</string>
+
     <string name="hello_world">Hello world!</string>
+    <string name="txt_hi">Hi</string>
+
 
 </resources>
