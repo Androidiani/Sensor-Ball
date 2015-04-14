@@ -1042,13 +1042,16 @@ public class GamePongTwoPlayer extends GamePong {
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
                                 textInfo.setText(getResources().getString(R.string.text_disconnected));
+                                if(timer != null)timer.cancel();
                                 break;
                             case FSMGame.STATE_OPPONENT_LEFT:
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
+                                //TODO Da inserire in UI Thread
                                 if (rush_hour) {
                                     clearRushHour();
                                 }
+                                if(timer != null)timer.cancel();
                                 textInfo.setText(getResources().getString(R.string.text_opponent_left));
                                 break;
                             default:
