@@ -622,6 +622,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
         }
     };
 
+    @SuppressWarnings("all")
     private final Handler fsmHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {

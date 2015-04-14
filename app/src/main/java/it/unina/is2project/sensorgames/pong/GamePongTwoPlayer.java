@@ -2,9 +2,11 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -52,6 +54,8 @@ public class GamePongTwoPlayer extends GamePong {
     private Text textPoint;
     // Points to reach
     private int points;
+    // Indicates the winner of the match
+    private boolean winner = false;
     // Return intent extra
     public static String EXTRA_MASTER = "isMaster_boolean";
     public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
@@ -439,7 +443,12 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected void gameOver() {
-        //do nothing
+        handler.setVelocity(0, 0);
+        BAR_SPEED = 0;
+        if(timer != null) timer.cancel();
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        String user_input_name = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
+//        this.finish();
     }
 
 
@@ -452,6 +461,11 @@ public class GamePongTwoPlayer extends GamePong {
     public void addScore() {
         score++;
         textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore + " [" + points + "]");
+        if(score == points){
+            AppMessage gameOverMessage = new AppMessage(Constants.MSG_TYPE_GAME_OVER);
+            sendBluetoothMessage(gameOverMessage);
+            fsmGame.setState(FSMGame.STATE_GAME_WINNER);
+        }
     }
 
     @Override
@@ -924,6 +938,11 @@ public class GamePongTwoPlayer extends GamePong {
                                     Log.d("SendReceived", "MSG_TYPE_POINT_UP");
                                     addScore();
                                     break;
+                                //------------------------GAME OVER-----------------------
+                                case Constants.MSG_TYPE_GAME_OVER:
+                                    Log.d("SendReceived", "MSG_TYPE_GAME_OVER");
+                                    fsmGame.setState(FSMGame.STATE_GAME_LOSER);
+                                    break;
                                 //------------------------BONUS SPEED X2------------------------
                                 case Constants.MSG_TYPE_BONUS_SPEEDX2:
                                     Log.d("SendReceived", "MSG_TYPE_BONUS_SPEEDX2");
@@ -1052,6 +1071,16 @@ public class GamePongTwoPlayer extends GamePong {
                                 }
                                 if(timer != null)timer.cancel();
                                 textInfo.setText(getResources().getString(R.string.text_opponent_left));
+                                break;
+                            case FSMGame.STATE_GAME_WINNER:
+                                textInfo.setText(getResources().getString(R.string.text_you_win));
+                                winner = true;
+                                gameOver();
+                                break;
+                            case FSMGame.STATE_GAME_LOSER:
+                                textInfo.setText(getResources().getString(R.string.text_you_lose));
+                                winner = false;
+                                gameOver();
                                 break;
                             default:
                                 Log.e("FSMGame", "Invalid State : " + msg.arg1);

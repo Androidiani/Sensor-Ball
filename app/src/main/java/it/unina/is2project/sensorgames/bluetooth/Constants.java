@@ -21,16 +21,17 @@ public interface Constants {
     @Deprecated
     public static final int MSG_TYPE_RESUME_NOREADY = 14;
     public static final int MSG_TYPE_POINT_UP = 15;
+    public static final int MSG_TYPE_GAME_OVER = 16;
 
     // Message Bonus Types
-    public static final int MSG_TYPE_BONUS_SPEEDX2 = 16;
-    public static final int MSG_TYPE_BONUS_SPEEDX3 = 17;
-    public static final int MSG_TYPE_BONUS_SPEEDX4 = 18;
-    public static final int MSG_TYPE_BONUS_LOCKFIELD = 19;
-    public static final int MSG_TYPE_BONUS_CUTBAR30 = 20;
-    public static final int MSG_TYPE_BONUS_CUTBAR50 = 21;
-    public static final int MSG_TYPE_BONUS_REVERTEDBAR = 22;
-    public static final int MSG_TYPE_BONUS_RUSHHOUR = 23;
+    public static final int MSG_TYPE_BONUS_SPEEDX2 = 17;
+    public static final int MSG_TYPE_BONUS_SPEEDX3 = 18;
+    public static final int MSG_TYPE_BONUS_SPEEDX4 = 19;
+    public static final int MSG_TYPE_BONUS_LOCKFIELD = 20;
+    public static final int MSG_TYPE_BONUS_CUTBAR30 = 21;
+    public static final int MSG_TYPE_BONUS_CUTBAR50 = 22;
+    public static final int MSG_TYPE_BONUS_REVERTEDBAR = 23;
+    public static final int MSG_TYPE_BONUS_RUSHHOUR = 24;
 
     // Key names received from the BluetoothService Handler
     public static final String DEVICE_NAME = "device_name";

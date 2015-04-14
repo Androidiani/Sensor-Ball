@@ -23,6 +23,8 @@ public class FSMGame implements Cloneable {
     public final static int STATE_GAME_OPPONENT_PAUSED = 880;
     @Deprecated
     public final static int STATE_GAME_EXIT_PAUSE = 888;
+    public final static int STATE_GAME_WINNER = 489;
+    public final static int STATE_GAME_LOSER = 490;
 
 
     // Private fields
@@ -68,6 +70,12 @@ public class FSMGame implements Cloneable {
                 break;
             case STATE_NOT_READY:
                 result = "Non pronto";
+                break;
+            case STATE_GAME_WINNER:
+                result = "Vincitore";
+                break;
+            case STATE_GAME_LOSER:
+                result = "Sconfitto";
                 break;
             default:
                 result = "default";
