@@ -381,6 +381,7 @@ public class GamePongTwoPlayer extends GamePong {
         AppMessage pointToEnemyMessage = new AppMessage(Constants.MSG_TYPE_POINT_UP);
         sendBluetoothMessage(pointToEnemyMessage);
         opponentScore++;
+        bonusManager.clearAll();
         textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore);
     }
 

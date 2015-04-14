@@ -79,6 +79,8 @@ public class BonusManager {
 
     public void deleteBonus(int bonusID){
         bonusMap.remove(bonusID);
+        handler.obtainMessage(BONUS_EXPIRED, bonusID, -1).sendToTarget();
+        Log.d("BonusManager", "Removed bonus ID: " + bonusID);
     }
 
     public void decrementCount(){
@@ -90,7 +92,6 @@ public class BonusManager {
             value--;
             Log.d("BonusManager", "Remain " + value + " of ID: " + pair.getKey());
             if (value == 0){
-//                bonusMap.remove(pair.getKey());
                 it.remove();
                 Log.d("BonusManager", "Removed bonus ID: " + pair.getKey());
                 handler.obtainMessage(BONUS_EXPIRED, (Integer)pair.getKey(),-1).sendToTarget();
@@ -101,7 +102,12 @@ public class BonusManager {
     }
 
     public void clearAll(){
-        bonusMap.clear();
+        Iterator it = bonusMap.entrySet().iterator();
+        while (it.hasNext()){
+            Map.Entry pair = (Map.Entry)it.next();
+            handler.obtainMessage(BONUS_EXPIRED, (Integer)pair.getKey(), -1).sendToTarget();
+            it.remove();
+        }
     }
 
     public boolean alreadyExist(int bonusID){
