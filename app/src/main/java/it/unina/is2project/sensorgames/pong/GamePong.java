@@ -154,7 +154,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         display.getSize(size);
         CAMERA_WIDTH = size.x;
         CAMERA_HEIGHT = size.y;
-        DEVICE_RATIO = CAMERA_WIDTH / 480;
+        DEVICE_RATIO = (float) CAMERA_WIDTH / 480;
         Log.d("Camera", "Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
