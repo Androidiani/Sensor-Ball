@@ -237,8 +237,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // The bar is moving only on X
         float new_position = barSprite.getX() + pAccelerationData.getX() * BAR_SPEED;
         // There's the edges' condition that do not hide the bar beyond the walls
-        if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 && new_position > -barSprite.getWidth() / 2)
-            barSprite.setX(new_position);
+//        if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 && new_position > -barSprite.getWidth() / 2)
+//            barSprite.setX(new_position);
+        if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
+            if(new_position > -barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
+                barSprite.setX(new_position);
+
     }
 
     @Override
@@ -415,12 +419,12 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void collidesBottom() {
         Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
-        barSprite.detachSelf();
+//        barSprite.detachSelf();
         ballSprite.detachSelf();
-        barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
+//        barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
         handler.setVelocityY(-handler.getVelocityY());
-        scene.attachChild(barSprite);
+//        scene.attachChild(barSprite);
         attachBall();
     }
 

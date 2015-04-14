@@ -217,7 +217,7 @@ public class GamePongOnePlayer extends GamePong {
         if (life < 0) {
             gameOver();
         } else {
-            barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
+//            barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
             handler.setVelocityY(-handler.getVelocityY());
             scene.attachChild(barSprite);
