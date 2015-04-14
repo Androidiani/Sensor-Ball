@@ -226,12 +226,14 @@ public class GamePongTwoPlayer extends GamePong {
         textInfo = new Text(10, 10, font, "", 30, getVertexBufferObjectManager());
         scene.attachChild(textInfo);
 
+        Text textPointUtils = new Text(10, 10, font, "Score", 30, getVertexBufferObjectManager());
+
         // Attachning textPoint
-        textPoint = new Text(10, CAMERA_HEIGHT - textInfo.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore, 30, getVertexBufferObjectManager());
+        textPoint = new Text(10, CAMERA_HEIGHT - textPointUtils.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore, 30, getVertexBufferObjectManager());
         scene.attachChild(textPoint);
 
         // Traslating bar
-        barSprite.setY(CAMERA_HEIGHT - textPoint.getHeight() - barSprite.getHeight());
+        barSprite.setY(textPoint.getY() - barSprite.getHeight());
         BARWIDTH = barSprite.getWidth();
 
         initializeSprite();
