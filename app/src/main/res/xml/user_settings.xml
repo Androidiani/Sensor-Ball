@@ -5,5 +5,13 @@
             android:title="@string/settings_nickname"
             android:summary="@string/settings_nickname_info"
             android:key="prefNickname"/>
+
+        <ListPreference
+            android:key="prefGameTheme"
+            android:title="Game Theme"
+            android:summary="Set the Game Theme"
+            android:entries="@array/selectTheme"
+            android:entryValues="@array/selectThemeValues"
+            />
     </PreferenceCategory>
 </PreferenceScreen>

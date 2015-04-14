@@ -1,8 +1,10 @@
 package it.unina.is2project.sensorgames.pong;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
 
@@ -61,6 +63,11 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected BitmapTextureAtlas barTexture;
     protected ITextureRegion barTextureRegion;
     protected Sprite barSprite;
+
+    // Game Theme
+    private final int CLASSIC = 0;
+    private final int GOLD = 1;
+    private final int BLUE = 2;
 
     /**
      * Sounds
@@ -187,7 +194,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         };
 
         // Setting up the background color
-        scene.setBackground(new Background(0f, 0f, 0f));
+        setBackground();
 
         // Adding the textPause to the scene
         textPause_util = new Text(0, 0, font, "Pause", 20, getVertexBufferObjectManager());
@@ -251,17 +258,72 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             pauseGame();
     }
 
+    private void setBackground(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme","0"));
+
+        Log.d("loadGraphics.GamePong", "Theme background " + choice);
+
+        switch (choice){
+            case CLASSIC:
+                scene.setBackground(new Background(0f, 0f, 0f));
+                break;
+            case GOLD:
+                scene.setBackground(new Background(0.678f, 0.082f, 0.082f));
+                break;
+            case BLUE:
+                scene.setBackground(new Background(0.082f, 0.2f, 0.678f));
+                break;
+        }
+
+    }
+
     protected void loadGraphics() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme","0"));
+
+        Log.d("loadGraphics.GamePong", "Theme " + choice);
+
+        Drawable ballDraw, barDraw;
+
         // White Ball texture loading
-        Drawable ballDraw = getResources().getDrawable(R.drawable.ball_white);
-        ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
-        ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_white, 0, 0);
+        switch (choice){
+            case CLASSIC:
+                ballDraw = getResources().getDrawable(R.drawable.ball_white);
+                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
+                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_white, 0, 0);
+                break;
+            case GOLD:
+                ballDraw = getResources().getDrawable(R.drawable.ball_gold);
+                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
+                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_gold, 0, 0);
+                break;
+            case BLUE:
+                ballDraw = getResources().getDrawable(R.drawable.ball_blue);
+                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
+                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_blue, 0, 0);
+                break;
+        }
         ballTexture.load();
 
         // White Bar texture loading
-        Drawable barDraw = getResources().getDrawable(R.drawable.bar_white);
-        barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
-        barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_white, 0, 0);
+        switch (choice){
+            case CLASSIC:
+                barDraw = getResources().getDrawable(R.drawable.bar_white);
+                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
+                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_white, 0, 0);
+                break;
+            case GOLD:
+                barDraw = getResources().getDrawable(R.drawable.bar_gold);
+                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
+                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_gold, 0, 0);
+                break;
+            case BLUE:
+                barDraw = getResources().getDrawable(R.drawable.bar_blue);
+                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
+                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_blue, 0, 0);
+                break;
+        }
         barTexture.load();
     }
 
