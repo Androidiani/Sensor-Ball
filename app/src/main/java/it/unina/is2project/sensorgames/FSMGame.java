@@ -90,7 +90,7 @@ public class FSMGame implements Cloneable {
 
     public void setState(int state) {
         this.state = state;
-        Log.d(TAG, "Set State From " + this.state + " to " + this.toString());
+        Log.d(TAG, "Set State to " + this.toString());
         handler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
 
