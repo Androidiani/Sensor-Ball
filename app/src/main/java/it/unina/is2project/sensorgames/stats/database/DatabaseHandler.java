@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import it.unina.is2project.sensorgames.stats.database.dao.GiocatoreDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
@@ -41,9 +40,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Execute create table SQL
+        /*
         Log.d(TAG, "SQL command: " + GiocatoreDAO.CREATE_TABLE);
         db.execSQL(GiocatoreDAO.CREATE_TABLE);
-
+        */
         Log.d(TAG, "SQL command: " + PlayerDAO.CREATE_TABLE);
         db.execSQL(PlayerDAO.CREATE_TABLE);
 
@@ -53,6 +53,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Log.d(TAG, "SQL command: " + StatTwoPlayerDAO.CREATE_TABLE);
         db.execSQL(StatTwoPlayerDAO.CREATE_TABLE);
 
+        /*
         db.execSQL("INSERT INTO player VALUES(1,'Giovanni')");
         db.execSQL("INSERT INTO stat_one_player VALUES(NULL,30,'2015-03-26',1)");
         db.execSQL("INSERT INTO stat_two_player VALUES(1,1,2)");
@@ -73,7 +74,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         db.execSQL("INSERT INTO player VALUES(6,'Anonymous')");
         db.execSQL("INSERT INTO stat_one_player VALUES(NULL,1300000,'2015-03-29',6)");
-
+        */
     }
 
     /**
@@ -82,9 +83,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVer, int newVer) {
         // DROP table
+        /*
         Log.d(TAG, "SQL command: " + GiocatoreDAO.UPGRADE_TABLE);
         db.execSQL(GiocatoreDAO.UPGRADE_TABLE);
-
+        */
         Log.d(TAG, "SQL command: " + PlayerDAO.UPGRADE_TABLE);
         db.execSQL(PlayerDAO.UPGRADE_TABLE);
 

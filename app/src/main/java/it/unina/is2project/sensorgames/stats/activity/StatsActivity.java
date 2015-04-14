@@ -119,6 +119,10 @@ public class StatsActivity extends ActionBarActivity {
         textViewVinte = (TextView) findViewById(R.id.textViewVinte);
         textViewGiocate = (TextView) findViewById(R.id.textViewGiocate);
         textViewWinningRate = (TextView) findViewById(R.id.textViewWinningRate);
+
+        textViewGiocate.setText("");
+        textViewVinte.setText("");
+        textViewWinningRate.setText("");
     }
 
     public void setFont() {
