@@ -2,7 +2,9 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.EditText;
@@ -436,14 +438,11 @@ public class GamePongOnePlayer extends GamePong {
                 alert.setTitle(getResources().getString(R.string.text_ttl_oneplayer_savegame));
                 alert.setMessage(getResources().getString(R.string.text_msg_oneplayer_savegame));
 
-                // Set an EditText view to get user input
-                final EditText input = new EditText(GamePongOnePlayer.this);
-                alert.setView(input);
-
-                alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                 alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
-                        String user_input_name = input.getText().toString();
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        String user_input_name = sharedPreferences.getString("prefNickname",getString(R.string.txt_no_name));
 
                         if (!user_input_name.equals("")) {
                             saveGame(user_input_name);
