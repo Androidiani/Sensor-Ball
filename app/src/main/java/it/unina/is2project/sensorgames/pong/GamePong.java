@@ -210,7 +210,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         //Set game velocity
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
-        myModule = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
 
         /** Enable the Acceleration Sensor
          * - Option: SensorDelay.GAME */
@@ -436,7 +435,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         float barX = bar_center_coords[0];
         float[] ball_center_coords = ballSprite.getSceneCenterCoordinates();
         float ballX = ball_center_coords[0];
-        //myModule = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
+        myModule = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
 
         if (ballX - barX <= (-(13 * barSprite.getWidth()) / 30)) {
             Log.d("CollisionBar", "20° LEFT");
