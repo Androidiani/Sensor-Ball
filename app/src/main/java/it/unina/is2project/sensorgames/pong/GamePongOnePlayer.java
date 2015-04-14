@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import org.andengine.engine.handler.physics.PhysicsHandler;
@@ -121,6 +120,7 @@ public class GamePongOnePlayer extends GamePong {
      * Events
      */
     private int game_event;
+    private int random_int;
 
     // Events' enable
     private boolean no_event = false;
@@ -208,8 +208,7 @@ public class GamePongOnePlayer extends GamePong {
     protected void collidesBottom() {
         Log.d(TAG, "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
-
-        barSprite.detachSelf();
+        // Detach Ball and Life
         ballSprite.detachSelf();
         lifeSprites.get(life).detachSelf();
         life--;
@@ -217,10 +216,8 @@ public class GamePongOnePlayer extends GamePong {
         if (life < 0) {
             gameOver();
         } else {
-//            barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
             ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
             handler.setVelocityY(-handler.getVelocityY());
-            scene.attachChild(barSprite);
             attachBall();
             clearEvent();
             game_event = NO_EVENT;
@@ -438,11 +435,11 @@ public class GamePongOnePlayer extends GamePong {
                 alert.setTitle(getResources().getString(R.string.text_ttl_oneplayer_savegame));
                 alert.setMessage(getResources().getString(R.string.text_msg_oneplayer_savegame));
 
-                 alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                        String user_input_name = sharedPreferences.getString("prefNickname",getString(R.string.txt_no_name));
+                        String user_input_name = sharedPreferences.getString("prefNickname", getString(R.string.txt_no_name));
 
                         if (!user_input_name.equals("")) {
                             saveGame(user_input_name);
@@ -671,10 +668,10 @@ public class GamePongOnePlayer extends GamePong {
     private void callEvent() {
         // Generating a new event, different from current event
         Random random = new Random();
-        int random_int = random.nextInt(level + 1);
-        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12)) {
+        do {
             random_int = random.nextInt(level + 1);
         }
+        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
         game_event = random_int;
     }
 

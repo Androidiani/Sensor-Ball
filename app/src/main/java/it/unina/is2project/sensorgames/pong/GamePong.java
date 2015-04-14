@@ -3,7 +3,6 @@ package it.unina.is2project.sensorgames.pong;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 
@@ -48,7 +47,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected int CAMERA_WIDTH;
     protected int CAMERA_HEIGHT;
     protected float DEVICE_RATIO;
-    protected float density;
 
     /**
      * Graphics
@@ -150,18 +148,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     @Override
     public EngineOptions onCreateEngineOptions() {
-        Display display = getWindow().getWindowManager().getDefaultDisplay();
-        // Understanding the device display's density
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        display.getMetrics(displayMetrics);
-        density = displayMetrics.density;
         // Understanding the device display's dimensions
+        Display display = getWindow().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         CAMERA_WIDTH = size.x;
         CAMERA_HEIGHT = size.y;
         DEVICE_RATIO = CAMERA_WIDTH / 480;
-        Log.d("Camera", "Density = " + density + ", Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
+        Log.d("Camera", "Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
         // Setting up the andEngine options
@@ -269,7 +263,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         // Setting the Asset Base Path for fonts
         FontFactory.setAssetBasePath("font/");
         // "secrcode.ttf" texture loading
-        int fontSize = (int) (30 * density);
+        int fontSize = (int) getResources().getDimension(R.dimen.text_font);
         fontTexture = new BitmapTextureAtlas(getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", fontSize, true, Color.WHITE);
         font.load();
@@ -419,12 +413,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void collidesBottom() {
         Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
-//        barSprite.detachSelf();
         ballSprite.detachSelf();
-//        barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
         handler.setVelocityY(-handler.getVelocityY());
-//        scene.attachChild(barSprite);
         attachBall();
     }
 

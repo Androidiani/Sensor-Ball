@@ -3,4 +3,5 @@
     <dimen name="home_font">28sp</dimen>
     <dimen name="name_font">40sp</dimen>
     <dimen name="medium_font">18sp</dimen>
+    <dimen name="text_font">20sp</dimen>
 </resources>
