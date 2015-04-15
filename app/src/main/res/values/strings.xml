@@ -34,6 +34,11 @@
         - Toscano Giovanni\n
     </string>
 
+    <!-- First access -->
+    <string name="hello_view">Please, enter your nickname</string>
+    <string name="nickname">Nickname</string>
+    <string name="submit">Ok</string>
+
     <!-- General game -->
     <string name="text_pause">Pause</string>
     <string name="text_gameover">Game Over</string>

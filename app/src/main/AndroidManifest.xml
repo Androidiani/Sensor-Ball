@@ -73,6 +73,8 @@
             android:theme="@style/Base.ThemeOverlay.AppCompat.Dark">
         </activity>
 
+        <activity android:name=".FirstAccess"/>
+
     </application>
 
 </manifest>
