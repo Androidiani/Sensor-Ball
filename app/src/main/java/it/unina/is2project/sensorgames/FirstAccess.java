@@ -18,10 +18,11 @@ import android.widget.Toast;
 
 public class FirstAccess extends Activity {
 
-    private final String TAG = "First Access";
+    private final String TAG = "FirstAccess";
 
     // Views on screen declaration
     private TextView helloView;
+    private TextView appNameView;
     private EditText nickname;
     private Button okButton;
 
@@ -42,7 +43,12 @@ public class FirstAccess extends Activity {
         setListners();
         // Get Screen Dims for nickname form width
         Point p = getScreenDimensions();
-        nickname.setWidth((int) 0.7f * p.x);
+        Log.d(TAG, "Screen dimensions: " + p.x + ", " + p.y);
+        Log.d(TAG, "Previous nickname form width: " + nickname.getWidth());
+        //nickname.setWidth((int) (0.7f * p.x));
+        nickname.getLayoutParams().width = (int) (0.7f * p.x);
+        Log.d(TAG, "Width set to: " + (int) (0.7f * p.x));
+        Log.d(TAG, "Nickname form width: " + nickname.getWidth());
 
 
     }
@@ -52,6 +58,7 @@ public class FirstAccess extends Activity {
      */
     public void findViews() {
         helloView = (TextView) findViewById(R.id.helloView);
+        appNameView = (TextView) findViewById(R.id.nameFirstAccess);
         nickname = (EditText) findViewById(R.id.nicknameForm);
         okButton = (Button) findViewById(R.id.btnSubmit);
     }
@@ -64,6 +71,7 @@ public class FirstAccess extends Activity {
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
         // Set the typeface
         helloView.setTypeface(typeFace);
+        appNameView.setTypeface(typeFace);
         nickname.setTypeface(typeFace);
     }
 

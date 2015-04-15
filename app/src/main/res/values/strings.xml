@@ -35,7 +35,7 @@
     </string>
 
     <!-- First access -->
-    <string name="hello_view">Please, enter your nickname</string>
+    <string name="hello_view">\n\nPlease, enter your nickname</string>
     <string name="nickname">Nickname</string>
     <string name="submit">Ok</string>
 
