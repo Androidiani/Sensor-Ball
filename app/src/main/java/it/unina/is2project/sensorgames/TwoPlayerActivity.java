@@ -594,7 +594,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                                 case Constants.MSG_TYPE_FIRST_START:
                                     privateNumber = recMsg.OP1 == 0 ? new Integer(1) : new Integer(0);
                                     points = recMsg.OP5;
-                                    btnPlay.setEnabled(true);
+//                                    btnPlay.setEnabled(true);
                                     break;
                                 case Constants.MSG_TYPE_SYNC:
                                     AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
@@ -603,6 +603,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
                                 case Constants.MSG_TYPE_FAIL:
                                     btnPlay.setEnabled(false);
                                     break;
+                                case Constants.MSG_TYPE_ALERT:
+                                    btnPlay.setEnabled(true);
                                 default:
                                     Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                                     break;
