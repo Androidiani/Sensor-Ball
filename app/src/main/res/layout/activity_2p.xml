@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:text="@string/text_bluetooth"
             android:id="@+id/lblBluetooth"
-            android:textSize="22sp"
+            android:textSize="@dimen/text_font"
             android:layout_gravity="left"
             android:textColor="#ffffffff"
             android:paddingTop="10sp" />
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:text="@string/text_enemy"
             android:id="@+id/lblEnemy"
-            android:textSize="22sp"
+            android:textSize="@dimen/text_font"
             android:layout_gravity="left"
             android:textColor="#ffffffff"
             android:paddingTop="25sp" />
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtEnemy"
-            android:textSize="22sp"
+            android:textSize="@dimen/text_font"
             android:text="@string/text_none"
             android:layout_gravity="right"
             android:textColor="#ffffffff"

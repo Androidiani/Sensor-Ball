@@ -332,7 +332,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         FontFactory.setAssetBasePath("font/");
         // "secrcode.ttf" texture loading
         int fontSize = (int) getResources().getDimension(R.dimen.text_font);
-        fontTexture = new BitmapTextureAtlas(getTextureManager(), 256, 256, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        fontTexture = new BitmapTextureAtlas(getTextureManager(), 512, 512,
+                TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", fontSize, true, Color.WHITE);
         font.load();
     }

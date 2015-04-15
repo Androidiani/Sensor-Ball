@@ -61,10 +61,8 @@
     <string name="text_waiting">Waiting for\nyour opponent</string>
     <string name="text_exit_pause">Your opponent\nis in pause</string>
     <string name="text_pause_not_allowed">Pause not\nallowed now</string>
-    <string name="text_you_win">You win\nthe game!</string>
+    <string name="text_you_win">You win\nthe game</string>
     <string name="text_you_lose">You lose\nthe game</string>
-
-
 
     <string name="text_first_to">First to</string>
     <string name="text_win">win</string>
