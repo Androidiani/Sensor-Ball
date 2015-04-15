@@ -63,12 +63,14 @@ public class GamePongTwoPlayer extends GamePong {
     // Return intent extra
     public static String EXTRA_MASTER = "isMaster_boolean";
     public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
+    public static String EXTRA_DEVICE = "deviceName_string";
     // Pause Utils
     private long tap;
     private boolean proximityRegion;
     private int PROXIMITY_ZONE;
     // Connections Utils
     private boolean isConnected;
+    private String mConnectedDeviceName = "";
     // Score variables
     private int score;
     private int opponentScore;
@@ -195,6 +197,7 @@ public class GamePongTwoPlayer extends GamePong {
         super.onCreateScene();
 
         points = i.getIntExtra("points", 0);
+        mConnectedDeviceName = i.getStringExtra("deviceName");
 
         // Set result in case of failure
         setResult(Activity.RESULT_CANCELED);
@@ -219,11 +222,13 @@ public class GamePongTwoPlayer extends GamePong {
         previous_event = -1;
 
         if (i.getIntExtra("master", 0) == 1) {
+            // I AM MASTER
             AppMessage alertMessage = new AppMessage(Constants.MSG_TYPE_ALERT);
             sendBluetoothMessage(alertMessage);
             isMaster = true;
             fsmGame.setState(FSMGame.STATE_IN_GAME_WAITING);
         } else {
+            // I'M NOT MASTER
             AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
             sendBluetoothMessage(messageSync);
             isMaster = false;
@@ -351,6 +356,16 @@ public class GamePongTwoPlayer extends GamePong {
         old_y_speed = -BALL_SPEED;
     }
 
+//    @Override
+//    protected boolean rightCondition() {
+//        return super.rightCondition() && ballSprite.getY() > 0;
+//    }
+//
+//    @Override
+//    protected boolean leftCondition() {
+//        return super.leftCondition() && ballSprite.getY() > 0;
+//    }
+
     @Override
     protected boolean topCondition() {
         if (!transferringBall && ballSprite.getY() < 0 && previous_event != TOP && haveBall) {
@@ -370,6 +385,8 @@ public class GamePongTwoPlayer extends GamePong {
                     SIN_X,
                     xRatio);
             sendBluetoothMessage(messageCoords);
+            Log.d("Collision", "S: X: " + ballSprite.getX() + " of " + CAMERA_WIDTH);
+            Log.d("Collision", "S: XRatio: " + xRatio);
 //            Log.d("MESSAGECOORDSsen", "Module " + myModule);
 //            Log.d("MESSAGECOORDSsen", "VelX " + handler.getVelocityX());
 //            Log.d("MESSAGECOORDSsen", "VelY " + handler.getVelocityY());
@@ -534,6 +551,7 @@ public class GamePongTwoPlayer extends GamePong {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_CONNECTION_STATE, isConnected);
         intent.putExtra(EXTRA_MASTER, isMaster);
+        intent.putExtra(EXTRA_DEVICE, mConnectedDeviceName);
         setResult(Activity.RESULT_CANCELED, intent);
         if (timer != null) timer.cancel();
         super.onBackPressed();
@@ -833,6 +851,7 @@ public class GamePongTwoPlayer extends GamePong {
         rushHourIconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - rushHourIconSprite.getHeight() / 2);
     }
 
+
     //----------------------------------------------
     // HANDLERS
     //----------------------------------------------
@@ -846,6 +865,7 @@ public class GamePongTwoPlayer extends GamePong {
                     case Constants.MESSAGE_STATE_CHANGE:
                         switch (msg.arg1) {
                             case BluetoothService.STATE_CONNECTED:
+                                isConnected = true;
                                 break;
                             case BluetoothService.STATE_CONNECTING:
                                 break;
@@ -869,11 +889,17 @@ public class GamePongTwoPlayer extends GamePong {
                             switch (recMsg.TYPE) {
                                 //------------------------COORDS------------------------
                                 case Constants.MSG_TYPE_COORDS:
-                                    Log.d("SendReceived", "MSG_TYPE_COORDS");
+                                    Log.d("Collision", "MSG_TYPE_COORDS");
                                     if (!haveBall) {
 //                                        Log.d("MESSAGECOORDSrec", "COS_X " + recMsg.OP2);
 //                                        Log.d("MESSAGECOORDSrec", "SIN_X " + recMsg.OP3);
-                                        float xPos = (1 - recMsg.OP4) * CAMERA_WIDTH;
+                                        float offset = 0;
+                                        if(recMsg.OP1 == 0){
+                                            offset = ballSprite.getWidth();
+                                        }else if(recMsg.OP1 > 0){
+                                            offset = 2 * ballSprite.getWidth();
+                                        }
+                                        float xPos = ((1 - recMsg.OP4) * CAMERA_WIDTH) - offset;
                                         float velX = -recMsg.OP1 * myModule * recMsg.OP2;
                                         float velY = myModule * recMsg.OP3;
                                         COS_X = recMsg.OP2;
@@ -882,6 +908,7 @@ public class GamePongTwoPlayer extends GamePong {
 //                                        Log.d("MESSAGECOORDSrec", "VelX " + velX);
 //                                        Log.d("MESSAGECOORDSrec", "VelY " + velY);
                                         ballSprite.setPosition(xPos, -ballSprite.getHeight());
+                                        Log.d("SendRecv", "R: X: " + xPos + " of " + CAMERA_WIDTH);
                                         scene.attachChild(ballSprite);
                                         handler.setVelocity(velX, velY);
                                         previous_event = TOP;
@@ -1017,6 +1044,7 @@ public class GamePongTwoPlayer extends GamePong {
                         }
                         break;
                     case Constants.MESSAGE_DEVICE_NAME:
+                        mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
                         break;
                     case Constants.MESSAGE_TOAST:
                         break;
@@ -1081,6 +1109,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 break;
                             case FSMGame.STATE_DISCONNECTED:
                                 isConnected = false;
+                                mConnectedDeviceName = "";
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
                                 textInfo.setText(getResources().getString(R.string.text_disconnected));

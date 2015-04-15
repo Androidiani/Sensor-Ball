@@ -265,10 +265,13 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 boolean isConnected = data.getExtras().getBoolean(GamePongTwoPlayer.EXTRA_CONNECTION_STATE);
                 if(resultCode == Activity.RESULT_CANCELED){
                     Log.d(TAG, "2 Players Game Was Canceled");
-                    if(isConnected)
+                    if(isConnected) {
                         fsmGame.setState(FSMGame.STATE_GAME_ABORTED);
-                    else
+                        txtEnemy.setText(data.getStringExtra(GamePongTwoPlayer.EXTRA_DEVICE));
+                    }
+                    else {
                         fsmGame.setState(FSMGame.STATE_DISCONNECTED);
+                    }
                 }
                 break;
         }
@@ -415,6 +418,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
         mIntent.putExtra("points", points);
         mIntent.putExtra("ball", privateNumber);
         mIntent.putExtra("master", intMaster);
+        mIntent.putExtra("deviceName", mConnectedDeviceName);
         startActivityForResult(mIntent, GAME_START);
     }
 
@@ -563,7 +567,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 case Constants.MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
-                            Log.i(TAG, "Connected To " + mConnectedDeviceName);
+                            txtEnemy.setText(mConnectedDeviceName);
                             // FSM STATE CHANGE
                             fsmGame.setState(FSMGame.STATE_CONNECTED);
                             break;
@@ -612,7 +616,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 case Constants.MESSAGE_DEVICE_NAME:
                     // Salvo il nome del dispositivo connesso
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    txtEnemy.setText(mConnectedDeviceName);
+//                    txtEnemy.setText(mConnectedDeviceName);
                     break;
                 case Constants.MESSAGE_TOAST:
                     Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
