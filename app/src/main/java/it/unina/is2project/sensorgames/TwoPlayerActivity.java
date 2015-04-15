@@ -66,8 +66,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
     // Synchronization's number
     private Integer privateNumber = null;
     // Points to reach bounds
-    private final Integer LOWER_BOUND_POINT = 8;
-    private final Integer UPPER_BOUND_POINT = 14;
+    private final Integer LOWER_BOUND_POINT = 2;
+    private final Integer UPPER_BOUND_POINT = 3;
     // Points to reach
     private Integer points = null;
     // Intents code

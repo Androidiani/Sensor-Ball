@@ -82,7 +82,7 @@ public class StatsActivity extends ActionBarActivity {
                 if (s != null) {
                     textViewGiocate.setText("" + s.getPartiteGiocate());
                     textViewVinte.setText("" + s.getPartiteVinte());
-                    textViewWinningRate.setText("" + (float) s.getPartiteGiocate() / s.getPartiteVinte() * 100 + "%");
+                    textViewWinningRate.setText("" + (float) s.getPartiteVinte() / s.getPartiteGiocate() * 100 + "%");
                 } else {
                     textViewGiocate.setText("0");
                     textViewVinte.setText("0");

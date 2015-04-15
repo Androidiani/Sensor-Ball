@@ -32,6 +32,10 @@ import it.unina.is2project.sensorgames.bluetooth.BluetoothService;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
 import it.unina.is2project.sensorgames.bluetooth.Serializer;
 import it.unina.is2project.sensorgames.bluetooth.messages.AppMessage;
+import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
+import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
+import it.unina.is2project.sensorgames.stats.entity.Player;
+import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
 
 public class GamePongTwoPlayer extends GamePong {
 
@@ -446,15 +450,41 @@ public class GamePongTwoPlayer extends GamePong {
         handler.setVelocity(0, 0);
         BAR_SPEED = 0;
         if(timer != null) timer.cancel();
-//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        String user_input_name = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
-//        this.finish();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String nickname = sharedPreferences.getString(Constants.PREF_NICKNAME,
+                getString(R.string.txt_no_name));
+        saveGame(nickname);
     }
 
 
     @Override
-    protected void saveGame(String s) {
-        //do nothing
+    protected void saveGame(String user) {
+        PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
+        Player currentPlayer = playerDAO.findByNome(user);
+        long idPlayer;
+
+        if(currentPlayer == null){
+            currentPlayer = new Player(user);
+            idPlayer = playerDAO.insert(currentPlayer);
+        }else idPlayer = currentPlayer.getId();
+
+        StatTwoPlayerDAO statTwoPlayerDAO = new StatTwoPlayerDAO(getApplicationContext());
+        StatTwoPlayer currentPlayerStats = statTwoPlayerDAO.findById((int)idPlayer);
+
+        if(currentPlayerStats == null){
+            currentPlayerStats = new StatTwoPlayer((int)idPlayer, 0, 0);
+            statTwoPlayerDAO.insert(currentPlayerStats);
+        }
+
+        currentPlayerStats.increasePartiteGiocate();
+
+        if(winner)
+            currentPlayerStats.increasePartiteVinte();
+
+        statTwoPlayerDAO.update(currentPlayerStats);
+
+        playerDAO.close();
+        statTwoPlayerDAO.close();
     }
 
     @Override
@@ -921,7 +951,9 @@ public class GamePongTwoPlayer extends GamePong {
                                     if (fsmGame.getState() == FSMGame.STATE_DISCONNECTED ||
                                             fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
                                             fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_OPPONENT_LEFT) {
+                                            fsmGame.getState() == FSMGame.STATE_OPPONENT_LEFT ||
+                                            fsmGame.getState() == FSMGame.STATE_GAME_WINNER ||
+                                            fsmGame.getState() == FSMGame.STATE_GAME_LOSER) {
                                         AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
                                         sendBluetoothMessage(notReadyMessage);
                                     }
