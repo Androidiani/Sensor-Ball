@@ -1,0 +1,22 @@
+package it.unina.is2project.sensorgames.game.entity;
+
+import android.graphics.Point;
+
+import org.andengine.entity.scene.Scene;
+import org.andengine.ui.activity.SimpleBaseGameActivity;
+
+/**
+ * Created by Giovanni on 09/04/2015.
+ */
+public class Ball extends GameObject {
+
+    public Ball(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable, Point displaySize) {
+        super(simpleBaseGameActivity, idDrawable, displaySize);
+    }
+
+    @Override
+    public void addToScene(Scene scene, float spriteRatio) {
+        super.addToScene(scene, spriteRatio);
+        gSprite.setHeight(displaySize.x * spriteRatio);
+    }
+}
