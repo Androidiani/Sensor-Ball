@@ -1,6 +1,7 @@
 package it.unina.is2project.sensorgames.stats;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import it.unina.is2project.sensorgames.R;
-
+import it.unina.is2project.sensorgames.stats.activity.StatOnePlayerRow;
 
 public class StatAdapter extends ArrayAdapter<StatOnePlayerRow> {
 
@@ -23,10 +24,17 @@ public class StatAdapter extends ArrayAdapter<StatOnePlayerRow> {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = inflater.inflate(R.layout.stat_one_player_row, null);
 
-        TextView data = (TextView) convertView.findViewById(R.id.textViewData);
+        TextView pos = (TextView) convertView.findViewById(R.id.textViewPosition);
         TextView nome = (TextView) convertView.findViewById(R.id.textViewNome);
         TextView score = (TextView) convertView.findViewById(R.id.textViewScore);
-        TextView pos = (TextView) convertView.findViewById(R.id.textViewPosition);
+        TextView data = (TextView) convertView.findViewById(R.id.textViewData);
+
+        // Load the font
+        Typeface typeFace = Typeface.createFromAsset(getContext().getAssets(), "font/secrcode.ttf");
+        pos.setTypeface(typeFace);
+        nome.setTypeface(typeFace);
+        score.setTypeface(typeFace);
+        data.setTypeface(typeFace);
 
         StatOnePlayerRow s = getItem(position);
         pos.setText("" + (position + 1));
@@ -36,5 +44,4 @@ public class StatAdapter extends ArrayAdapter<StatOnePlayerRow> {
 
         return convertView;
     }
-
 }

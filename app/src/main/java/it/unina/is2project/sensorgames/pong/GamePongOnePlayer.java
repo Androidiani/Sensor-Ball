@@ -17,7 +17,7 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
@@ -476,7 +476,10 @@ public class GamePongOnePlayer extends GamePong {
             idPlayer = playerDAO.insert(player);
         } else idPlayer = player.getId();
 
-        StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, new Date().toString(), score);
+        Calendar calendar = Calendar.getInstance();
+        String date = "" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + ((calendar.get(Calendar.MONTH) < 9 ? "0" : "")) + (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
+
+        StatOnePlayer statOnePlayer = new StatOnePlayer((int) idPlayer, date, score);
         StatOnePlayerDAO statOnePlayerDAO = new StatOnePlayerDAO(getApplicationContext());
 
         statOnePlayerDAO.insert(statOnePlayer);

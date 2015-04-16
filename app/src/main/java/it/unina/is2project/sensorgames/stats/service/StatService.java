@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unina.is2project.sensorgames.stats.StatOnePlayerRow;
+import it.unina.is2project.sensorgames.stats.activity.StatOnePlayerRow;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;

@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.stats;
+package it.unina.is2project.sensorgames.stats.activity;
 
 import it.unina.is2project.sensorgames.stats.entity.Player;
 

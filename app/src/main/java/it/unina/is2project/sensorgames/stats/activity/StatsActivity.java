@@ -1,12 +1,12 @@
 package it.unina.is2project.sensorgames.stats.activity;
 
-import android.content.pm.ActivityInfo;
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,17 +15,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import it.unina.is2project.sensorgames.R;
-import it.unina.is2project.sensorgames.stats.StatAdapter;
 import it.unina.is2project.sensorgames.stats.entity.Player;
 import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
 import it.unina.is2project.sensorgames.stats.service.StatService;
 
 
-public class StatsActivity extends ActionBarActivity {
+public class StatsActivity extends Activity {
     //TODO: risolvere il problema del metodo close su StatService
-
-    // Font typeface
-    private Typeface typeFace;
 
     // TextView
     private TextView top;
@@ -46,28 +42,80 @@ public class StatsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats2);
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        /** Set the fullscreen window */
+        // Set the fullscreen window
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
-
-        /** Load the font */
-        typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
-
-        // Find View by ID
+        // Find view
         findView();
-
-        // Set Font Typeface
+        // Set-up typeface
         setFont();
-
 
         StatService statService = new StatService(getApplicationContext());
 
-        StatAdapter adapter = new StatAdapter(this, R.layout.stat_one_player_row, statService.getStatOnePlayerList());
+        ArrayAdapter<StatOnePlayerRow> adapter = new ArrayAdapter<StatOnePlayerRow>(this, R.layout.stat_one_player_row, statService.getStatOnePlayerList()){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.stat_one_player_row, null);
+
+                TextView pos = (TextView) convertView.findViewById(R.id.textViewPosition);
+                TextView nome = (TextView) convertView.findViewById(R.id.textViewNome);
+                TextView score = (TextView) convertView.findViewById(R.id.textViewScore);
+                TextView data = (TextView) convertView.findViewById(R.id.textViewData);
+
+                // Load the font
+                Typeface typeFace = Typeface.createFromAsset(getContext().getAssets(), "font/secrcode.ttf");
+                pos.setTypeface(typeFace);
+                nome.setTypeface(typeFace);
+                score.setTypeface(typeFace);
+                data.setTypeface(typeFace);
+
+                StatOnePlayerRow s = getItem(position);
+                pos.setText("" + (position + 1));
+                nome.setText("" + s.getPlayer().getNome());
+                score.setText("" + s.getScore());
+                data.setText("" + s.getData());
+
+                return convertView;
+            }
+        };
         listView.setAdapter(adapter);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinnerTwoPlayer);
-        ArrayAdapter<Player> adapterSpinner = new ArrayAdapter<Player>(this, android.R.layout.simple_spinner_item, statService.getPlayers());
+        ArrayAdapter<Player> adapterSpinner = new ArrayAdapter<Player>(this, R.layout.spinner_stats_item, statService.getPlayers()){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.spinner_stats_item, null);
+
+                TextView name = (TextView) convertView.findViewById(R.id.spinner_stat_item);
+
+                // Load the font
+                Typeface typeFace = Typeface.createFromAsset(getContext().getAssets(), "font/secrcode.ttf");
+                name.setTypeface(typeFace);
+
+                Player p = getItem(position);
+                name.setText(p.getNome());
+
+                return  convertView;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.spinner_stats_item, null);
+
+                TextView name = (TextView) convertView.findViewById(R.id.spinner_stat_item);
+
+                // Load the font
+                Typeface typeFace = Typeface.createFromAsset(getContext().getAssets(), "font/secrcode.ttf");
+                name.setTypeface(typeFace);
+
+                Player p = getItem(position);
+                name.setText(p.getNome());
+
+                return  convertView;
+            }
+        };
         spinner.setAdapter(adapterSpinner);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -98,34 +146,26 @@ public class StatsActivity extends ActionBarActivity {
         //statService.close();
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_stats, menu);
-        return true;
-    }
-
     public void findView() {
         top = (TextView) findViewById(R.id.txt_stat);
         single = (TextView) findViewById(R.id.txt_single);
         multi = (TextView) findViewById(R.id.txt_multi);
 
-        textViewColVinte = (TextView) findViewById(R.id.textViewVinte);
-        textViewColGiocate = (TextView) findViewById(R.id.textViewGiocate);
-        textViewColWinningRate = (TextView) findViewById(R.id.textViewWinningRate);
-
         listView = (ListView) findViewById(R.id.listViewDemo);
+
+        textViewColVinte = (TextView) findViewById(R.id.textViewColVinte);
+        textViewColGiocate = (TextView) findViewById(R.id.textViewColGiocate);
+        textViewColWinningRate = (TextView) findViewById(R.id.textViewColWinningRate);
+
         textViewVinte = (TextView) findViewById(R.id.textViewVinte);
         textViewGiocate = (TextView) findViewById(R.id.textViewGiocate);
         textViewWinningRate = (TextView) findViewById(R.id.textViewWinningRate);
-
-        textViewGiocate.setText("");
-        textViewVinte.setText("");
-        textViewWinningRate.setText("");
     }
 
     public void setFont() {
+        // Load the font
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
+
         top.setTypeface(typeFace);
         single.setTypeface(typeFace);
         multi.setTypeface(typeFace);
@@ -137,20 +177,5 @@ public class StatsActivity extends ActionBarActivity {
         textViewVinte.setTypeface(typeFace);
         textViewGiocate.setTypeface(typeFace);
         textViewWinningRate.setTypeface(typeFace);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
