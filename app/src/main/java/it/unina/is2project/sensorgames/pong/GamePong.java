@@ -3,7 +3,6 @@ package it.unina.is2project.sensorgames.pong;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -37,8 +36,8 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import java.io.IOException;
 
 import it.unina.is2project.sensorgames.R;
-
-import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
+import it.unina.is2project.sensorgames.game.entity.Ball;
+import it.unina.is2project.sensorgames.game.entity.Bar;
 
 public abstract class GamePong extends SimpleBaseGameActivity implements IAccelerationListener {
 
@@ -59,10 +58,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected ITextureRegion ballTextureRegion;
     protected Sprite ballSprite;
 
+    protected Ball ball;
+
     // Bar
     protected BitmapTextureAtlas barTexture;
     protected ITextureRegion barTextureRegion;
     protected Sprite barSprite;
+
+    protected Bar bar;
 
     // Game Theme
     private final int CLASSIC = 0;
@@ -157,10 +160,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     public EngineOptions onCreateEngineOptions() {
         // Understanding the device display's dimensions
         Display display = getWindow().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        CAMERA_WIDTH = size.x;
-        CAMERA_HEIGHT = size.y;
+        Point displaySize = new Point();
+        display.getSize(displaySize);
+        CAMERA_WIDTH = displaySize.x;
+        CAMERA_HEIGHT = displaySize.y;
         DEVICE_RATIO = (float) CAMERA_WIDTH / 480;
         Log.d("Camera", "Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
         // Setting up the andEngine camera
@@ -202,17 +205,26 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         scene.attachChild(textPause);
 
         // Adding the ballSprite to the scene
-        ballSprite = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
+        ball.addToScene(scene, 0.1f);
+        ball.top();
+        ballSprite = ball.getSprite();
+
+       /* ballSprite = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
         ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
         ballSprite.setHeight(CAMERA_WIDTH * 0.1f);
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 3);
-        attachBall();
+        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 3);*/
+        //TODO VEDERE BENE 2 PLAYERS OVERRIDE
+        //attachBall();
 
         // Adding the barSprite to the scene
-        barSprite = new Sprite(0, 0, barTextureRegion, getVertexBufferObjectManager());
+        bar.addToScene(scene, 0.3f);
+        bar.bottom();
+        barSprite = bar.getSprite();
+
+    /*    barSprite = new Sprite(0, 0, barTextureRegion, getVertexBufferObjectManager());
         barSprite.setWidth(CAMERA_WIDTH * 0.3f);
         barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
-        scene.attachChild(barSprite);
+        scene.attachChild(barSprite);*/
 
         //Set game velocity
         BAR_SPEED = 2 * DEVICE_RATIO;
@@ -284,47 +296,25 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         Log.d("loadGraphics.GamePong", "Theme " + choice);
 
-        Drawable ballDraw, barDraw;
-
         // White Ball texture loading
-        switch (choice){
+        int theme_ball = 0;
+        int theme_bar = 0;
+        switch (choice) {
             case CLASSIC:
-                ballDraw = getResources().getDrawable(R.drawable.ball_white);
-                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
-                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_white, 0, 0);
+                theme_ball = R.drawable.ball_white;
+                theme_bar = R.drawable.bar_white;
                 break;
             case GOLD:
-                ballDraw = getResources().getDrawable(R.drawable.ball_gold);
-                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
-                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_gold, 0, 0);
+                theme_ball = R.drawable.ball_gold;
+                theme_bar = R.drawable.bar_gold;
                 break;
             case BLUE:
-                ballDraw = getResources().getDrawable(R.drawable.ball_blue);
-                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
-                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_blue, 0, 0);
+                theme_ball = R.drawable.ball_blue;
+                theme_bar = R.drawable.bar_blue;
                 break;
         }
-        ballTexture.load();
-
-        // White Bar texture loading
-        switch (choice){
-            case CLASSIC:
-                barDraw = getResources().getDrawable(R.drawable.bar_white);
-                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
-                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_white, 0, 0);
-                break;
-            case GOLD:
-                barDraw = getResources().getDrawable(R.drawable.bar_gold);
-                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
-                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_gold, 0, 0);
-                break;
-            case BLUE:
-                barDraw = getResources().getDrawable(R.drawable.bar_blue);
-                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
-                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_blue, 0, 0);
-                break;
-        }
-        barTexture.load();
+        ball = new Ball(this, theme_ball);
+        bar = new Bar(this, theme_bar);
     }
 
     protected void loadFonts() {

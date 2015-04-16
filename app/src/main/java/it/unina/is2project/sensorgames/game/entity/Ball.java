@@ -1,7 +1,5 @@
 package it.unina.is2project.sensorgames.game.entity;
 
-import android.graphics.Point;
-
 import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
@@ -10,8 +8,8 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
  */
 public class Ball extends GameObject {
 
-    public Ball(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable, Point displaySize) {
-        super(simpleBaseGameActivity, idDrawable, displaySize);
+    public Ball(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable) {
+        super(simpleBaseGameActivity, idDrawable);
     }
 
     @Override

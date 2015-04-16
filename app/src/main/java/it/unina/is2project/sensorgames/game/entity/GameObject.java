@@ -22,12 +22,13 @@ public class GameObject {
 
     protected Context context;
 
-    public GameObject(SimpleBaseGameActivity simpleBaseGameActivity, final int idDrawable, Point displaySize) {
+    public GameObject(SimpleBaseGameActivity simpleBaseGameActivity, final int idDrawable) {
         this.simpleBaseGameActivity = simpleBaseGameActivity;
         this.context = simpleBaseGameActivity.getApplicationContext();
 
-        //R.drawable.ball_white
-        this.displaySize = displaySize;
+        this.displaySize = new Point();
+        simpleBaseGameActivity.getWindow().getWindowManager().getDefaultDisplay().getSize(this.displaySize);
+
         this.gDraw = context.getResources().getDrawable(idDrawable);
         this.gTexture = new BitmapTextureAtlas(simpleBaseGameActivity.getTextureManager(), this.gDraw.getIntrinsicWidth(), this.gDraw.getIntrinsicHeight());
         this.gTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromResource(this.gTexture, context, idDrawable, 0, 0);
@@ -35,33 +36,32 @@ public class GameObject {
     }
 
     public void addToScene(Scene scene, float spriteRatio) {
-        gSprite = new Sprite(0, 0, gTextureRegion, simpleBaseGameActivity.getVertexBufferObjectManager());
-        gSprite.setWidth(displaySize.x * spriteRatio);
-        this.centre();
+        this.gSprite = new Sprite(0, 0, gTextureRegion, simpleBaseGameActivity.getVertexBufferObjectManager());
+        this.gSprite.setWidth(displaySize.x * spriteRatio);
         scene.attachChild(gSprite);
     }
 
     public void centre() {
         //Posiziona lo sprite al centro dello schermo
-        gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - gTexture.getHeight()) / 2);
+        this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - gTexture.getHeight()) / 2);
     }
 
     public void top() {
         //Posiziona lo sprite in alto con un margine proporzionale all'altezza dello sprite
-        gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - gTexture.getHeight()) / 3);
+        this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - gTexture.getHeight()) / 3);
     }
 
     public void bottom() {
         //Posiziona lo sprite in basso con un margine proporzionale all'altezza dello sprite
-        gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - 2 * gTexture.getHeight()));
+        this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - 2 * gTexture.getHeight()));
     }
 
     public void setPosition(float x, float y) {
-        gSprite.setPosition(x, y);
+        this.gSprite.setPosition(x, y);
     }
 
     public Sprite getSprite() {
         //Segsprite è null vuoldire che non è stata chiamata addToScene
-        return gSprite;
+        return this.gSprite;
     }
 }
