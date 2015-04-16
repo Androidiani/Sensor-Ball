@@ -6,8 +6,6 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 public class Ball extends GameObject {
 
-    protected PhysicsHandler handler;
-
     public Ball(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable) {
         super(simpleBaseGameActivity, idDrawable);
     }
@@ -16,5 +14,11 @@ public class Ball extends GameObject {
     public void addToScene(Scene scene, float spriteRatio) {
         super.addToScene(scene, spriteRatio);
         gSprite.setHeight(displaySize.x * spriteRatio);
+    }
+
+    public void onBallLost() {
+        this.detach();
+        this.setPosition(Ball.MIDDLE);
+        this.attach();
     }
 }

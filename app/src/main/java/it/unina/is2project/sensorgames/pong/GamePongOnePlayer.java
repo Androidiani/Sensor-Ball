@@ -204,26 +204,20 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     protected void collidesBottom() {
-        Log.d(TAG, "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = BOTTOM;
-        // Detach Ball and Life
-        ballSprite.detachSelf();
+        super.collidesBottom();
+
+        Log.d(TAG, "Life: " + life);
         lifeSprites.get(life).detachSelf();
         life--;
-        Log.d(TAG, "Life: " + life);
         if (life < 0) {
+            Log.d(TAG, "Game Over");
             gameOver();
         } else {
-            ball.setPosition(GameObject.MIDDLE);
-            //ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
-            handler.setVelocityY(-handler.getVelocityY());
-            ball.attach();
             clearEvent();
             game_event = NO_EVENT;
             gameEvent();
             reach_count = 1;
         }
-
     }
 
     @Override

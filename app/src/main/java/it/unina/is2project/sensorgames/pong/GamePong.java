@@ -211,7 +211,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         ballSprite = ball.getSprite();
 
         // Adding the bar to the scene
-        // Adding the bar to the scene
         bar.addToScene(scene, 0.3f);
         bar.setPosition(Bar.BOTTOM);
         barSprite = bar.getSprite();
@@ -231,17 +230,15 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(!pause && !animActive)
+        if (!pause && !animActive)
             pauseGame();
     }
 
-    private void setBackground(){
+    private void setBackground() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme","0"));
-
+        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme", "0"));
         Log.d("loadGraphics.GamePong", "Theme background " + choice);
-
-        switch (choice){
+        switch (choice) {
             case CLASSIC:
                 scene.setBackground(new Background(0f, 0f, 0f));
                 break;
@@ -252,15 +249,12 @@ public abstract class GamePong extends SimpleBaseGameActivity {
                 scene.setBackground(new Background(0.082f, 0.2f, 0.678f));
                 break;
         }
-
     }
 
     protected void loadGraphics() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme","0"));
-
+        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme", "0"));
         Log.d("loadGraphics.GamePong", "Theme " + choice);
-
         // White Ball texture loading
         switch (choice) {
             case CLASSIC:
@@ -282,10 +276,11 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         loadAdditionalGraphics();
     }
 
-    //Questo metodo è ereditato da tutti. In 2Players override con corpo vuoto.
+    /**
+     * Questo metodo è ereditato da tutti. In 2Players override con corpo vuoto.
+     */
     protected void loadAdditionalGraphics() {
         firstEnemy = new GameObject(this, theme_bar);
-        Log.d(GamePong.class.getName(), "FirstEnemy Caricato.");
     }
 
     protected void loadFonts() {
@@ -293,8 +288,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         FontFactory.setAssetBasePath("font/");
         // "secrcode.ttf" texture loading
         int fontSize = (int) getResources().getDimension(R.dimen.text_font);
-        fontTexture = new BitmapTextureAtlas(getTextureManager(), 512, 512,
-                TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        fontTexture = new BitmapTextureAtlas(getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", fontSize, true, Color.WHITE);
         font.load();
     }
@@ -345,8 +339,8 @@ public abstract class GamePong extends SimpleBaseGameActivity {
 
     protected void doPhysics() {
         // A physics handler is linked to the ballSprite
-        handler = new PhysicsHandler(ballSprite);
-        ballSprite.registerUpdateHandler(handler);
+        handler = new PhysicsHandler(ball.getSprite());
+        ball.getSprite().registerUpdateHandler(handler);
 
         // Setting the initial ball velocity
         setBallVeloctity();
@@ -355,10 +349,10 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         scene.registerUpdateHandler(new IUpdateHandler() {
             @Override
             public void onUpdate(float pSecondsElapsed) {
-                // Edge collision
+                // Collision Detection
                 if (!pause) {
                     collides(condition());
-                    // Extra action relative to the TOP side, needed for two player game
+                    // Extra action relative to 2Player Game
                     bluetoothExtra();
                     // Game events collision
                     gameEventsCollisionLogic();
@@ -403,6 +397,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
             case RIGHT:
             case LEFT:
             case SIDE:
+                Log.d("CollisionEdge", "RIGHT - LEFT - SIDE EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
                 previous_event = collision_event;
                 handler.setVelocityX(-handler.getVelocityX());
                 touch.play();
@@ -429,10 +424,8 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected void collidesBottom() {
         Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
-        ball.detach();
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
+        ball.onBallLost();
         handler.setVelocityY(-handler.getVelocityY());
-        ball.attach();
     }
 
     protected void collidesOverBar() {
