@@ -139,6 +139,8 @@ public class GamePongTwoPlayer extends GamePong {
     private Sprite rushHourSprite;
     private List<Sprite> rushHour = new ArrayList<>();
     private List<PhysicsHandler> rushHourHandlers = new ArrayList<>();
+    private List<Float> oldRushSpeed_x = new ArrayList<>();
+    private List<Float> oldRushSpeed_y = new ArrayList<>();
     private boolean rush_hour = false;
     private final int RUSH_HOUR_MIN_NUM = 15;
     private final int RUSH_HOUR_MAX_NUM = 30;
@@ -1090,6 +1092,11 @@ public class GamePongTwoPlayer extends GamePong {
                                 handler.setVelocity(old_x_speed, old_y_speed);
                                 BAR_SPEED = old_bar_speed;
                                 textInfo.setText(" ");
+                                if (rush_hour) {
+                                    for (int i = 0; i < rushHour.size(); i++) {
+                                        rushHourHandlers.get(i).setVelocity(oldRushSpeed_x.get(i), oldRushSpeed_y.get(i));
+                                    }
+                                }
                                 task = new TimerBonusTask();
                                 timer = new Timer();
                                 timer.schedule(task, 2000, 7000);
@@ -1104,6 +1111,13 @@ public class GamePongTwoPlayer extends GamePong {
                                 old_x_speed = handler.getVelocityX();
                                 old_y_speed = handler.getVelocityY();
                                 old_bar_speed = BAR_SPEED;
+                                if (rush_hour) {
+                                    for (int i = 0; i < rushHour.size(); i++) {
+                                        oldRushSpeed_x.add(rushHourHandlers.get(i).getVelocityX());
+                                        oldRushSpeed_y.add(rushHourHandlers.get(i).getVelocityY());
+                                        rushHourHandlers.get(i).setVelocity(0);
+                                    }
+                                }
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
                                 timer.cancel();
@@ -1121,6 +1135,13 @@ public class GamePongTwoPlayer extends GamePong {
                                 old_x_speed = handler.getVelocityX();
                                 old_y_speed = handler.getVelocityY();
                                 old_bar_speed = BAR_SPEED;
+                                if (rush_hour) {
+                                    for (int i = 0; i < rushHour.size(); i++) {
+                                        oldRushSpeed_x.add(rushHourHandlers.get(i).getVelocityX());
+                                        oldRushSpeed_y.add(rushHourHandlers.get(i).getVelocityY());
+                                        rushHourHandlers.get(i).setVelocity(0);
+                                    }
+                                }
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
                                 timer.cancel();
@@ -1139,9 +1160,13 @@ public class GamePongTwoPlayer extends GamePong {
                             case FSMGame.STATE_OPPONENT_LEFT:
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
-                                //TODO Da inserire in UI Thread
                                 if (rush_hour) {
-                                    clearRushHour();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            clearRushHour();
+                                        }
+                                    });
                                 }
                                 if(timer != null)timer.cancel();
                                 textInfo.setText(getResources().getString(R.string.text_opponent_left));
@@ -1402,11 +1427,6 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     private void clearRushHour() {
-//        while (rushHour.size() > 0){
-//            rushHour.get(0).detachSelf();
-//            rushHourHandlers.remove(0);
-//            rushHour.remove(0);
-//        }
         rush_hour = false;
         List<Sprite> rushHourCopy = new ArrayList<>();
         List<PhysicsHandler> rushHourHandlersCopy = new ArrayList<>();
