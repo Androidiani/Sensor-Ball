@@ -190,6 +190,13 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if(!pause && !animActive)
+            pauseGame();
+    }
+
+    @Override
     protected void loadGraphics() {
         super.loadGraphics();
 

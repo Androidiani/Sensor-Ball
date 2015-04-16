@@ -22,6 +22,7 @@ public interface Constants {
     public static final int MSG_TYPE_RESUME_NOREADY = 14;
     public static final int MSG_TYPE_POINT_UP = 15;
     public static final int MSG_TYPE_GAME_OVER = 16;
+    public static final int MSG_TYPE_ON_STOP_REQUEST = 25;
 
     // Message Bonus Types
     public static final int MSG_TYPE_BONUS_SPEEDX2 = 17;

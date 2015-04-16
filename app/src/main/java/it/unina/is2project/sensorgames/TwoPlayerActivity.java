@@ -573,6 +573,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
                             txtEnemy.setText(mConnectedDeviceName);
+                            Log.d("TEXTSIZE", "Size is " + txtEnemy.getTextSize());
+                            Log.d("TEXTSIZE", "Connected - Enemy is " + mConnectedDeviceName);
                             // FSM STATE CHANGE
                             fsmGame.setState(FSMGame.STATE_CONNECTED);
                             break;
@@ -623,6 +625,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 case Constants.MESSAGE_DEVICE_NAME:
                     // Salvo il nome del dispositivo connesso
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    Log.d("TEXTSIZE", "Device - Enemy is " + mConnectedDeviceName);
 //                    txtEnemy.setText(mConnectedDeviceName);
                     break;
                 case Constants.MESSAGE_TOAST:

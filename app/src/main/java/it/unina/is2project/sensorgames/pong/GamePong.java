@@ -254,8 +254,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     @Override
     protected void onStop() {
         super.onStop();
-        if(!pause && !animActive)
-            pauseGame();
     }
 
     private void setBackground(){
