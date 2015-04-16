@@ -38,6 +38,7 @@ import java.io.IOException;
 import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.Bar;
+import it.unina.is2project.sensorgames.game.entity.GameObject;
 
 public abstract class GamePong extends SimpleBaseGameActivity implements IAccelerationListener {
 
@@ -206,7 +207,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         // Adding the ballSprite to the scene
         ball.addToScene(scene, 0.1f);
-        ball.top();
+        ball.setPosition(GameObject.TOP);
         ballSprite = ball.getSprite();
 
        /* ballSprite = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
@@ -218,7 +219,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         // Adding the barSprite to the scene
         bar.addToScene(scene, 0.3f);
-        bar.bottom();
+        bar.setPosition(GameObject.BOTTOM);
         barSprite = bar.getSprite();
 
     /*    barSprite = new Sprite(0, 0, barTextureRegion, getVertexBufferObjectManager());

@@ -18,8 +18,6 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.region.ITextureRegion;
 
-import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,6 +34,8 @@ import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
 import it.unina.is2project.sensorgames.stats.entity.Player;
 import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
+
+import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
 
 public class GamePongTwoPlayer extends GamePong {
 
@@ -188,13 +188,13 @@ public class GamePongTwoPlayer extends GamePong {
         // Retrieve intent message
         Intent i = getIntent();
 
+        super.onCreateScene();
         if (i.getIntExtra("ball", 0) == 1) {
             haveBall = true;
         } else {
             haveBall = false;
+            ball.remove();
         }
-
-        super.onCreateScene();
 
         points = i.getIntExtra("points", 0);
         mConnectedDeviceName = i.getStringExtra("deviceName");

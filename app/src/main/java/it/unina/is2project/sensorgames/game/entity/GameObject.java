@@ -13,6 +13,10 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 
 public class GameObject {
 
+    public final static int TOP = 0;
+    public final static int MIDDLE = 1;
+    public final static int BOTTOM = 2;
+
     protected Drawable gDraw;
     protected BitmapTextureAtlas gTexture;
     protected ITextureRegion gTextureRegion;
@@ -41,27 +45,36 @@ public class GameObject {
         scene.attachChild(gSprite);
     }
 
-    public void centre() {
-        //Posiziona lo sprite al centro dello schermo
-        this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - gTexture.getHeight()) / 2);
-    }
-
-    public void top() {
-        //Posiziona lo sprite in alto con un margine proporzionale all'altezza dello sprite
-        this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - gTexture.getHeight()) / 3);
-    }
-
-    public void bottom() {
-        //Posiziona lo sprite in basso con un margine proporzionale all'altezza dello sprite
-        this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - 2 * gTexture.getHeight()));
-    }
-
     public void setPosition(float x, float y) {
         this.gSprite.setPosition(x, y);
+    }
+
+    public void setPosition(int position) {
+        switch (position) {
+            case TOP:
+                //Posiziona lo sprite in alto con un margine proporzionale all'altezza dello sprite
+                this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - gTexture.getHeight()) / 3);
+                break;
+            case MIDDLE:
+                //Posiziona lo sprite al centro dello schermo
+                this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - gTexture.getHeight()) / 2);
+                break;
+            case BOTTOM:
+                //Posiziona lo sprite in basso con un margine proporzionale all'altezza dello sprite
+                this.gSprite.setPosition((displaySize.x - gTexture.getWidth()) / 2, (displaySize.y - 2 * gTexture.getHeight()));
+                break;
+        }
     }
 
     public Sprite getSprite() {
         //Segsprite è null vuoldire che non è stata chiamata addToScene
         return this.gSprite;
+    }
+
+    /**
+     * Rimuove lo sprite con operazione dei detach
+     */
+    public void remove() {
+        gSprite.detachSelf();
     }
 }
