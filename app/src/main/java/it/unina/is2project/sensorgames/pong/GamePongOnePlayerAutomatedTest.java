@@ -2,8 +2,6 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.util.Log;
 
-import org.andengine.input.sensor.acceleration.AccelerationData;
-
 import java.util.Random;
 
 public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
@@ -11,11 +9,6 @@ public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
     private static final String TAG = "1P_Test";
 
     private float random_number = 0;
-
-    @Override
-    public void onAccelerationChanged(AccelerationData pAccelerationData) {
-        // do nothing
-    }
 
     @Override
     protected void gameEventsCollisionLogic() {

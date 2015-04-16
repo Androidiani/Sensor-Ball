@@ -1,12 +1,12 @@
 package it.unina.is2project.sensorgames.game.entity;
 
+import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
-/**
- * Created by Giovanni on 09/04/2015.
- */
 public class Ball extends GameObject {
+
+    protected PhysicsHandler handler;
 
     public Ball(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable) {
         super(simpleBaseGameActivity, idDrawable);

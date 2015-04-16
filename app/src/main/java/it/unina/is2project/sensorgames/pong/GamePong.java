@@ -20,10 +20,6 @@ import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.util.FPSLogger;
-import org.andengine.input.sensor.SensorDelay;
-import org.andengine.input.sensor.acceleration.AccelerationData;
-import org.andengine.input.sensor.acceleration.AccelerationSensorOptions;
-import org.andengine.input.sensor.acceleration.IAccelerationListener;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
@@ -40,7 +36,13 @@ import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.Bar;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 
-public abstract class GamePong extends SimpleBaseGameActivity implements IAccelerationListener {
+public abstract class GamePong extends SimpleBaseGameActivity {
+
+
+    protected int theme_ball = 0;
+    protected int theme_bar = 0;
+
+    protected boolean first_enemy = false;
 
     /**
      * Camera
@@ -68,6 +70,8 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     protected Bar bar;
 
+    protected GameObject firstEnemy;
+
     // Game Theme
     private final int CLASSIC = 0;
     private final int GOLD = 1;
@@ -84,10 +88,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected ITexture fontTexture;
     protected Font font;
 
-    /**
-     * Sensors
-     */
-    protected AccelerationSensorOptions mAccelerationOptions;
 
     /**
      * Scene
@@ -207,61 +207,25 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
         // Adding the ballSprite to the scene
         ball.addToScene(scene, 0.1f);
-        ball.setPosition(GameObject.TOP);
+        ball.setPosition(Ball.TOP);
         ballSprite = ball.getSprite();
 
-       /* ballSprite = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
-        ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
-        ballSprite.setHeight(CAMERA_WIDTH * 0.1f);
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 3);*/
-        //TODO VEDERE BENE 2 PLAYERS OVERRIDE
-        //attachBall();
-
-        // Adding the barSprite to the scene
+        // Adding the bar to the scene
+        // Adding the bar to the scene
         bar.addToScene(scene, 0.3f);
-        bar.setPosition(GameObject.BOTTOM);
+        bar.setPosition(Bar.BOTTOM);
         barSprite = bar.getSprite();
-
-    /*    barSprite = new Sprite(0, 0, barTextureRegion, getVertexBufferObjectManager());
-        barSprite.setWidth(CAMERA_WIDTH * 0.3f);
-        barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
-        scene.attachChild(barSprite);*/
 
         //Set game velocity
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
 
-        /** Enable the Acceleration Sensor
-         * - Option: SensorDelay.GAME */
-        this.enableAccelerationSensor(this);
-        mAccelerationOptions = new AccelerationSensorOptions(SensorDelay.GAME);
+        bar.setSpeed(BAR_SPEED);
+        //TODO speed anche della palla
 
         this.mEngine.registerUpdateHandler(new FPSLogger());
 
         return scene;
-    }
-
-    @Override
-    public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {
-    }
-
-    @Override
-    public void onAccelerationChanged(AccelerationData pAccelerationData) {
-        // The bar is moving only on X
-        float new_position = barSprite.getX() + pAccelerationData.getX() * BAR_SPEED;
-        // There's the edges' condition that do not hide the bar beyond the walls
-//        if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 && new_position > -barSprite.getWidth() / 2)
-//            barSprite.setX(new_position);
-        if(BAR_SPEED > 0) {
-            if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
-                if (new_position > -barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
-                    barSprite.setX(new_position);
-        }else{
-            if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
-                if (new_position > -barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
-                    barSprite.setX(new_position);
-        }
-
     }
 
     @Override
@@ -298,8 +262,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         Log.d("loadGraphics.GamePong", "Theme " + choice);
 
         // White Ball texture loading
-        int theme_ball = 0;
-        int theme_bar = 0;
         switch (choice) {
             case CLASSIC:
                 theme_ball = R.drawable.ball_white;
@@ -316,6 +278,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         }
         ball = new Ball(this, theme_ball);
         bar = new Bar(this, theme_bar);
+
+        loadAdditionalGraphics();
+    }
+
+    //Questo metodo è ereditato da tutti. In 2Players override con corpo vuoto.
+    protected void loadAdditionalGraphics() {
+        firstEnemy = new GameObject(this, theme_bar);
+        Log.d(GamePong.class.getName(), "FirstEnemy Caricato.");
     }
 
     protected void loadFonts() {
@@ -387,33 +357,9 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             public void onUpdate(float pSecondsElapsed) {
                 // Edge collision
                 if (!pause) {
-                    if (leftCondition()) {
-                        collidesLeft();
-                    }
-                    if (rightCondition()) {
-                        collidesRight();
-                    }
-                    if (topCondition()) {
-                        collidesTop();
-                    }
-
+                    collides(condition());
                     // Extra action relative to the TOP side, needed for two player game
                     bluetoothExtra();
-
-                    if (bottomCondition()) {
-                        collidesBottom();
-                    }
-
-                    // Bar and Ball collision
-                    if (ballSprite.collidesWith(barSprite)) {
-                        if (overBarCondition()) {
-                            collidesOverBar();
-                        }
-                        if (sideBarCondition()) {
-                            collidesSideBar();
-                        }
-                    }
-
                     // Game events collision
                     gameEventsCollisionLogic();
                 }
@@ -425,42 +371,52 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         });
     }
 
-    protected void attachBall() {
-        scene.attachChild(ballSprite);
-    }
-
     protected void setBallVeloctity() {
         handler.setVelocity(0, -BALL_SPEED);
     }
 
-    protected boolean leftCondition() {
-        return (ballSprite.getX() < 0) && (previous_event != LEFT);
-    }
-
-    protected boolean rightCondition() {
-        return (ballSprite.getX() > CAMERA_WIDTH - (int) ballSprite.getWidth()) && (previous_event != RIGHT);
+    protected int condition() {
+        if ((ballSprite.getX() < 0) && (previous_event != LEFT)) {
+            return LEFT;
+        } else if ((ballSprite.getX() > CAMERA_WIDTH - (int) ballSprite.getWidth()) && (previous_event != RIGHT)) {
+            return RIGHT;
+        } else if (topCondition()) {
+            return TOP;
+        } else if ((ballSprite.getY() > CAMERA_HEIGHT) && (previous_event != BOTTOM)) {
+            return BOTTOM;
+        } else if (ballSprite.collidesWith(barSprite)) {
+            if (((ballSprite.getY() + ballSprite.getHeight()) < barSprite.getY() + barSprite.getHeight()) && (previous_event != OVER) && (previous_event != SIDE)) {
+                return OVER;
+            } else if ((previous_event != SIDE) && (previous_event != OVER)) {
+                return SIDE;
+            }
+        }
+        return NO_COLL;
     }
 
     protected boolean topCondition() {
         return (ballSprite.getY() < 0) && (previous_event != TOP);
     }
 
-    protected boolean bottomCondition() {
-        return (ballSprite.getY() > CAMERA_HEIGHT) && (previous_event != BOTTOM);
-    }
-
-    protected void collidesLeft() {
-        Log.d("CollisionEdge", "LEFT EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = LEFT;
-        handler.setVelocityX(-handler.getVelocityX());
-        touch.play();
-    }
-
-    protected void collidesRight() {
-        Log.d("CollisionEdge", "RIGHT EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = RIGHT;
-        handler.setVelocityX(-handler.getVelocityX());
-        touch.play();
+    protected void collides(int collision_event) {
+        switch (collision_event) {
+            case RIGHT:
+            case LEFT:
+            case SIDE:
+                previous_event = collision_event;
+                handler.setVelocityX(-handler.getVelocityX());
+                touch.play();
+                break;
+            case TOP:
+                collidesTop();
+                break;
+            case BOTTOM:
+                collidesBottom();
+                break;
+            case OVER:
+                collidesOverBar();
+                break;
+        }
     }
 
     protected void collidesTop() {
@@ -473,18 +429,10 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void collidesBottom() {
         Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
         previous_event = BOTTOM;
-        ballSprite.detachSelf();
+        ball.detach();
         ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
         handler.setVelocityY(-handler.getVelocityY());
-        attachBall();
-    }
-
-    protected boolean overBarCondition() {
-        return (ballSprite.getY() + ballSprite.getHeight() < barSprite.getY() + barSprite.getHeight()) && (previous_event != OVER) && (previous_event != SIDE);
-    }
-
-    protected boolean sideBarCondition() {
-        return (previous_event != SIDE) && (previous_event != OVER);
+        ball.attach();
     }
 
     protected void collidesOverBar() {
@@ -592,13 +540,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         touch.play();
     }
 
-    protected void collidesSideBar() {
-        Log.d("CollisionBar", "SIDE BAR. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = SIDE;
-        handler.setVelocityX(-handler.getVelocityX());
-        touch.play();
-    }
-
     protected void clearGame() {
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
@@ -663,4 +604,21 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     protected abstract void saveGame(String s);
 
+
+    protected void firstEnemyLogic() {
+        firstEnemy.addToScene(scene, 1f);
+        firstEnemy.setPosition(GameObject.TOP);
+    }
+
+    protected void clearFirstEnemy() {
+        firstEnemy.detach();
+    }
+
+    protected void firstEnemyCollisions() {
+        if (ballSprite.collidesWith(firstEnemy.getSprite()) && first_enemy && ballSprite.getY() < CAMERA_HEIGHT / 2 && previous_event != TOP) {
+            previous_event = TOP;
+            handler.setVelocityY(-handler.getVelocityY());
+            touch.play();
+        }
+    }
 }

@@ -23,6 +23,7 @@ import java.util.Random;
 
 import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
+import it.unina.is2project.sensorgames.game.entity.GameObject;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.entity.Player;
@@ -46,9 +47,6 @@ public class GamePongOnePlayer extends GamePong {
     private BitmapTextureAtlas lifeTexture;
     private ITextureRegion lifeTextureRegion;
     private List<Sprite> lifeSprites = new ArrayList<>();
-
-    // First enemy
-    private Sprite firstEnemy;
 
     // Bonus ball
     private BitmapTextureAtlas bonusBallTexture;
@@ -125,7 +123,6 @@ public class GamePongOnePlayer extends GamePong {
 
     // Events' enable
     private boolean no_event = false;
-    private boolean first_enemy = false;
     private boolean bubble_bonus = false;
     private boolean cut_bar_30 = false;
     private boolean life_bonus = false;
@@ -217,9 +214,10 @@ public class GamePongOnePlayer extends GamePong {
         if (life < 0) {
             gameOver();
         } else {
-            ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
+            ball.setPosition(GameObject.MIDDLE);
+            //ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
             handler.setVelocityY(-handler.getVelocityY());
-            attachBall();
+            ball.attach();
             clearEvent();
             game_event = NO_EVENT;
             gameEvent();
@@ -670,23 +668,14 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void callEvent() {
-        // Generating a new event, different from current event
+/*        // Generating a new event, different from current event
         Random random = new Random();
         do {
             random_int = random.nextInt(level + 1);
         }
         while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
-        game_event = random_int;
-    }
-
-    private void firstEnemyLogic() {
-        firstEnemy = new Sprite(0, CAMERA_HEIGHT / 3, barTextureRegion, getVertexBufferObjectManager());
-        firstEnemy.setWidth(CAMERA_WIDTH);
-        scene.attachChild(firstEnemy);
-    }
-
-    private void clearFirstEnemy() {
-        firstEnemy.detachSelf();
+        game_event = random_int;*/
+        game_event = NO_EVENT;
     }
 
     private void bubbleBonusLogic() {
@@ -799,14 +788,6 @@ public class GamePongOnePlayer extends GamePong {
             rushHour.get(0).detachSelf();
             rushHour.remove(0);
             rushHourHandlers.remove(0);
-        }
-    }
-
-    private void firstEnemyCollisions() {
-        if (ballSprite.collidesWith(firstEnemy) && first_enemy && ballSprite.getY() < CAMERA_HEIGHT / 2 && previous_event != TOP) {
-            previous_event = TOP;
-            handler.setVelocityY(-handler.getVelocityY());
-            touch.play();
         }
     }
 

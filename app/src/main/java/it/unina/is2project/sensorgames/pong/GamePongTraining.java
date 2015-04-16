@@ -46,9 +46,6 @@ public class GamePongTraining extends GamePong {
     private static final int REVERSE = 4;
     private static final int RUSH_HOUR = 5;
 
-    // First enemy
-    private Sprite firstEnemy;
-
     // Rush Hour
     private List<Sprite> rushHour = new ArrayList<>();
     private List<PhysicsHandler> rushHourHandlers = new ArrayList<>();
@@ -218,6 +215,7 @@ public class GamePongTraining extends GamePong {
         // Setting up the game event
         switch (event) {
             case FIRST_ENEMY:
+                first_enemy = true;
                 firstEnemyLogic();
                 break;
             case CUT_30:
@@ -253,16 +251,6 @@ public class GamePongTraining extends GamePong {
                 clearRushHour();
                 break;
         }
-    }
-
-    private void firstEnemyLogic() {
-        firstEnemy = new Sprite(0, CAMERA_HEIGHT / 3, barTextureRegion, getVertexBufferObjectManager());
-        firstEnemy.setWidth(CAMERA_WIDTH);
-        scene.attachChild(firstEnemy);
-    }
-
-    private void clearFirstEnemy() {
-        firstEnemy.detachSelf();
     }
 
     private void cutBar30Logic() {
@@ -319,13 +307,6 @@ public class GamePongTraining extends GamePong {
         }
     }
 
-    private void firstEnemyCollisions() {
-        if (ballSprite.collidesWith(firstEnemy) && previous_event != TOP) {
-            previous_event = TOP;
-            handler.setVelocityY(-handler.getVelocityY());
-            touch.play();
-        }
-    }
 
     private void rushHourCollisions() {
         for (int i = 0; i < rushHour.size(); i++) {

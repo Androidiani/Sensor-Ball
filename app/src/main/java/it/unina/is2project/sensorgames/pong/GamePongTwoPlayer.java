@@ -193,7 +193,7 @@ public class GamePongTwoPlayer extends GamePong {
             haveBall = true;
         } else {
             haveBall = false;
-            ball.remove();
+            ball.detach();
         }
 
         points = i.getIntExtra("points", 0);
@@ -340,13 +340,12 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
-    protected void settingPhysics() {
-        doPhysics();
+    protected void loadAdditionalGraphics() {
     }
 
     @Override
-    protected void attachBall() {
-        if (haveBall) super.attachBall();
+    protected void settingPhysics() {
+        doPhysics();
     }
 
     @Override
@@ -355,16 +354,6 @@ public class GamePongTwoPlayer extends GamePong {
         old_x_speed = BALL_SPEED;
         old_y_speed = -BALL_SPEED;
     }
-
-//    @Override
-//    protected boolean rightCondition() {
-//        return super.rightCondition() && ballSprite.getY() > 0;
-//    }
-//
-//    @Override
-//    protected boolean leftCondition() {
-//        return super.leftCondition() && ballSprite.getY() > 0;
-//    }
 
     @Override
     protected boolean topCondition() {
