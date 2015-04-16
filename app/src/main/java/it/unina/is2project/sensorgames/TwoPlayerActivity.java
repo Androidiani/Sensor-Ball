@@ -469,7 +469,12 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 mStatus = false;
             }
         }
+    }
 
+    @Override
+    public void onBackPressed() {
+        mBluetoothService.stop();
+        super.onBackPressed();
     }
 
     //----------------------------------------------
