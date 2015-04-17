@@ -64,6 +64,7 @@
     <string name="text_you_win">You win\nthe game</string>
     <string name="text_you_lose">You lose\nthe game</string>
     <string name="pause_stop">Temporarily\nstop the game</string>
+    <string name="text_game_suspended">Game temporarily\nsuspended</string>
 
     <string name="text_first_to">First to</string>
     <string name="text_win">win</string>
@@ -161,6 +162,5 @@
     <string name="txt_no_name">No Name</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="text_game_suspended">Game temporarily\\nsuspended</string>
 
 </resources>

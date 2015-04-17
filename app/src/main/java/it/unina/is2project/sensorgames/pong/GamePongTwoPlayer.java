@@ -363,6 +363,8 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected synchronized void onResume() {
         backPressed = false;
+        if(fsmGame != null && fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED)
+            fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
         super.onResume();
     }
 
@@ -375,7 +377,11 @@ public class GamePongTwoPlayer extends GamePong {
                 saveHandlerState();
             }
             if (timer != null) timer.cancel();
-            fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
+            if (fsmGame.getState() != FSMGame.STATE_GAME_SUSPENDED &&
+                    fsmGame.getState() != FSMGame.STATE_GAME_LOSER &&
+                    fsmGame.getState() != FSMGame.STATE_GAME_WINNER) {
+                fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
+            }
         }
         super.onStop();
     }
@@ -552,9 +558,10 @@ public class GamePongTwoPlayer extends GamePong {
             }
 
             if (fsmGame.getState() == FSMGame.STATE_PAUSE_STOP && !receivedStop){
-                fsmGame.setState(FSMGame.STATE_IN_GAME);
+                receivedStop = true;
                 AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
                 sendBluetoothMessage(resumeMessage);
+                fsmGame.setState(FSMGame.STATE_IN_GAME);
             }
 
             if(fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED && receivedStop){
@@ -578,10 +585,19 @@ public class GamePongTwoPlayer extends GamePong {
                 fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
                 fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING ||
                 fsmGame.getState() == FSMGame.STATE_PAUSE_STOP ||
+                fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED ||
                 fsmGame.getState() == FSMGame.STATE_OPPONENT_NOT_READY) {
             backPressed = true;
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
+        }
+        if(rush_hour){
+            runOnUpdateThread(new Runnable() {
+                @Override
+                public void run() {
+                    clearRushHour();
+                }
+            });
         }
 
         Intent intent = new Intent();
@@ -1062,7 +1078,8 @@ public class GamePongTwoPlayer extends GamePong {
                                             fsmGame.getState() != FSMGame.STATE_PAUSE_STOP){
                                         saveHandlerState();
                                     }
-                                    if(fsmGame.getState() != FSMGame.STATE_PAUSE_STOP) {
+                                    if(fsmGame.getState() != FSMGame.STATE_PAUSE_STOP &&
+                                            fsmGame.getState() != FSMGame.STATE_GAME_SUSPENDED) {
                                         receivedStop = true;
                                         fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
                                     }else{
@@ -1202,8 +1219,8 @@ public class GamePongTwoPlayer extends GamePong {
                             case FSMGame.STATE_PAUSE_STOP:
                                 textInfo.setText(getResources().getString(R.string.pause_stop));
                                 handler.setVelocity(0, 0);
-                                if(timer != null)timer.cancel();
                                 BAR_SPEED = 0;
+                                if(timer != null)timer.cancel();
                                 break;
                             case FSMGame.STATE_GAME_EXIT_PAUSE:
                                 textInfo.setText(getResources().getString(R.string.text_exit_pause));
