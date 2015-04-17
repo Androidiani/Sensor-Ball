@@ -26,8 +26,7 @@ public class FSMGame implements Cloneable {
     public final static int STATE_GAME_WINNER = 489;
     public final static int STATE_GAME_LOSER = 490;
     public final static int STATE_PAUSE_STOP = 404;
-
-
+    public final static int STATE_GAME_SUSPENDED = 900;
 
     // Private fields
     private static FSMGame fsmInstance = null;
@@ -81,6 +80,9 @@ public class FSMGame implements Cloneable {
                 break;
             case STATE_PAUSE_STOP:
                 result = "Pausa OnStop";
+                break;
+            case STATE_GAME_SUSPENDED:
+                result = "Gioco Sospeso";
                 break;
             default:
                 result = "default";

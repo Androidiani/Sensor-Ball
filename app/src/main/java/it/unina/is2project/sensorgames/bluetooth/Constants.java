@@ -3,41 +3,42 @@ package it.unina.is2project.sensorgames.bluetooth;
 public interface Constants {
 
     // Message types sent from the BluetoothService Handler
-    public static final int MESSAGE_STATE_CHANGE = 1;
-    public static final int MESSAGE_READ = 2;
-    public static final int MESSAGE_WRITE = 3;
-    public static final int MESSAGE_DEVICE_NAME = 4;
-    public static final int MESSAGE_TOAST = 5;
+    int MESSAGE_STATE_CHANGE = 1;
+    int MESSAGE_READ = 2;
+    int MESSAGE_WRITE = 3;
+    int MESSAGE_DEVICE_NAME = 4;
+    int MESSAGE_TOAST = 5;
 
     // Message Types
-    public static final int MSG_TYPE_COORDS = 6;
-    public static final int MSG_TYPE_FIRST_START = 7;
-    public static final int MSG_TYPE_SYNC = 8;
-    public static final int MSG_TYPE_FAIL = 9;
-    public static final int MSG_TYPE_PAUSE = 10;
-    public static final int MSG_TYPE_RESUME = 11;
-    public static final int MSG_TYPE_ALERT = 12;
-    public static final int MSG_TYPE_NOREADY = 13;
+    int MSG_TYPE_COORDS = 6;
+    int MSG_TYPE_FIRST_START = 7;
+    int MSG_TYPE_SYNC = 8;
+    int MSG_TYPE_FAIL = 9;
+    int MSG_TYPE_PAUSE = 10;
+    int MSG_TYPE_RESUME = 11;
+    int MSG_TYPE_ALERT = 12;
+    int MSG_TYPE_NOREADY = 13;
     @Deprecated
-    public static final int MSG_TYPE_RESUME_NOREADY = 14;
-    public static final int MSG_TYPE_POINT_UP = 15;
-    public static final int MSG_TYPE_GAME_OVER = 16;
-    public static final int MSG_TYPE_ON_STOP_REQUEST = 25;
+    int MSG_TYPE_RESUME_NOREADY = 14;
+    int MSG_TYPE_POINT_UP = 15;
+    int MSG_TYPE_GAME_OVER = 16;
+    int MSG_TYPE_STOP_REQUEST = 25;
+    int MSG_TYPE_RESUME_AFTER_SUSPEND = 26;
 
     // Message Bonus Types
-    public static final int MSG_TYPE_BONUS_SPEEDX2 = 17;
-    public static final int MSG_TYPE_BONUS_SPEEDX3 = 18;
-    public static final int MSG_TYPE_BONUS_SPEEDX4 = 19;
-    public static final int MSG_TYPE_BONUS_LOCKFIELD = 20;
-    public static final int MSG_TYPE_BONUS_CUTBAR30 = 21;
-    public static final int MSG_TYPE_BONUS_CUTBAR50 = 22;
-    public static final int MSG_TYPE_BONUS_REVERTEDBAR = 23;
-    public static final int MSG_TYPE_BONUS_RUSHHOUR = 24;
+    int MSG_TYPE_BONUS_SPEEDX2 = 17;
+    int MSG_TYPE_BONUS_SPEEDX3 = 18;
+    int MSG_TYPE_BONUS_SPEEDX4 = 19;
+    int MSG_TYPE_BONUS_LOCKFIELD = 20;
+    int MSG_TYPE_BONUS_CUTBAR30 = 21;
+    int MSG_TYPE_BONUS_CUTBAR50 = 22;
+    int MSG_TYPE_BONUS_REVERTEDBAR = 23;
+    int MSG_TYPE_BONUS_RUSHHOUR = 24;
 
     // Key names received from the BluetoothService Handler
-    public static final String DEVICE_NAME = "device_name";
-    public static final String TOAST = "toast";
+    String DEVICE_NAME = "device_name";
+    String TOAST = "toast";
 
     // Keys for shared preferences
-    public static final String PREF_NICKNAME = "prefNickname";
+    String PREF_NICKNAME = "prefNickname";
 }

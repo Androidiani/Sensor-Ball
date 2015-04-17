@@ -161,5 +161,6 @@
     <string name="txt_no_name">No Name</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="text_game_suspended">Game temporarily\\nsuspended</string>
 
 </resources>

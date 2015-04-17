@@ -47,6 +47,8 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean isMaster = false;
     // Indicates when ball is passing
     private boolean transferringBall;
+    // Indicates who backs activity
+    private boolean backPressed = false;
     // Service bluetooth
     private BluetoothService mBluetoothService = null;
     // Finite State Machine
@@ -184,6 +186,7 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected Scene onCreateScene() {
+        Log.d("LifeCycle", "onCreateScene()");
         // Getting instance of fsm, service bluetooth and bonus manager
         fsmGame = FSMGame.getFsmInstance(fsmHandler);
         mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
@@ -358,16 +361,22 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
+    protected synchronized void onResume() {
+        backPressed = false;
+        super.onResume();
+    }
+
+    @Override
     protected void onStop() {
-        AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_ON_STOP_REQUEST);
-        sendBluetoothMessage(pauseMessage);
-        if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED){
-            old_x_speed = handler.getVelocityX();
-            old_y_speed = handler.getVelocityY();
-            old_bar_speed = BAR_SPEED;
+        if(!backPressed) {
+            AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_STOP_REQUEST);
+            sendBluetoothMessage(pauseMessage);
+            if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
+                saveHandlerState();
+            }
+            if (timer != null) timer.cancel();
+            fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
         }
-        if(timer != null)timer.cancel();
-        fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
         super.onStop();
     }
 
@@ -548,6 +557,12 @@ public class GamePongTwoPlayer extends GamePong {
                 sendBluetoothMessage(resumeMessage);
             }
 
+            if(fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED && receivedStop){
+                fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
+                AppMessage resumeAfterSuspend = new AppMessage(Constants.MSG_TYPE_RESUME_AFTER_SUSPEND);
+                sendBluetoothMessage(resumeAfterSuspend);
+            }
+
             if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)) {
                 fsmGame.setState(FSMGame.STATE_IN_GAME);
                 AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
@@ -562,7 +577,9 @@ public class GamePongTwoPlayer extends GamePong {
                 fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
                 fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
                 fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING ||
-                fsmGame.getState() == FSMGame.STATE_PAUSE_STOP) {
+                fsmGame.getState() == FSMGame.STATE_PAUSE_STOP ||
+                fsmGame.getState() == FSMGame.STATE_OPPONENT_NOT_READY) {
+            backPressed = true;
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
         }
@@ -673,6 +690,19 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public void run() {
             scene.detachChild(sprite);
+        }
+    }
+
+    private void saveHandlerState() {
+        old_x_speed = handler.getVelocityX();
+        old_y_speed = handler.getVelocityY();
+        old_bar_speed = BAR_SPEED;
+        if (rush_hour) {
+            for (int i = 0; i < rushHour.size(); i++) {
+                oldRushSpeed_x.add(rushHourHandlers.get(i).getVelocityX());
+                oldRushSpeed_y.add(rushHourHandlers.get(i).getVelocityY());
+                rushHourHandlers.get(i).setVelocity(0);
+            }
         }
     }
 
@@ -1025,15 +1055,30 @@ public class GamePongTwoPlayer extends GamePong {
                                         sendBluetoothMessage(notReadyMessage);
                                     }
                                     break;
-                                //------------------------ON STOP REQUEST------------------------
-                                case Constants.MSG_TYPE_ON_STOP_REQUEST:
-                                    if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED){
-                                        old_x_speed = handler.getVelocityX();
-                                        old_y_speed = handler.getVelocityY();
-                                        old_bar_speed = BAR_SPEED;
+                                //------------------------STOP REQUEST------------------------
+                                case Constants.MSG_TYPE_STOP_REQUEST:
+                                    if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED &&
+                                            fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED &&
+                                            fsmGame.getState() != FSMGame.STATE_PAUSE_STOP){
+                                        saveHandlerState();
                                     }
-                                    receivedStop = true;
-                                    fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
+                                    if(fsmGame.getState() != FSMGame.STATE_PAUSE_STOP) {
+                                        receivedStop = true;
+                                        fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
+                                    }else{
+                                        if(!receivedStop) {
+                                            AppMessage anotherStopMessage = new AppMessage(Constants.MSG_TYPE_STOP_REQUEST);
+                                            sendBluetoothMessage(anotherStopMessage);
+                                        }
+                                        fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
+                                    }
+                                    break;
+                                //------------------------RESUME AFTER SUSPEND------------------------
+                                case Constants.MSG_TYPE_RESUME_AFTER_SUSPEND:
+                                    if(fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED){
+                                        fsmGame.setState(FSMGame.STATE_PAUSE_STOP);
+                                        receivedStop = false;
+                                    }
                                     break;
                                 //------------------------NOREADY------------------------
                                 case Constants.MSG_TYPE_NOREADY:
@@ -1133,9 +1178,11 @@ public class GamePongTwoPlayer extends GamePong {
                                     }
                                 }
                                 if(receivedStop && haveBall && Math.signum(handler.getVelocityY()) > 0) {
+                                    handler.setVelocityX(-handler.getVelocityX());
                                     handler.setVelocityY(-handler.getVelocityY());
-                                    receivedStop = false;
+                                    previous_event = -1;
                                 }
+                                receivedStop = false;
                                 task = new TimerBonusTask();
                                 timer = new Timer();
                                 timer.schedule(task, 2000, 7000);
@@ -1147,16 +1194,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 break;
                             case FSMGame.STATE_GAME_PAUSED:
                                 textInfo.setText(getResources().getString(R.string.text_pause));
-                                old_x_speed = handler.getVelocityX();
-                                old_y_speed = handler.getVelocityY();
-                                old_bar_speed = BAR_SPEED;
-                                if (rush_hour) {
-                                    for (int i = 0; i < rushHour.size(); i++) {
-                                        oldRushSpeed_x.add(rushHourHandlers.get(i).getVelocityX());
-                                        oldRushSpeed_y.add(rushHourHandlers.get(i).getVelocityY());
-                                        rushHourHandlers.get(i).setVelocity(0);
-                                    }
-                                }
+                                saveHandlerState();
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
                                 timer.cancel();
@@ -1177,16 +1215,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 break;
                             case FSMGame.STATE_GAME_OPPONENT_PAUSED:
                                 textInfo.setText(getResources().getString(R.string.text_opponent_pause));
-                                old_x_speed = handler.getVelocityX();
-                                old_y_speed = handler.getVelocityY();
-                                old_bar_speed = BAR_SPEED;
-                                if (rush_hour) {
-                                    for (int i = 0; i < rushHour.size(); i++) {
-                                        oldRushSpeed_x.add(rushHourHandlers.get(i).getVelocityX());
-                                        oldRushSpeed_y.add(rushHourHandlers.get(i).getVelocityY());
-                                        rushHourHandlers.get(i).setVelocity(0);
-                                    }
-                                }
+                                saveHandlerState();
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
                                 timer.cancel();
@@ -1195,12 +1224,16 @@ public class GamePongTwoPlayer extends GamePong {
                                 textInfo.setText(getResources().getString(R.string.text_opponent_not_ready));
                                 break;
                             case FSMGame.STATE_DISCONNECTED:
+                                textInfo.setText(getResources().getString(R.string.text_disconnected));
                                 isConnected = false;
                                 mConnectedDeviceName = "";
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
-                                textInfo.setText(getResources().getString(R.string.text_disconnected));
                                 if(timer != null)timer.cancel();
+                                break;
+                            case FSMGame.STATE_GAME_SUSPENDED:
+                                textInfo.setText(getResources().getString(R.string.text_game_suspended));
+                                receivedStop = true;
                                 break;
                             case FSMGame.STATE_OPPONENT_LEFT:
                                 handler.setVelocity(0, 0);
