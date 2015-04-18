@@ -12,6 +12,7 @@ public class FSMGame implements Cloneable {
 
     // States
     public final static int STATE_NOT_READY = 111;
+    public final static int STATE_CONNECTING = 200;
     public final static int STATE_CONNECTED = 222;
     public final static int STATE_IN_GAME_WAITING = 333;
     public final static int STATE_IN_GAME = 444;
@@ -20,13 +21,15 @@ public class FSMGame implements Cloneable {
     public final static int STATE_DISCONNECTED = 666;
     public final static int STATE_GAME_ABORTED = 777;
     public final static int STATE_GAME_PAUSED = 800;
+    public final static int STATE_GAME_PAUSE_STOP = 404;
     public final static int STATE_GAME_OPPONENT_PAUSED = 880;
+    public final static int STATE_GAME_SUSPENDED = 900;
     @Deprecated
     public final static int STATE_GAME_EXIT_PAUSE = 888;
     public final static int STATE_GAME_WINNER = 489;
     public final static int STATE_GAME_LOSER = 490;
-    public final static int STATE_PAUSE_STOP = 404;
-    public final static int STATE_GAME_SUSPENDED = 900;
+
+
 
     // Private fields
     private static FSMGame fsmInstance = null;
@@ -44,6 +47,9 @@ public class FSMGame implements Cloneable {
         switch (state){
             case STATE_CONNECTED:
                 result = "Connesso";
+                break;
+            case STATE_CONNECTING:
+                result = "In Connessione";
                 break;
             case STATE_DISCONNECTED:
                 result = "Disconnesso";
@@ -78,7 +84,7 @@ public class FSMGame implements Cloneable {
             case STATE_GAME_LOSER:
                 result = "Sconfitto";
                 break;
-            case STATE_PAUSE_STOP:
+            case STATE_GAME_PAUSE_STOP:
                 result = "Pausa OnStop";
                 break;
             case STATE_GAME_SUSPENDED:

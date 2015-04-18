@@ -77,6 +77,15 @@ public class TwoPlayerActivity extends ActionBarActivity {
     // ACTIVITY ELEMENTS
     //----------------------------------------------
 
+    public static final String EXTRA_POINTS = "points";
+    public static final String EXTRA_BALL = "ball";
+    public static final String EXTRA_MASTER = "master";
+    public static final String EXTRA_DEVICENAME = "deviceName";
+
+    //----------------------------------------------
+    // ACTIVITY ELEMENTS
+    //----------------------------------------------
+
     // Font typeface
     private Typeface typeFace;
     // TextView
@@ -209,6 +218,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
             mBluetoothService.stop();
             mBluetoothService = null;
         }
+        this.unregisterReceiver(bReceiver);
     }
 
     //----------------------------------------------
@@ -401,8 +411,8 @@ public class TwoPlayerActivity extends ActionBarActivity {
      */
     private void btnPlayClick() {
         Log.d(TAG, "btnPlay()");
-        int intMaster;
-        intMaster = isMaster? 1 : 0;
+//        int intMaster;
+//        intMaster = isMaster? 1 : 0;
         if(privateNumber == null) {
             // Crea un numero casuale per la scelta di dove far apparire la palla.
             Random rand = new Random();
@@ -415,10 +425,10 @@ public class TwoPlayerActivity extends ActionBarActivity {
             sendBluetoothMessage(ballChoise);
         }
         Intent mIntent = new Intent(TwoPlayerActivity.this, GamePongTwoPlayer.class);
-        mIntent.putExtra("points", points);
-        mIntent.putExtra("ball", privateNumber);
-        mIntent.putExtra("master", intMaster);
-        mIntent.putExtra("deviceName", mConnectedDeviceName);
+        mIntent.putExtra(EXTRA_POINTS, points);
+        mIntent.putExtra(EXTRA_BALL, privateNumber);
+        mIntent.putExtra(EXTRA_MASTER, isMaster);
+        mIntent.putExtra(EXTRA_DEVICENAME, mConnectedDeviceName);
         startActivityForResult(mIntent, GAME_START);
     }
 
@@ -573,19 +583,19 @@ public class TwoPlayerActivity extends ActionBarActivity {
                     switch (msg.arg1) {
                         case BluetoothService.STATE_CONNECTED:
                             txtEnemy.setText(mConnectedDeviceName);
-                            Log.d("TEXTSIZE", "Size is " + txtEnemy.getTextSize());
-                            Log.d("TEXTSIZE", "Connected - Enemy is " + mConnectedDeviceName);
+                            Log.d(TAG, "mHandler, Connected: Size is " + txtEnemy.getTextSize());
                             // FSM STATE CHANGE
                             fsmGame.setState(FSMGame.STATE_CONNECTED);
                             break;
                         case BluetoothService.STATE_CONNECTING:
-                            Log.i(TAG, "Connecting...");
+                            fsmGame.setState(FSMGame.STATE_CONNECTING);
+                            Log.i(TAG, "mHandler, Connecting...");
                             break;
                         case BluetoothService.STATE_LISTEN:
-                            Log.i(TAG, "Listening...");
+                            Log.i(TAG, "mHandler, Listening...");
                             break;
                         case BluetoothService.STATE_NONE:
-                            Log.i(TAG, "State None");
+                            Log.i(TAG, "mHandler, State None");
                             fsmGame.setState(FSMGame.STATE_DISCONNECTED);
                             break;
                     }
@@ -612,6 +622,7 @@ public class TwoPlayerActivity extends ActionBarActivity {
                                     break;
                                 case Constants.MSG_TYPE_ALERT:
                                     btnPlay.setEnabled(true);
+                                    break;
                                 default:
                                     Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                                     break;
@@ -625,12 +636,12 @@ public class TwoPlayerActivity extends ActionBarActivity {
                 case Constants.MESSAGE_DEVICE_NAME:
                     // Salvo il nome del dispositivo connesso
                     mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                    Log.d("TEXTSIZE", "Device - Enemy is " + mConnectedDeviceName);
+                    Log.d(TAG, "Device - Enemy is " + mConnectedDeviceName);
 //                    txtEnemy.setText(mConnectedDeviceName);
                     break;
                 case Constants.MESSAGE_TOAST:
                     Toast.makeText(getApplicationContext(), msg.getData().getString(Constants.TOAST),
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                     break;
             }
         }
