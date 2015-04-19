@@ -228,9 +228,7 @@ public class BluetoothService implements Cloneable{
         Bundle bundle = new Bundle();
         bundle.putString(Constants.DEVICE_NAME, device.getName());
         msg.setData(bundle);
-//        mHandler.sendMessage(msg);
         mHandler.sendMessage(msg);
-        Log.d(TAG, "CONNECTED to " + device.getName());
 
         // Imposta lo stato in "Connesso"
         setState(STATE_CONNECTED);

@@ -46,49 +46,49 @@ public class FSMGame implements Cloneable {
         String result;
         switch (state){
             case STATE_CONNECTED:
-                result = "Connesso";
+                result = "STATE_CONNECTED";
                 break;
             case STATE_CONNECTING:
-                result = "In Connessione";
+                result = "STATE_CONNECTING";
                 break;
             case STATE_DISCONNECTED:
-                result = "Disconnesso";
+                result = "STATE_DISCONNECTED";
                 break;
             case STATE_GAME_ABORTED:
-                result = "Gioco abortito";
+                result = "STATE_GAME_ABORTED";
                 break;
             case STATE_GAME_EXIT_PAUSE:
-                result = "Uscita da pausa";
+                result = "STATE_GAME_EXIT_PAUSE";
                 break;
             case STATE_GAME_OPPONENT_PAUSED:
-                result = "Pausa avversario";
+                result = "STATE_GAME_OPPONENT_PAUSED";
                 break;
             case STATE_GAME_PAUSED:
-                result = "Pausa";
+                result = "STATE_GAME_PAUSED";
                 break;
             case STATE_IN_GAME:
-                result = "In gioco";
+                result = "STATE_IN_GAME";
                 break;
             case STATE_IN_GAME_WAITING:
-                result = "In attesa di gioco";
+                result = "STATE_IN_GAME_WAITING";
                 break;
             case STATE_OPPONENT_LEFT:
-                result = "Avversario ritirato";
+                result = "STATE_OPPONENT_LEFTo";
                 break;
             case STATE_NOT_READY:
-                result = "Non pronto";
+                result = "STATE_NOT_READY";
                 break;
             case STATE_GAME_WINNER:
-                result = "Vincitore";
+                result = "STATE_GAME_WINNER";
                 break;
             case STATE_GAME_LOSER:
-                result = "Sconfitto";
+                result = "STATE_GAME_LOSER";
                 break;
             case STATE_GAME_PAUSE_STOP:
-                result = "Pausa OnStop";
+                result = "STATE_GAME_PAUSE_STOP";
                 break;
             case STATE_GAME_SUSPENDED:
-                result = "Gioco Sospeso";
+                result = "STATE_GAME_SUSPENDED";
                 break;
             default:
                 result = "default";
@@ -110,13 +110,69 @@ public class FSMGame implements Cloneable {
     }
 
     public void setState(int state) {
+        int previousState = this.state;
         this.state = state;
         Log.d(TAG, "Set State to " + this.toString());
-        handler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+        handler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, state, previousState).sendToTarget();
     }
 
     public int getState() {
         return state;
+    }
+
+    public static String toStringDebug(int theState){
+        String result;
+        switch (theState){
+            case STATE_CONNECTED:
+                result = "STATE_CONNECTED";
+                break;
+            case STATE_CONNECTING:
+                result = "STATE_CONNECTING";
+                break;
+            case STATE_DISCONNECTED:
+                result = "STATE_DISCONNECTED";
+                break;
+            case STATE_GAME_ABORTED:
+                result = "STATE_GAME_ABORTED";
+                break;
+            case STATE_GAME_EXIT_PAUSE:
+                result = "STATE_GAME_EXIT_PAUSE";
+                break;
+            case STATE_GAME_OPPONENT_PAUSED:
+                result = "STATE_GAME_OPPONENT_PAUSED";
+                break;
+            case STATE_GAME_PAUSED:
+                result = "STATE_GAME_PAUSED";
+                break;
+            case STATE_IN_GAME:
+                result = "STATE_IN_GAME";
+                break;
+            case STATE_IN_GAME_WAITING:
+                result = "STATE_IN_GAME_WAITING";
+                break;
+            case STATE_OPPONENT_LEFT:
+                result = "STATE_OPPONENT_LEFTo";
+                break;
+            case STATE_NOT_READY:
+                result = "STATE_NOT_READY";
+                break;
+            case STATE_GAME_WINNER:
+                result = "STATE_GAME_WINNER";
+                break;
+            case STATE_GAME_LOSER:
+                result = "STATE_GAME_LOSER";
+                break;
+            case STATE_GAME_PAUSE_STOP:
+                result = "STATE_GAME_PAUSE_STOP";
+                break;
+            case STATE_GAME_SUSPENDED:
+                result = "STATE_GAME_SUSPENDED";
+                break;
+            default:
+                result = "default";
+                break;
+        }
+        return result;
     }
 
     @Override
