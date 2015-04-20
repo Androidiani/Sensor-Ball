@@ -3,18 +3,11 @@ package it.unina.is2project.sensorgames.pong;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.widget.Toast;
 
-import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
-import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.region.ITextureRegion;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,8 +22,6 @@ import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.entity.Player;
 import it.unina.is2project.sensorgames.stats.entity.StatOnePlayer;
 
-import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
-
 public class GamePongOnePlayer extends GamePong {
 
     private final String TAG = "1PlayerGame";
@@ -44,23 +35,15 @@ public class GamePongOnePlayer extends GamePong {
     private Text textEvnt;
 
     // Life
-    private BitmapTextureAtlas lifeTexture;
-    private ITextureRegion lifeTextureRegion;
-    private List<Sprite> lifeSprites = new ArrayList<>();
+    private GameObject lifeStar;
+    private List<GameObject> lifeStars = new ArrayList<>();
 
     // Bonus ball
-    private BitmapTextureAtlas bonusBallTexture;
-    private ITextureRegion bonusBallTextureRegion;
-    private List<Sprite> bonusBalls = new ArrayList<>();
+    private GameObject bonusBall;
+    private List<GameObject> bonusBalls = new ArrayList<>();
 
     // Life bonus
-    private Sprite lifeBonus;
-
-    // Rush Hour
-    private List<Sprite> rushHour = new ArrayList<>();
-    private List<PhysicsHandler> rushHourHandlers = new ArrayList<>();
-    private List<Float> oldRushSpeed_x = new ArrayList<>();
-    private List<Float> oldRushSpeed_y = new ArrayList<>();
+    private GameObject lifeBonus;
 
     /**
      * Game data
@@ -119,18 +102,12 @@ public class GamePongOnePlayer extends GamePong {
      * Events
      */
     private int game_event;
-    private int random_int;
 
     // Events' enable
-    private boolean no_event = false;
     private boolean bubble_bonus = false;
-    private boolean cut_bar_30 = false;
     private boolean life_bonus = false;
-    private boolean cut_bar_50 = false;
     private boolean big_bar = false;
-    private boolean reverse = false;
     private boolean freeze = false;
-    private boolean rush_hour = false;
 
     // Events' number
     private static final int NO_EVENT = 0;
@@ -147,8 +124,6 @@ public class GamePongOnePlayer extends GamePong {
     // Events' data
     private static final int BONUS_BALL_MAX_NUM = 5;
     private static final int BONUS_BALL_MIN_NUM = 3;
-    private static final int RUSH_HOUR_MIN_NUM = 15;
-    private static final int RUSH_HOUR_MAX_NUM = 30;
     private boolean life_detached = false;
     private boolean allBonusDetached = false;
 
@@ -172,10 +147,10 @@ public class GamePongOnePlayer extends GamePong {
 
         // Adding the life sprites to the scene
         for (int i = 1; i <= life + 1; i++) {
-            Sprite lifeSprite = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
-            lifeSprite.setX(CAMERA_WIDTH - i * lifeSprite.getWidth());
-            lifeSprites.add(lifeSprite);
-            scene.attachChild(lifeSprites.get(i - 1));
+            lifeStar.addToScene(scene, 0.05f);
+            lifeStar.getSprite().setHeight(CAMERA_WIDTH * 0.05f);
+            lifeStar.setPosition(CAMERA_WIDTH - i * lifeStar.getObjectWidth(), 0);
+            lifeStars.add(lifeStar);
         }
 
         // Setting up the physics of the game
@@ -191,32 +166,32 @@ public class GamePongOnePlayer extends GamePong {
         super.loadGraphics();
 
         // Life texture loading
-        Drawable starDraw = getResources().getDrawable(R.drawable.life);
-        lifeTexture = new BitmapTextureAtlas(getTextureManager(), starDraw.getIntrinsicWidth(), starDraw.getIntrinsicHeight());
-        lifeTextureRegion = createFromResource(lifeTexture, this, R.drawable.life, 0, 0);
-        lifeTexture.load();
+        lifeStar = new GameObject(this, R.drawable.life);
+        lifeBonus = new GameObject(this, R.drawable.life);
+
         // Bonus ball loading
-        Drawable bonusBallDraw = getResources().getDrawable(R.drawable.ball_petrol);
-        bonusBallTexture = new BitmapTextureAtlas(getTextureManager(), bonusBallDraw.getIntrinsicWidth(), bonusBallDraw.getIntrinsicHeight());
-        bonusBallTextureRegion = createFromResource(bonusBallTexture, this, R.drawable.ball_petrol, 0, 0);
-        bonusBallTexture.load();
+//        bonusBall = new GameObject(this, R.drawable.ball_petrol);
     }
 
     @Override
     protected void collidesBottom() {
         super.collidesBottom();
 
+        // Decrement and Detach Life
         Log.d(TAG, "Life: " + life);
-        lifeSprites.get(life).detachSelf();
+        lifeStars.get(life).detach();
         life--;
+        // Clear current event
+        clearEvent();
+        Log.d(TAG, "Event Cleared");
+        // Setting NO EVENT for 1 reach_count
+        game_event = NO_EVENT;
+        gameEvent();
+        reach_count = 1;
+        // Game Over section
         if (life < 0) {
             Log.d(TAG, "Game Over");
             gameOver();
-        } else {
-            clearEvent();
-            game_event = NO_EVENT;
-            gameEvent();
-            reach_count = 1;
         }
     }
 
@@ -288,28 +263,6 @@ public class GamePongOnePlayer extends GamePong {
         level_eleven = false;
         level_twelve = false;
         level_max = false;
-    }
-
-    @Override
-    protected void pauseGame() {
-        super.pauseGame();
-        if (rush_hour) {
-            for (int i = 0; i < rushHour.size(); i++) {
-                oldRushSpeed_x.add(rushHourHandlers.get(i).getVelocityX());
-                oldRushSpeed_y.add(rushHourHandlers.get(i).getVelocityY());
-                rushHourHandlers.get(i).setVelocity(0);
-            }
-        }
-    }
-
-    @Override
-    protected void restartGameAfterPause() {
-        super.restartGameAfterPause();
-        if (rush_hour) {
-            for (int i = 0; i < rushHour.size(); i++) {
-                rushHourHandlers.get(i).setVelocity(oldRushSpeed_x.get(i), oldRushSpeed_y.get(i));
-            }
-        }
     }
 
     @Override
@@ -415,8 +368,8 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     protected void gameOver() {
-        handler.setVelocity(0f);
-        BAR_SPEED = 0f;
+        ball.setHandlerSpeed(0f, 0f);
+        bar.setBarSpeed(0f);
         textEvnt.setText(getResources().getString(R.string.text_gameover));
 
         runOnUiThread(new Runnable() {
@@ -434,15 +387,8 @@ public class GamePongOnePlayer extends GamePong {
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         String user_input_name = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
 
-                        if (!user_input_name.equals("")) {
-                            saveGame(user_input_name);
-                            finish();
-                        } else {
-                            Toast toast = Toast.makeText(getApplication(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.TOP, 0, 0);
-                            toast.show();
-                            run();
-                        }
+                        saveGame(user_input_name);
+                        finish();
                     }
                 });
 
@@ -493,8 +439,8 @@ public class GamePongOnePlayer extends GamePong {
             level = LEVEL_THREE;
             level_three = true;
             textLvl.setText(getResources().getString(R.string.text_lv3));
-            BAR_SPEED *= 1.5;
-            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
+            bar.setBarSpeed(1.5f * bar.getBarSpeed());
+            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
         } else if (score >= BARRIER_THREE && score < BARRIER_FOUR && !level_four) {
             level = LEVEL_FOUR;
             level_four = true;
@@ -507,7 +453,7 @@ public class GamePongOnePlayer extends GamePong {
             level = LEVEL_SIX;
             level_six = true;
             textLvl.setText(getResources().getString(R.string.text_lv6));
-            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
+            ball.getHandler().setVelocity(ball.getHandler().getVelocityX() * 1.5f, ball.getHandler().getVelocityY() * 1.5f);
         } else if (score >= BARRIER_SIX && score < BARRIER_SEVEN && !level_seven) {
             level = LEVEL_SEVEN;
             level_seven = true;
@@ -521,7 +467,7 @@ public class GamePongOnePlayer extends GamePong {
             level_nine = true;
             textLvl.setText(getResources().getString(R.string.text_lv9));
             BAR_SPEED *= 1.5;
-            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
+            ball.getHandler().setVelocity(ball.getHandler().getVelocityX() * 1.5f, ball.getHandler().getVelocityY() * 1.5f);
         } else if (score >= BARRIER_NINE && score < BARRIER_TEN && !level_ten) {
             level = LEVEL_TEN;
             level_ten = true;
@@ -539,80 +485,60 @@ public class GamePongOnePlayer extends GamePong {
             level_max = true;
             textLvl.setText(getResources().getString(R.string.text_lv13));
             BAR_SPEED *= 1.5;
-            handler.setVelocity(handler.getVelocityX() * 1.5f, handler.getVelocityY() * 1.5f);
+            ball.getHandler().setVelocity(ball.getHandler().getVelocityX() * 1.5f, ball.getHandler().getVelocityY() * 1.5f);
         }
     }
 
     private void gameEvent() {
         switch (game_event) {
             case NO_EVENT:
-                if (!no_event) {
-                    textEvnt.setText("");
-                    no_event = true;
-                }
+                textEvnt.setText("");
+                no_event = true;
                 break;
             case FIRST_ENEMY:
-                if (!first_enemy) {
-                    textEvnt.setText(getResources().getString(R.string.text_first_enemy));
-                    first_enemy = true;
-                    firstEnemyLogic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_first_enemy));
+                first_enemy = true;
+                firstEnemyLogic();
                 break;
             case BUBBLE_BONUS:
-                if (!bubble_bonus) {
-                    textEvnt.setText(getResources().getString(R.string.text_bubble));
-                    bubble_bonus = true;
-                    bubbleBonusLogic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_bubble));
+                bubble_bonus = true;
+                bubbleBonusLogic();
                 break;
             case CUT_BAR_30:
-                if (!cut_bar_30) {
-                    textEvnt.setText(getResources().getString(R.string.text_cut_bar_30));
-                    cut_bar_30 = true;
-                    cutBar30Logic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_cut_bar_30));
+                cut_bar_30 = true;
+                cutBar30Logic();
                 break;
             case LIFE_BONUS:
-                if (!life_bonus) {
-                    textEvnt.setText(getResources().getString(R.string.text_lifebonus));
-                    life_bonus = true;
-                    lifeBonusLogic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_lifebonus));
+                life_bonus = true;
+                lifeBonusLogic();
                 break;
             case CUT_BAR_50:
-                if (!cut_bar_50) {
-                    textEvnt.setText(getResources().getString(R.string.text_cut_bar_50));
-                    cut_bar_50 = true;
-                    cutBar50Logic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_cut_bar_50));
+                cut_bar_50 = true;
+                cutBar50Logic();
                 break;
             case BIG_BAR:
-                if (!big_bar) {
-                    textEvnt.setText(getResources().getString(R.string.text_big_bar));
-                    big_bar = true;
-                    bigBarLogic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_big_bar));
+                big_bar = true;
+                bigBarLogic();
                 break;
             case REVERSE:
-                if (!reverse) {
-                    textEvnt.setText(getResources().getString(R.string.text_reverse));
-                    reverse = true;
-                    reverseLogic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_reverse));
+                reverse = true;
+                reverseLogic();
                 break;
             case FREEZE:
-                if (!freeze) {
-                    textEvnt.setText(getResources().getString(R.string.text_freeze));
-                    freeze = true;
-                    freezeLogic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_freeze));
+                freeze = true;
+                freezeLogic();
                 break;
             case RUSH_HOUR:
-                if (!rush_hour) {
-                    textEvnt.setText(getResources().getString(R.string.text_rush));
-                    rush_hour = true;
-                    rushHourLogic();
-                }
+                textEvnt.setText(getResources().getString(R.string.text_rush));
+                rush_hour = true;
+                rushHourLogic();
                 break;
         }
     }
@@ -662,13 +588,14 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void callEvent() {
-/*        // Generating a new event, different from current event
-        Random random = new Random();
-        do {
-            random_int = random.nextInt(level + 1);
-        }
-        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
-        game_event = random_int;*/
+//        // Generating a new event, different from current event
+//        Random random = new Random();
+//        int random_int;
+//        do {
+//            random_int = random.nextInt(level + 1);
+//        }
+//        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
+//        game_event = random_int;
         game_event = NO_EVENT;
     }
 
@@ -678,13 +605,11 @@ public class GamePongOnePlayer extends GamePong {
 
         // Adding the bonus ball sprites to the scene
         for (int i = 0; i < BONUS_BALL_NUM; i++) {
-            random = new Random();
-            Sprite bonusSprite = new Sprite(0, 0, bonusBallTextureRegion, getVertexBufferObjectManager());
-            bonusBalls.add(bonusSprite);
-            bonusSprite.setWidth(CAMERA_WIDTH * 0.1f);
-            bonusSprite.setHeight(CAMERA_WIDTH * 0.1f);
-            bonusSprite.setPosition((int) bonusSprite.getWidth() + random.nextInt(CAMERA_WIDTH - ((int) bonusSprite.getWidth() * 2)), (bonusSprite.getHeight() * 2) * (i + 1));
-            scene.attachChild(bonusBalls.get(i));
+            bonusBall = new GameObject(this, R.drawable.ball_petrol);
+            bonusBall.addToScene(scene, 0.1f);
+            bonusBall.getSprite().setHeight(CAMERA_WIDTH * 0.1f);
+            bonusBall.setPosition(bonusBall.getObjectWidth() + random.nextInt(CAMERA_WIDTH - (bonusBall.getObjectWidth() * 2)), (bonusBall.getObjectHeight() * 2) * (i + 1));
+            bonusBalls.add(bonusBall);
         }
         Log.d(TAG, "BONUS_BALL_NUM: " + BONUS_BALL_NUM + " bonusBalls.size(): " + bonusBalls.size());
     }
@@ -692,104 +617,48 @@ public class GamePongOnePlayer extends GamePong {
     private void clearBubbleBonus() {
         if (!allBonusDetached) {
             while (bonusBalls.size() > 0) {
-                bonusBalls.get(0).detachSelf();
+                bonusBalls.get(0).detach();
                 bonusBalls.remove(0);
             }
         }
         allBonusDetached = false;
     }
 
-    private void cutBar30Logic() {
-        barSprite.setWidth(0.21f * CAMERA_WIDTH);
-    }
-
-    private void clearCutBar30() {
-        barSprite.setWidth(0.3f * CAMERA_WIDTH);
-    }
-
     private void lifeBonusLogic() {
         old_life = life;
-        Random random = new Random();
-        lifeBonus = new Sprite(0, 0, lifeTextureRegion, getVertexBufferObjectManager());
-        lifeBonus.setWidth(CAMERA_WIDTH * 0.1f);
-        lifeBonus.setHeight(CAMERA_WIDTH * 0.1f);
-        lifeBonus.setPosition((int) lifeBonus.getWidth() + random.nextInt(CAMERA_WIDTH - ((int) lifeBonus.getWidth()) * 4), (int) lifeBonus.getHeight() + random.nextInt(CAMERA_HEIGHT - ((int) lifeBonus.getHeight()) * 4));
-        scene.attachChild(lifeBonus);
+        lifeBonus.addToScene(scene, 0.1f);
+        lifeBonus.getSprite().setHeight(CAMERA_WIDTH * 0.1f);
+        lifeBonus.setRandomPosition();
     }
 
     private void clearLifeBonus() {
         if (!life_detached)
-            lifeBonus.detachSelf();
+            lifeBonus.detach();
         life_detached = false;
     }
 
-    private void cutBar50Logic() {
-        barSprite.setWidth(0.15f * CAMERA_WIDTH);
-    }
-
-    private void clearCutBar50() {
-        barSprite.setWidth(0.3f * CAMERA_WIDTH);
-    }
-
     private void bigBarLogic() {
-        barSprite.setWidth(0.45f * CAMERA_WIDTH);
+        bar.getSprite().setWidth(0.45f * CAMERA_WIDTH);
     }
 
     private void clearBigBar() {
-        barSprite.setWidth(0.3f * CAMERA_WIDTH);
-    }
-
-    private void reverseLogic() {
-        BAR_SPEED *= -1;
-    }
-
-    private void clearReverse() {
-        BAR_SPEED *= -1;
+        bar.getSprite().setWidth(0.3f * CAMERA_WIDTH);
     }
 
     private void freezeLogic() {
-        handler.setVelocity(handler.getVelocityX() / 2, handler.getVelocityY() / 2);
+        ball.getHandler().setVelocity(ball.getHandler().getVelocityX() / 2, ball.getHandler().getVelocityY() / 2);
     }
 
     private void clearFreeze() {
-        handler.setVelocity(handler.getVelocityX() * 2, handler.getVelocityY() * 2);
-    }
-
-    private void rushHourLogic() {
-        Random random = new Random();
-        int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
-
-        for (int i = 0; i < RUSH_HOUR_NUM; i++) {
-            Sprite rush = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
-            rushHour.add(rush);
-            rush.setWidth(CAMERA_WIDTH * 0.1f);
-            rush.setHeight(CAMERA_WIDTH * 0.1f);
-            rush.setPosition((int) rush.getWidth() + random.nextInt(CAMERA_WIDTH - (int) rush.getWidth() * 2), (int) rush.getHeight() + random.nextInt(CAMERA_HEIGHT - (int) rush.getHeight() * 2));
-
-            PhysicsHandler physicsHandler = new PhysicsHandler(rushHour.get(i));
-            physicsHandler.setVelocity(BALL_SPEED * (random.nextFloat() - random.nextFloat()), BALL_SPEED * (random.nextFloat() - random.nextFloat()));
-            rushHourHandlers.add(physicsHandler);
-
-            rushHour.get(i).registerUpdateHandler(rushHourHandlers.get(i));
-
-            scene.attachChild(rushHour.get(i));
-        }
-        Log.d(TAG, "RUSH_HOUR_NUM: " + RUSH_HOUR_NUM + " rushHour.size(): " + rushHour.size());
-    }
-
-    private void clearRushHour() {
-        while (rushHour.size() > 0) {
-            rushHour.get(0).detachSelf();
-            rushHour.remove(0);
-            rushHourHandlers.remove(0);
-        }
+        ball.getHandler().setVelocity(ball.getHandler().getVelocityX() * 2, ball.getHandler().getVelocityY() * 2);
     }
 
     private void bubbleBonusCollisions() {
         for (int i = 0; i < bonusBalls.size(); i++) {
-            if (ballSprite.collidesWith(bonusBalls.get(i))) {
+            if (ball.getSprite().collidesWith(bonusBalls.get(i).getSprite())) {
                 Log.d(TAG, "Bonus Ball " + i + " removed");
-                bonusBalls.get(i).detachSelf();
+//                bonusBalls.get(i).detachSelf();
+                bonusBalls.get(i).detach();
                 bonusBalls.remove(i);
                 score += 20 * (level + 1);
                 textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
@@ -803,29 +672,12 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void lifeBonusCollisions() {
-        if (ballSprite.collidesWith(lifeBonus) && old_life == life) {
-            lifeBonus.detachSelf();
+        if (ball.getSprite().collidesWith(lifeBonus.getSprite()) && old_life == life) {
+            lifeBonus.detach();
             life++;
-            scene.attachChild(lifeSprites.get(life));
+            lifeStars.get(life).attach();
             life_detached = true;
             Log.d(TAG, "Life Collision. Current Life: " + life);
-        }
-    }
-
-    private void rushHourCollisions() {
-        for (int i = 0; i < rushHour.size(); i++) {
-            if (rushHour.get(i).getX() < 0) {
-                rushHourHandlers.get(i).setVelocityX(-rushHourHandlers.get(i).getVelocityX());
-            }
-            if (rushHour.get(i).getX() > CAMERA_WIDTH - (int) ballSprite.getWidth()) {
-                rushHourHandlers.get(i).setVelocityX(-rushHourHandlers.get(i).getVelocityX());
-            }
-            if (rushHour.get(i).getY() < 0) {
-                rushHourHandlers.get(i).setVelocityY(-rushHourHandlers.get(i).getVelocityY());
-            }
-            if (rushHour.get(i).getY() > CAMERA_HEIGHT - (int) ballSprite.getHeight()) {
-                rushHourHandlers.get(i).setVelocityY(-rushHourHandlers.get(i).getVelocityY());
-            }
         }
     }
 }

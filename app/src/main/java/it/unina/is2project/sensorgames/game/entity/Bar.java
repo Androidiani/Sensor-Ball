@@ -9,34 +9,43 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 public class Bar extends GameObject implements IAccelerationListener {
 
-    private float speed;
-    // Sensors
+    // Bar field
+    private float barSpeed;
+    private float barWidth;
+
+    // Sensor
     private AccelerationSensorOptions accelerationSensorOptions;
 
     public Bar(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable) {
         super(simpleBaseGameActivity, idDrawable);
-        this.accelerationSensorOptions = new AccelerationSensorOptions(SensorDelay.GAME);
     }
 
-    public float getSpeed() {
-        return speed;
+    public float getBarSpeed() {
+        return barSpeed;
     }
 
-    public void setSpeed(float speed) {
-        this.speed = speed;
+    public void setBarSpeed(float barSpeed) {
+        this.barSpeed = barSpeed;
+    }
+
+    public float getBarWidth() {
+        return barWidth;
+    }
+
+    public void setBarWidth(float barWidth) {
+        this.barWidth = barWidth;
     }
 
     @Override
     public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {
-
     }
 
     @Override
     public void onAccelerationChanged(AccelerationData pAccelerationData) {
         // The bar is moving only on X
-        float newXPosition = gSprite.getX() + pAccelerationData.getX() * this.speed;
+        float newXPosition = gSprite.getX() + pAccelerationData.getX() * this.barSpeed;
         // There's the edges' condition that do not hide the bar beyond the walls
-        if (this.speed > 0) {
+        if (this.barSpeed > 0) {
             if (newXPosition < displaySize.x - gSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
                 if (newXPosition > -gSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
                     gSprite.setX(newXPosition);

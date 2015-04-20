@@ -341,6 +341,7 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected void loadAdditionalGraphics() {
+        //do nothing
     }
 
     @Override
@@ -349,7 +350,7 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
-    protected void setBallVeloctity() {
+    protected void setBallVelocity() {
         old_bar_speed = 2;
         old_x_speed = BALL_SPEED;
         old_y_speed = -BALL_SPEED;
@@ -455,7 +456,7 @@ public class GamePongTwoPlayer extends GamePong {
     protected void gameOver() {
         handler.setVelocity(0, 0);
         BAR_SPEED = 0;
-        if(timer != null) timer.cancel();
+        if (timer != null) timer.cancel();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String nickname = sharedPreferences.getString(Constants.PREF_NICKNAME,
                 getString(R.string.txt_no_name));
@@ -469,22 +470,22 @@ public class GamePongTwoPlayer extends GamePong {
         Player currentPlayer = playerDAO.findByNome(user);
         long idPlayer;
 
-        if(currentPlayer == null){
+        if (currentPlayer == null) {
             currentPlayer = new Player(user);
             idPlayer = playerDAO.insert(currentPlayer);
-        }else idPlayer = currentPlayer.getId();
+        } else idPlayer = currentPlayer.getId();
 
         StatTwoPlayerDAO statTwoPlayerDAO = new StatTwoPlayerDAO(getApplicationContext());
-        StatTwoPlayer currentPlayerStats = statTwoPlayerDAO.findById((int)idPlayer);
+        StatTwoPlayer currentPlayerStats = statTwoPlayerDAO.findById((int) idPlayer);
 
-        if(currentPlayerStats == null){
-            currentPlayerStats = new StatTwoPlayer((int)idPlayer, 0, 0);
+        if (currentPlayerStats == null) {
+            currentPlayerStats = new StatTwoPlayer((int) idPlayer, 0, 0);
             statTwoPlayerDAO.insert(currentPlayerStats);
         }
 
         currentPlayerStats.increasePartiteGiocate();
 
-        if(winner)
+        if (winner)
             currentPlayerStats.increasePartiteVinte();
 
         statTwoPlayerDAO.update(currentPlayerStats);
@@ -497,7 +498,7 @@ public class GamePongTwoPlayer extends GamePong {
     public void addScore() {
         score++;
         textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore + " [" + points + "]");
-        if(score == points){
+        if (score == points) {
             AppMessage gameOverMessage = new AppMessage(Constants.MSG_TYPE_GAME_OVER);
             sendBluetoothMessage(gameOverMessage);
             fsmGame.setState(FSMGame.STATE_GAME_WINNER);
@@ -883,9 +884,9 @@ public class GamePongTwoPlayer extends GamePong {
 //                                        Log.d("MESSAGECOORDSrec", "COS_X " + recMsg.OP2);
 //                                        Log.d("MESSAGECOORDSrec", "SIN_X " + recMsg.OP3);
                                         float offset = 0;
-                                        if(recMsg.OP1 == 0){
+                                        if (recMsg.OP1 == 0) {
                                             offset = ballSprite.getWidth();
-                                        }else if(recMsg.OP1 > 0){
+                                        } else if (recMsg.OP1 > 0) {
                                             offset = 2 * ballSprite.getWidth();
                                         }
                                         float xPos = ((1 - recMsg.OP4) * CAMERA_WIDTH) - offset;
@@ -1102,7 +1103,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
                                 textInfo.setText(getResources().getString(R.string.text_disconnected));
-                                if(timer != null)timer.cancel();
+                                if (timer != null) timer.cancel();
                                 break;
                             case FSMGame.STATE_OPPONENT_LEFT:
                                 handler.setVelocity(0, 0);
@@ -1111,7 +1112,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 if (rush_hour) {
                                     clearRushHour();
                                 }
-                                if(timer != null)timer.cancel();
+                                if (timer != null) timer.cancel();
                                 textInfo.setText(getResources().getString(R.string.text_opponent_left));
                                 break;
                             case FSMGame.STATE_GAME_WINNER:
@@ -1328,7 +1329,8 @@ public class GamePongTwoPlayer extends GamePong {
         }
     }
 
-    private void rushHourLogic() {
+    @Override
+    protected void rushHourLogic() {
         Random random = new Random();
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
@@ -1349,7 +1351,8 @@ public class GamePongTwoPlayer extends GamePong {
         Log.d("RushHour", "Created " + rushHour.size());
     }
 
-    private void clearRushHour() {
+    @Override
+    protected void clearRushHour() {
 //        while (rushHour.size() > 0){
 //            rushHour.get(0).detachSelf();
 //            rushHourHandlers.remove(0);
@@ -1375,7 +1378,7 @@ public class GamePongTwoPlayer extends GamePong {
 //        Log.d("BonusVelocity", "Previous Velx: " + handler.getVelocityX());
 //        Log.d("BonusVelocity", "Previous Vely: " + handler.getVelocityY());
 
-        switch (nextBonus){
+        switch (nextBonus) {
             case NOBONUS:
                 myModule = SPEED_X1;
                 break;
