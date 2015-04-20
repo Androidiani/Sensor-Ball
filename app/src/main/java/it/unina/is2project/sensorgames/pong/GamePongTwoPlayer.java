@@ -74,6 +74,7 @@ public class GamePongTwoPlayer extends GamePong {
     private int previous_bonus;
     private boolean resumeAllowed;
     private boolean receivedStop;
+    private final long BONUS_REPEATING_TIME_MILLIS = 7000;
     // Connections Utils
     private boolean isConnected;
     private String mConnectedDeviceName = "";
@@ -178,6 +179,8 @@ public class GamePongTwoPlayer extends GamePong {
     private List bonusStatusArray = new ArrayList<Integer>();
     TimerTask task;
     Timer timer;
+    private long scheduleDelay;
+    private long previousScheduleTime;
     private boolean locksField = false;
     private float BARWIDTH;
     private float SPEED_X1;
@@ -222,6 +225,7 @@ public class GamePongTwoPlayer extends GamePong {
         resumeAllowed = true;
         score = 0;
         opponentScore = 0;
+        scheduleDelay = 2000;
         SPEED_X1 = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
         myModule = SPEED_X1;
         SPEED_X2 = SPEED_X1 * 2;
@@ -365,8 +369,6 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected synchronized void onResume() {
         backPressed = false;
-        if(fsmGame != null && fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED)
-            fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
         super.onResume();
     }
 
@@ -390,8 +392,6 @@ public class GamePongTwoPlayer extends GamePong {
                 sendBluetoothMessage(suspendMessage);
                 fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
             }
-
-            if (timer != null) timer.cancel();
         }
         super.onStop();
     }
@@ -501,6 +501,7 @@ public class GamePongTwoPlayer extends GamePong {
         handler.setVelocity(0, 0);
         BAR_SPEED = 0;
         if(timer != null) timer.cancel();
+        if(task != null) task.cancel();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String nickname = sharedPreferences.getString(Constants.PREF_NICKNAME,
                 getString(R.string.txt_no_name));
@@ -753,7 +754,6 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X2 ICON INITIALIZING
 
         speedIconSprite_X2 = new Sprite(0, 0, speedIconTextureRegion_X2, getVertexBufferObjectManager());
-//        speedIconSprite_X2.setX(CAMERA_WIDTH / 2);
         speedIconSprite_X2.setX(CAMERA_WIDTH - speedIconSprite_X2.getWidth());
         speedIconSprite_X2.setY(textPoint.getY() + textPoint.getHeight() / 2 - speedIconSprite_X2.getHeight() / 2);
 
@@ -780,7 +780,6 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X3 ICON INITIALIZING
 
         speedIconSprite_X3 = new Sprite(0, 0, speedIconTextureRegion_X3, getVertexBufferObjectManager());
-//        speedIconSprite_X3.setX(speedIconSprite_X2.getX() + speedIconSprite_X2.getWidth());
         speedIconSprite_X3.setX(speedIconSprite_X2.getX() - speedIconSprite_X2.getWidth());
         speedIconSprite_X3.setY(textPoint.getY() + textPoint.getHeight() / 2 - speedIconSprite_X3.getHeight() / 2);
 
@@ -807,7 +806,6 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X4 ICON INITIALIZING
 
         speedIconSprite_X4 = new Sprite(0, 0, speedIconTextureRegion_X4, getVertexBufferObjectManager());
-//        speedIconSprite_X4.setX(speedIconSprite_X3.getX() + speedIconSprite_X3.getWidth());
         speedIconSprite_X4.setX(speedIconSprite_X3.getX() - speedIconSprite_X3.getWidth());
         speedIconSprite_X4.setY(textPoint.getY() + textPoint.getHeight() / 2 - speedIconSprite_X4.getHeight() / 2);
 
@@ -833,7 +831,6 @@ public class GamePongTwoPlayer extends GamePong {
         // LOCK FIELD ICON INITIALIZING
 
         lockFieldIconSprite = new Sprite(0, 0, lockFieldIconTextureRegion, getVertexBufferObjectManager());
-//        lockFieldIconSprite.setX(speedIconSprite_X4.getX() + speedIconSprite_X4.getWidth());
         lockFieldIconSprite.setX(speedIconSprite_X4.getX() - speedIconSprite_X4.getWidth());
         lockFieldIconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - lockFieldIconSprite.getHeight() / 2);
 
@@ -859,7 +856,6 @@ public class GamePongTwoPlayer extends GamePong {
         // CUT BAR 30 ICON INITIALIZING
 
         cutBar30IconSprite = new Sprite(0, 0, cutBar30IconTextureRegion, getVertexBufferObjectManager());
-//        cutBar30IconSprite.setX(lockFieldIconSprite.getX() + lockFieldIconSprite.getWidth());
         cutBar30IconSprite.setX(lockFieldIconSprite.getX() - lockFieldIconSprite.getWidth());
         cutBar30IconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - cutBar30IconSprite.getHeight() / 2);
 
@@ -885,7 +881,6 @@ public class GamePongTwoPlayer extends GamePong {
         // CUT BAR 50 ICON INITIALIZING
 
         cutBar50IconSprite = new Sprite(0, 0, cutBar50IconTextureRegion, getVertexBufferObjectManager());
-//        cutBar50IconSprite.setX(cutBar30IconSprite.getX() + cutBar30IconSprite.getWidth());
         cutBar50IconSprite.setX(cutBar30IconSprite.getX() - cutBar30IconSprite.getWidth());
         cutBar50IconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - cutBar50IconSprite.getHeight() / 2);
 
@@ -911,7 +906,6 @@ public class GamePongTwoPlayer extends GamePong {
         // REVERTED ICON INITIALIZING
 
         revertedBarIconSprite = new Sprite(0, 0, revertedBarIconTextureRegion, getVertexBufferObjectManager());
-//        revertedBarIconSprite.setX(cutBar50IconSprite.getX() + cutBar50IconSprite.getWidth());
         revertedBarIconSprite.setX(cutBar50IconSprite.getX() - cutBar50IconSprite.getWidth());
         revertedBarIconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - revertedBarIconSprite.getHeight() / 2);
 
@@ -937,7 +931,6 @@ public class GamePongTwoPlayer extends GamePong {
         // RUSH HOUR ICON INITIALIZING
 
         rushHourIconSprite = new Sprite(0, 0, rushHourIconTextureRegion, getVertexBufferObjectManager());
-//        rushHourIconSprite.setX(revertedBarIconSprite.getX() + revertedBarIconSprite.getWidth());
         rushHourIconSprite.setX(revertedBarIconSprite.getX() - revertedBarIconSprite.getWidth());
         rushHourIconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - rushHourIconSprite.getHeight() / 2);
     }
@@ -1208,7 +1201,9 @@ public class GamePongTwoPlayer extends GamePong {
                                 resumeAllowed = false;
                                 task = new TimerBonusTask();
                                 timer = new Timer();
-                                timer.schedule(task, 2000, 7000);
+                                Log.d(TAG, "Try To Schedule Using : " + scheduleDelay);
+                                scheduleDelay = scheduleDelay < 0 ? 0 : scheduleDelay;
+                                timer.schedule(task, scheduleDelay, BONUS_REPEATING_TIME_MILLIS);
                                 break;
                             case FSMGame.STATE_IN_GAME_WAITING:
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To "
@@ -1224,7 +1219,13 @@ public class GamePongTwoPlayer extends GamePong {
                                 saveHandlerState();
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
-                                timer.cancel();
+                                if(task.scheduledExecutionTime() != 0) {
+                                    previousScheduleTime = task.scheduledExecutionTime();
+                                }
+                                scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
+                                Log.d(TAG, "Schedule - Current: " + System.currentTimeMillis() + " Task: " + previousScheduleTime);
+                                Log.d(TAG, "ScheduleDelay PAUSED : " + scheduleDelay);
+                                if(timer != null)timer.cancel();
                                 break;
                             case FSMGame.STATE_GAME_PAUSE_STOP:
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To "
@@ -1232,6 +1233,15 @@ public class GamePongTwoPlayer extends GamePong {
                                 textInfo.setText(getResources().getString(R.string.pause_stop));
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
+                                if(task != null) {
+                                    if(task.scheduledExecutionTime() != 0) {
+                                        previousScheduleTime = task.scheduledExecutionTime();
+                                    }
+                                    scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
+                                    Log.d(TAG, "Schedule - Current: " + System.currentTimeMillis() + " Task: " + previousScheduleTime);
+                                    Log.d(TAG, "ScheduleDelay PAUSED : " + scheduleDelay);
+                                    task = null;
+                                }
                                 if(timer != null)timer.cancel();
                                 break;
                             case FSMGame.STATE_GAME_EXIT_PAUSE:
@@ -1251,7 +1261,13 @@ public class GamePongTwoPlayer extends GamePong {
                                 saveHandlerState();
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
-                                timer.cancel();
+                                if(task.scheduledExecutionTime() != 0) {
+                                    previousScheduleTime = task.scheduledExecutionTime();
+                                }
+                                scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
+                                Log.d(TAG, "Schedule - Current: " + System.currentTimeMillis() + " Task: " + previousScheduleTime);
+                                Log.d(TAG, "ScheduleDelay PAUSED : " + scheduleDelay);
+                                if(timer != null) timer.cancel();
                                 break;
                             case FSMGame.STATE_OPPONENT_NOT_READY:
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To "
