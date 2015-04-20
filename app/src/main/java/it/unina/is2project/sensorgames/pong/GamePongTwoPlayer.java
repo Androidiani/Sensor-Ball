@@ -72,6 +72,7 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean proximityRegion;
     private int PROXIMITY_ZONE;
     private int previous_bonus;
+    private boolean resumeAllowed;
     private boolean receivedStop;
     // Connections Utils
     private boolean isConnected;
@@ -218,6 +219,7 @@ public class GamePongTwoPlayer extends GamePong {
         proximityRegion = false;
         transferringBall = false;
         receivedStop = false;
+        resumeAllowed = true;
         score = 0;
         opponentScore = 0;
         SPEED_X1 = (float) Math.sqrt(Math.pow(BALL_SPEED, 2) + Math.pow(BALL_SPEED, 2));
@@ -371,17 +373,25 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected void onStop() {
         if(!backPressed) {
-            AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_STOP_REQUEST);
-            sendBluetoothMessage(pauseMessage);
+
             if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                 saveHandlerState();
             }
-            if (timer != null) timer.cancel();
-            if (fsmGame.getState() != FSMGame.STATE_GAME_SUSPENDED &&
-                    fsmGame.getState() != FSMGame.STATE_GAME_LOSER &&
-                    fsmGame.getState() != FSMGame.STATE_GAME_WINNER) {
+
+            if(fsmGame.getState() == FSMGame.STATE_IN_GAME ||
+                    fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
+                    fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                AppMessage pauseMessage = new AppMessage(Constants.MSG_TYPE_STOP_REQUEST);
+                sendBluetoothMessage(pauseMessage);
+                resumeAllowed = true;
                 fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
+            }else if(fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP && receivedStop){
+                AppMessage suspendMessage = new AppMessage(Constants.MSG_TYPE_SUSPEND_REQUEST);
+                sendBluetoothMessage(suspendMessage);
+                fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
             }
+
+            if (timer != null) timer.cancel();
         }
         super.onStop();
     }
@@ -553,24 +563,23 @@ public class GamePongTwoPlayer extends GamePong {
                 }
             }
 
-            if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP && !receivedStop){
-                //TODO Questo receivedStop fa casini.
-//                receivedStop = true;
-                AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
-                sendBluetoothMessage(resumeMessage);
-                fsmGame.setState(FSMGame.STATE_IN_GAME);
-            }
-
-            if(fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED && receivedStop){
-                fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
-                AppMessage resumeAfterSuspend = new AppMessage(Constants.MSG_TYPE_RESUME_AFTER_SUSPEND);
-                sendBluetoothMessage(resumeAfterSuspend);
-            }
-
             if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)) {
                 fsmGame.setState(FSMGame.STATE_IN_GAME);
                 AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
                 sendBluetoothMessage(resumeMessage);
+            }
+
+            if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP && resumeAllowed){
+                AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
+                sendBluetoothMessage(resumeMessage);
+                fsmGame.setState(FSMGame.STATE_IN_GAME);
+            }
+
+            if(fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED){
+                AppMessage resumeAfterSuspend = new AppMessage(Constants.MSG_TYPE_RESUME_AFTER_SUSPEND);
+                sendBluetoothMessage(resumeAfterSuspend);
+                resumeAllowed = false;
+                fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
             }
         }
     }
@@ -1010,9 +1019,10 @@ public class GamePongTwoPlayer extends GamePong {
                                 //------------------------FAIL------------------------
                                 case Constants.MSG_TYPE_FAIL:
                                     Log.d(TAG, "Received : MSG_TYPE_FAIL");
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED) {
+                                    if (fsmGame.getState() != FSMGame.STATE_GAME_WINNER &&
+                                            fsmGame.getState() != FSMGame.STATE_GAME_LOSER &&
+                                            fsmGame.getState() != FSMGame.STATE_DISCONNECTED &&
+                                            fsmGame.getState() != FSMGame.STATE_OPPONENT_LEFT) {
                                         fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
                                     }
                                     break;
@@ -1064,24 +1074,19 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_STOP_REQUEST:
                                     Log.d(TAG, "Received : MSG_TYPE_STOP_REQUEST");
                                     // TODO da valutare
-                                    if(!haveBall && ballSprite.getY() < ballSprite.getHeight()){
-                                        ballSprite.detachSelf();
-                                    }
-                                    if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSED &&
-                                            fsmGame.getState() != FSMGame.STATE_GAME_OPPONENT_PAUSED &&
-                                            fsmGame.getState() != FSMGame.STATE_GAME_PAUSE_STOP &&
-                                            fsmGame.getState() != FSMGame.STATE_GAME_SUSPENDED){
+//                                    if(!haveBall && ballSprite.getY() < ballSprite.getHeight()){
+//                                        ballSprite.detachSelf();
+//                                    }
+                                    if(fsmGame.getState() == FSMGame.STATE_IN_GAME){
                                         saveHandlerState();
                                     }
-                                    if(fsmGame.getState() != FSMGame.STATE_GAME_PAUSE_STOP &&
-                                            fsmGame.getState() != FSMGame.STATE_GAME_SUSPENDED) {
-                                        receivedStop = true;
-                                        fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
-                                    }else{
-                                        if(!receivedStop) {
-                                            AppMessage anotherStopMessage = new AppMessage(Constants.MSG_TYPE_STOP_REQUEST);
-                                            sendBluetoothMessage(anotherStopMessage);
-                                        }
+                                    receivedStop = true;
+                                    fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
+                                    break;
+                                //------------------------SUSPEND REQUEST------------------------
+                                case Constants.MSG_TYPE_SUSPEND_REQUEST:
+                                    Log.d(TAG, "Received : MSG_TYPE_SUSPEND_REQUEST");
+                                    if(fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP){
                                         fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
                                     }
                                     break;
@@ -1089,8 +1094,8 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_RESUME_AFTER_SUSPEND:
                                     Log.d(TAG, "Received : MSG_TYPE_RESUME_AFTER_SUSPEND");
                                     if(fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED){
+                                        resumeAllowed = true;
                                         fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
-                                        receivedStop = false;
                                     }
                                     break;
                                 //------------------------NOREADY------------------------
@@ -1200,6 +1205,7 @@ public class GamePongTwoPlayer extends GamePong {
                                     previous_event = -1;
                                 }
                                 receivedStop = false;
+                                resumeAllowed = false;
                                 task = new TimerBonusTask();
                                 timer = new Timer();
                                 timer.schedule(task, 2000, 7000);
@@ -1266,7 +1272,6 @@ public class GamePongTwoPlayer extends GamePong {
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To "
                                         + fsmGame.toString());
                                 textInfo.setText(getResources().getString(R.string.text_game_suspended));
-                                receivedStop = true;
                                 break;
                             case FSMGame.STATE_OPPONENT_LEFT:
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To "
