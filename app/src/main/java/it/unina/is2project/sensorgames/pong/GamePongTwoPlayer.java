@@ -1329,7 +1329,6 @@ public class GamePongTwoPlayer extends GamePong {
         }
     }
 
-    @Override
     protected void rushHourLogic() {
         Random random = new Random();
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
@@ -1351,7 +1350,6 @@ public class GamePongTwoPlayer extends GamePong {
         Log.d("RushHour", "Created " + rushHour.size());
     }
 
-    @Override
     protected void clearRushHour() {
 //        while (rushHour.size() > 0){
 //            rushHour.get(0).detachSelf();

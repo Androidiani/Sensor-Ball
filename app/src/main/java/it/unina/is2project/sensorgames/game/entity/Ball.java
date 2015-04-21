@@ -16,6 +16,10 @@ public class Ball extends GameObject {
         super(simpleBaseGameActivity, idDrawable);
     }
 
+    public Ball(Ball ball) {
+        super(ball);
+    }
+
     public float getBallSpeed() {
         return ballSpeed;
     }

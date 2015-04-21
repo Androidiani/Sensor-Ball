@@ -147,11 +147,11 @@ public class GamePongOnePlayer extends GamePong {
 
         // Adding the life sprites to the scene
         for (int i = 1; i <= life + 1; i++) {
-            lifeStar = new GameObject(this, R.drawable.life);
-            lifeStar.addToScene(scene, 0.05f);
-            lifeStar.setObjectHeight(0.05f * CAMERA_WIDTH);
-            lifeStar.setPosition(CAMERA_WIDTH - i * lifeStar.getObjectWidth(), 0);
-            lifeStars.add(lifeStar);
+            GameObject lifeTemp = new GameObject(lifeStar);
+            lifeTemp.addToScene(scene, 0.05f);
+            lifeTemp.setObjectHeight(0.05f * CAMERA_WIDTH);
+            lifeTemp.setPosition(CAMERA_WIDTH - i * lifeTemp.getObjectWidth(), 0);
+            lifeStars.add(lifeTemp);
         }
 
         // Setting up the physics of the game
@@ -166,11 +166,13 @@ public class GamePongOnePlayer extends GamePong {
     protected void loadGraphics() {
         super.loadGraphics();
 
-        // Life texture loading
-//        lifeStar = new GameObject(this, R.drawable.life);
         lifeBonus = new GameObject(this, R.drawable.life);
+        // Life texture loading
+        //Game object da cui copiare nella addToScene pre creare la lista
+        lifeStar = new GameObject(this, R.drawable.life);
         // Bonus ball loading
-//        bonusBall = new GameObject(this, R.drawable.ball_petrol);
+        //Game object da cui copiare nella addToScene pre creare la lista
+        bonusBall = new GameObject(this, R.drawable.ball_petrol);
     }
 
     @Override
@@ -307,7 +309,7 @@ public class GamePongOnePlayer extends GamePong {
                 lifeBonusCollisions();
                 break;
             case RUSH_HOUR:
-                rushHourCollisions();
+                rushHour.collision();
                 break;
         }
     }
@@ -542,7 +544,7 @@ public class GamePongOnePlayer extends GamePong {
             case RUSH_HOUR:
                 textEvnt.setText(getResources().getString(R.string.text_rush));
                 rush_hour = true;
-                rushHourLogic();
+                rushHour.addToScene(scene);
                 break;
         }
     }
@@ -586,21 +588,21 @@ public class GamePongOnePlayer extends GamePong {
                 break;
             case RUSH_HOUR:
                 rush_hour = false;
-                clearRushHour();
+                rushHour.clear();
                 break;
         }
     }
 
     private void callEvent() {
-        // Generating a new event, different from current event
+/*        // Generating a new event, different from current event
         Random random = new Random();
         int random_int;
         do {
             random_int = random.nextInt(level + 1);
         }
         while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
-        game_event = random_int;
-//        game_event = NO_EVENT;
+        game_event = random_int;*/
+        game_event = BUBBLE_BONUS;
     }
 
     private void bubbleBonusLogic() {
@@ -609,11 +611,11 @@ public class GamePongOnePlayer extends GamePong {
 
         // Adding the bonus ball sprites to the scene
         for (int i = 0; i < BONUS_BALL_NUM; i++) {
-            bonusBall = new GameObject(this, R.drawable.ball_petrol);
-            bonusBall.addToScene(scene, 0.1f);
-            bonusBall.setObjectHeight(CAMERA_WIDTH * 0.1f);
-            bonusBall.setPosition(bonusBall.getObjectWidth() + random.nextInt(CAMERA_WIDTH - (bonusBall.getObjectWidth() * 2)), (bonusBall.getObjectHeight() * 2) * (i + 1));
-            bonusBalls.add(bonusBall);
+            GameObject bonusBallTemp = new GameObject(bonusBall);
+            bonusBallTemp.addToScene(scene, 0.1f);
+            bonusBallTemp.setObjectHeight(CAMERA_WIDTH * 0.1f);
+            bonusBallTemp.setPosition(bonusBallTemp.getObjectWidth() + random.nextInt(CAMERA_WIDTH - (bonusBallTemp.getObjectWidth() * 2)), (bonusBallTemp.getObjectHeight() * 2) * (i + 1));
+            bonusBalls.add(bonusBallTemp);
         }
         Log.d(TAG, "BONUS_BALL_NUM: " + BONUS_BALL_NUM + " bonusBalls.size(): " + bonusBalls.size());
     }

@@ -138,7 +138,7 @@ public class GamePongTraining extends GamePong {
                 firstEnemyCollisions();
                 break;
             case RUSH_HOUR:
-                rushHourCollisions();
+                rushHour.collision();
                 break;
         }
     }
@@ -200,7 +200,7 @@ public class GamePongTraining extends GamePong {
             case RUSH_HOUR:
                 textEvent.setText(getResources().getString(R.string.text_rush));
                 rush_hour = true;
-                rushHourLogic();
+                rushHour.addToScene(scene);
                 break;
         }
     }
@@ -228,7 +228,7 @@ public class GamePongTraining extends GamePong {
                 break;
             case RUSH_HOUR:
                 rush_hour = false;
-                clearRushHour();
+                rushHour.clear();
                 break;
         }
     }
