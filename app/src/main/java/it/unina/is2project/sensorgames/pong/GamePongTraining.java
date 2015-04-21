@@ -18,8 +18,9 @@ public class GamePongTraining extends GamePong {
     // Setting button
     private GameObject setting;
 
-    // Text Hit
+    // Text
     private Text textHit;
+    private Text textEvent;
 
     // Hit count
     private int hit_count = 0;
@@ -41,6 +42,10 @@ public class GamePongTraining extends GamePong {
         textHit = new Text(10, 10, font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textHit);
         textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+
+        // Adding the textEvent to the scene
+        textEvent = new Text(10, textHit.getY() + textHit.getHeight(), font, "", 20, getVertexBufferObjectManager());
+        scene.attachChild(textEvent);
 
         // Adding the settingSprite to the scene
         setting.addToScene(scene, 0.1f);
@@ -163,27 +168,37 @@ public class GamePongTraining extends GamePong {
         Log.d(TAG, "Bar Speed Selected: " + bar_speed * bar.getBarSpeed());
 
         // Setting up the game event
+        gameEvent();
+    }
+
+    private void gameEvent() {
         switch (event) {
             case NO_EVENT:
+                textEvent.setText("");
                 no_event = true;
                 break;
             case FIRST_ENEMY:
+                textEvent.setText(getResources().getString(R.string.text_first_enemy));
                 first_enemy = true;
                 firstEnemyLogic();
                 break;
             case CUT_30:
+                textEvent.setText(getResources().getString(R.string.text_cut_bar_30));
                 cut_bar_30 = true;
                 cutBar30Logic();
                 break;
             case CUT_50:
+                textEvent.setText(getResources().getString(R.string.text_cut_bar_50));
                 cut_bar_50 = true;
                 cutBar50Logic();
                 break;
             case REVERSE:
+                textEvent.setText(getResources().getString(R.string.text_reverse));
                 reverse = true;
                 reverseLogic();
                 break;
             case RUSH_HOUR:
+                textEvent.setText(getResources().getString(R.string.text_rush));
                 rush_hour = true;
                 rushHourLogic();
                 break;

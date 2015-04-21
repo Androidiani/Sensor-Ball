@@ -120,7 +120,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     /**
      * Collision Events
      */
-    protected int previous_event = 0;
+    protected int previous_event;
     protected static final int NO_COLL = 0;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
@@ -310,7 +310,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         // First Enemy
         firstEnemy = new GameObject(this, theme_bar);
         // Rush Hour
-        rush = new Ball(this, theme_ball);
+//        rush = new Ball(this, theme_ball);
     }
 
     protected void loadFonts() {
@@ -405,8 +405,8 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         } else if ((ball.getYCoordinate() > CAMERA_HEIGHT) && (previous_event != BOTTOM)) {
             return BOTTOM;
         }
-        if (ball.getSprite().collidesWith(bar.getSprite())) {
-            if (((ball.getYCoordinate() + ball.getObjectHeight()) < bar.getYCoordinate() + bar.getObjectHeight()) && (previous_event != OVER) && (previous_event != SIDE)) {
+        if (ball.collidesWith(bar)) {
+            if (/*(ball.getYCoordinate() + ball.getObjectHeight() < bar.getYCoordinate() + bar.getObjectHeight()) && */(previous_event != OVER) && (previous_event != SIDE)) {
                 return OVER;
             } else if ((previous_event != SIDE) && (previous_event != OVER)) {
                 return SIDE;
@@ -634,7 +634,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     }
 
     protected void firstEnemyCollisions() {
-        if (ball.getSprite().collidesWith(firstEnemy.getSprite()) && previous_event != TOP) {
+        if (ball.collidesWith(firstEnemy) && previous_event != TOP) {
             collidesTop();
         }
     }
@@ -643,13 +643,13 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         Random random = new Random();
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
-//            rush = new Ball(this, theme_ball);
-            Ball rushTemp = (Ball) rush.duplicate(rush);
-            rushTemp.addToScene(scene, 0.1f);
-            rushTemp.setRandomPosition();
-            rushTemp.createHandler();
-            rushTemp.setHandlerSpeed(ball.getBallSpeed() * (random.nextFloat() - random.nextFloat()), ball.getBallSpeed() * (random.nextFloat() - random.nextFloat()));
-            rushHour.add(rushTemp);
+            rush = new Ball(this, theme_ball);
+//            Ball rushTemp = (Ball) rush.duplicate(rush);
+            rush.addToScene(scene, 0.1f);
+            rush.setRandomPosition();
+            rush.createHandler();
+            rush.setHandlerSpeed(ball.getBallSpeed() * (random.nextFloat() - random.nextFloat()), ball.getBallSpeed() * (random.nextFloat() - random.nextFloat()));
+            rushHour.add(rush);
         }
         Log.d("Rush Hour", "RUSH_HOUR_NUM: " + RUSH_HOUR_NUM + ", rushHour.size(): " + rushHour.size());
     }
@@ -680,7 +680,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     }
 
     protected void cutBar30Logic() {
-        bar.setObjectWidth(0.7f * (float) bar.getObjectWidth());
+        bar.setObjectWidth(0.7f * bar.getBarWidth());
     }
 
     protected void clearCutBar30() {
@@ -688,7 +688,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     }
 
     protected void cutBar50Logic() {
-        bar.setObjectWidth(0.5f * (float) bar.getObjectWidth());
+        bar.setObjectWidth(0.5f * bar.getBarWidth());
     }
 
     protected void clearCutBar50() {

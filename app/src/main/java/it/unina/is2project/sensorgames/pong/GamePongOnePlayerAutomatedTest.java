@@ -8,7 +8,7 @@ public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
 
     private static final String TAG = "1P_Test";
 
-    private float random_number = 0;
+    private int random_number = 0;
 
     @Override
     protected void gameEventsCollisionLogic() {
@@ -18,19 +18,20 @@ public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
     }
 
     /**
-     * X of BarSprite can get value between range: [ball_x_pos - (bar_width - ball_width) ; ball_x_pos]
+     * X of Bar can get value between range: [ball_x_pos - (bar_width - ball_width) ; ball_x_pos]
      */
     private void setRandomBarPosition() {
-        barSprite.setX(ballSprite.getX() - random_number);
-        if (ballSprite.collidesWith(barSprite)) {
+        bar.setPosition(ball.getXCoordinate() - random_number);
+        if (ball.collidesWith(bar)) {
             Random random = new Random();
-            random_number = random.nextInt((int) (barSprite.getWidth() - ballSprite.getWidth()) + 1);
-            Log.d(TAG, "Bar X = " + (ballSprite.getX() - random_number));
-            Log.d(TAG, "Bar width = " + barSprite.getWidth() + ", Ball width = " + ballSprite.getWidth());
+            random_number = random.nextInt((bar.getObjectWidth() - ball.getObjectWidth()) + 1);
+            Log.d(TAG, "Bar X = " + (ball.getXCoordinate() - random_number));
+            Log.d(TAG, "Bar width = " + bar.getObjectWidth() + ", Ball width = " + ball.getObjectWidth());
         }
     }
 
     private void setExactBarPosition() {
-        barSprite.setX(ballSprite.getX());
+        bar.setPosition(ball.getXCoordinate(), bar.getYCoordinate());
+//        barSprite.setX(ballSprite.getX());
     }
 }

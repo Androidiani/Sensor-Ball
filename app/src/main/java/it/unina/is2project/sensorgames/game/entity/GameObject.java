@@ -57,7 +57,7 @@ public class GameObject {
     }
 
     public void onTouch() {
-        Log.d(this.getClass().getName(), "Sprite touched");
+        Log.d("onTouch()", "Sprite touched");
     }
 
     public GameObject duplicate(GameObject gameObject) {
@@ -84,6 +84,15 @@ public class GameObject {
      */
     public void detach() {
         this.gSprite.detachSelf();
+    }
+
+    public Sprite getSprite() {
+        //Se gsprite è null vuol dire che non è stata chiamata addToScene
+        return this.gSprite;
+    }
+
+    public boolean collidesWith(GameObject gameObject) {
+        return (this.gSprite.collidesWith(gameObject.gSprite));
     }
 
     public void setPosition(float x, float y) {
@@ -113,11 +122,6 @@ public class GameObject {
                 getObjectWidth() * 2 + random.nextInt(this.displaySize.x - (getObjectWidth() * 2)),
                 getObjectHeight() * 4 + random.nextInt(this.displaySize.y - (getObjectHeight() * 4))
         );
-    }
-
-    public Sprite getSprite() {
-        //Se gsprite è null vuol dire che non è stata chiamata addToScene
-        return this.gSprite;
     }
 
     public int getXCoordinate() {
