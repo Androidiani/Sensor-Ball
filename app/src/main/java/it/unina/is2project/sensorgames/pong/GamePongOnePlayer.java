@@ -39,8 +39,7 @@ public class GamePongOnePlayer extends GamePong {
     private List<GameObject> lifeStars = new ArrayList<>();
 
     // Bonus ball
-    private GameObject bonusBall;
-    private List<GameObject> bonusBalls = new ArrayList<>();
+    private BubbleBonus bubble;
 
     // Life bonus
     private GameObject lifeBonus;
@@ -48,7 +47,7 @@ public class GamePongOnePlayer extends GamePong {
     /**
      * Game data
      */
-    private long score = 0;
+    private Integer score = 0;
     private int gain;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
@@ -122,10 +121,8 @@ public class GamePongOnePlayer extends GamePong {
     private static final int RUSH_HOUR = 9;
 
     // Events' data
-    private static final int BONUS_BALL_MAX_NUM = 5;
-    private static final int BONUS_BALL_MIN_NUM = 3;
+
     private boolean life_detached = false;
-    private boolean allBonusDetached = false;
 
     @Override
     protected Scene onCreateScene() {
@@ -172,7 +169,8 @@ public class GamePongOnePlayer extends GamePong {
         lifeStar = new GameObject(this, R.drawable.life);
         // Bonus ball loading
         //Game object da cui copiare nella addToScene pre creare la lista
-        bonusBall = new GameObject(this, R.drawable.ball_petrol);
+        bubble = new BubbleBonus(this, ball);
+        //bonusBall = new GameObject(this, R.drawable.ball_petrol);
     }
 
     @Override
@@ -303,7 +301,7 @@ public class GamePongOnePlayer extends GamePong {
                 firstEnemyCollisions();
                 break;
             case BUBBLE_BONUS:
-                bubbleBonusCollisions();
+                score = bubble.collision(score, level, textScore);
                 break;
             case LIFE_BONUS:
                 lifeBonusCollisions();
@@ -429,7 +427,8 @@ public class GamePongOnePlayer extends GamePong {
         statOnePlayerDAO.close();
     }
 
-    private void gameLevels() {
+    @Override
+    protected void gameLevels() {
         if (score >= 0 && score < BARRIER_ONE && level_one) {
             level = LEVEL_ONE;
             level_one = true;
@@ -509,7 +508,7 @@ public class GamePongOnePlayer extends GamePong {
             case BUBBLE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_bubble));
                 bubble_bonus = true;
-                bubbleBonusLogic();
+                bubble.addToScene(scene);
                 break;
             case CUT_BAR_30:
                 textEvnt.setText(getResources().getString(R.string.text_cut_bar_30));
@@ -560,7 +559,7 @@ public class GamePongOnePlayer extends GamePong {
                 break;
             case BUBBLE_BONUS:
                 bubble_bonus = false;
-                clearBubbleBonus();
+                bubble.clear();
                 break;
             case CUT_BAR_30:
                 cut_bar_30 = false;
@@ -603,48 +602,6 @@ public class GamePongOnePlayer extends GamePong {
         while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
         game_event = random_int;*/
         game_event = BUBBLE_BONUS;
-    }
-
-    private void bubbleBonusLogic() {
-        Random random = new Random();
-        int BONUS_BALL_NUM = BONUS_BALL_MIN_NUM + random.nextInt(BONUS_BALL_MAX_NUM - BONUS_BALL_MIN_NUM + 1);
-
-        // Adding the bonus ball sprites to the scene
-        for (int i = 0; i < BONUS_BALL_NUM; i++) {
-            GameObject bonusBallTemp = new GameObject(bonusBall);
-            bonusBallTemp.addToScene(scene, 0.1f);
-            bonusBallTemp.setObjectHeight(CAMERA_WIDTH * 0.1f);
-            bonusBallTemp.setPosition(bonusBallTemp.getObjectWidth() + random.nextInt(CAMERA_WIDTH - (bonusBallTemp.getObjectWidth() * 2)), (bonusBallTemp.getObjectHeight() * 2) * (i + 1));
-            bonusBalls.add(bonusBallTemp);
-        }
-        Log.d(TAG, "BONUS_BALL_NUM: " + BONUS_BALL_NUM + " bonusBalls.size(): " + bonusBalls.size());
-    }
-
-    private void clearBubbleBonus() {
-        if (!allBonusDetached) {
-            while (bonusBalls.size() > 0) {
-                bonusBalls.get(0).detach();
-                bonusBalls.remove(0);
-            }
-        }
-        allBonusDetached = false;
-    }
-
-    private void bubbleBonusCollisions() {
-        for (int i = 0; i < bonusBalls.size(); i++) {
-            if (ball.collidesWith(bonusBalls.get(i))) {
-                Log.d(TAG, "Bonus Ball " + i + " removed");
-                bonusBalls.get(i).detach();
-                bonusBalls.remove(i);
-                score += 20 * (level + 1);
-                textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
-                gameLevels();
-                if (bonusBalls.size() == 0) {
-                    allBonusDetached = true;
-                    Log.d(TAG, "All bonus ball detached by player");
-                }
-            }
-        }
     }
 
     private void lifeBonusLogic() {
