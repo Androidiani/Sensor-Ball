@@ -11,6 +11,7 @@ import java.util.Random;
 import it.unina.is2project.sensorgames.game.entity.Ball;
 
 public class RushHourBonus implements IBonusMalus {
+
     // Rush Hour
     protected Ball ball;
     protected List<Ball> rushHour = new ArrayList<>();
@@ -20,7 +21,6 @@ public class RushHourBonus implements IBonusMalus {
     protected List<Float> oldRushSpeed_y = new ArrayList<>();
 
     public RushHourBonus(Ball ball) {
-        //Duplicate ball in rush
         //RushHour ha la stessa texture di ball
         this.ball = ball;
     }

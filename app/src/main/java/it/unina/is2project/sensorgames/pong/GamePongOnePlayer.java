@@ -16,6 +16,7 @@ import java.util.Random;
 
 import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
+import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
@@ -35,6 +36,7 @@ public class GamePongOnePlayer extends GamePong {
     private Text textEvnt;
 
     // Life
+    private int theme_star;
     private GameObject lifeStar;
     private List<GameObject> lifeStars = new ArrayList<>();
 
@@ -163,14 +165,28 @@ public class GamePongOnePlayer extends GamePong {
     protected void loadGraphics() {
         super.loadGraphics();
 
-        lifeBonus = new GameObject(this, R.drawable.life);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme", "0"));
+        Log.d("loadGraphics.GamePong", "Theme " + choice);
+        switch (choice) {
+            case CLASSIC:
+                theme_star = R.drawable.star_white;
+                break;
+            case GOLD:
+                theme_star = R.drawable.star_gold;
+                break;
+            case BLUE:
+                theme_star = R.drawable.star_blue;
+                break;
+        }
         // Life texture loading
-        //Game object da cui copiare nella addToScene pre creare la lista
-        lifeStar = new GameObject(this, R.drawable.life);
+        lifeStar = new GameObject(this, theme_star);
+
+        // Life Bonus
+        lifeBonus = new GameObject(this, theme_star);
+
         // Bonus ball loading
-        //Game object da cui copiare nella addToScene pre creare la lista
         bubble = new BubbleBonus(this, ball);
-        //bonusBall = new GameObject(this, R.drawable.ball_petrol);
     }
 
     @Override
@@ -298,7 +314,7 @@ public class GamePongOnePlayer extends GamePong {
     protected void gameEventsCollisionLogic() {
         switch (game_event) {
             case FIRST_ENEMY:
-                firstEnemyCollisions();
+                previous_event = firstEnemy.collision(previous_event, touch);
                 break;
             case BUBBLE_BONUS:
                 score = bubble.collision(score, level, textScore);
@@ -503,7 +519,7 @@ public class GamePongOnePlayer extends GamePong {
             case FIRST_ENEMY:
                 textEvnt.setText(getResources().getString(R.string.text_first_enemy));
                 first_enemy = true;
-                firstEnemyLogic();
+                firstEnemy.addToScene(scene);
                 break;
             case BUBBLE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_bubble));
@@ -555,7 +571,7 @@ public class GamePongOnePlayer extends GamePong {
                 break;
             case FIRST_ENEMY:
                 first_enemy = false;
-                clearFirstEnemy();
+                firstEnemy.clear();
                 break;
             case BUBBLE_BONUS:
                 bubble_bonus = false;
@@ -601,7 +617,7 @@ public class GamePongOnePlayer extends GamePong {
         }
         while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
         game_event = random_int;*/
-        game_event = BUBBLE_BONUS;
+        game_event = LIFE_BONUS;
     }
 
     private void lifeBonusLogic() {

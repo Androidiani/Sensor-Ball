@@ -38,6 +38,8 @@ public class GamePongTraining extends GamePong {
     protected Scene onCreateScene() {
         super.onCreateScene();
 
+        Log.d(TAG, "Creating Scene Training Game");
+
         // Adding the textHit to the scene
         textHit = new Text(10, 10, font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textHit);
@@ -135,7 +137,7 @@ public class GamePongTraining extends GamePong {
     protected void gameEventsCollisionLogic() {
         switch (event) {
             case FIRST_ENEMY:
-                firstEnemyCollisions();
+                previous_event = firstEnemy.collision(previous_event, touch);
                 break;
             case RUSH_HOUR:
                 rushHour.collision();
@@ -185,7 +187,7 @@ public class GamePongTraining extends GamePong {
             case FIRST_ENEMY:
                 textEvent.setText(getResources().getString(R.string.text_first_enemy));
                 first_enemy = true;
-                firstEnemyLogic();
+                firstEnemy.addToScene(scene);
                 break;
             case CUT_30:
                 textEvent.setText(getResources().getString(R.string.text_cut_bar_30));
@@ -217,7 +219,7 @@ public class GamePongTraining extends GamePong {
                 break;
             case FIRST_ENEMY:
                 first_enemy = false;
-                clearFirstEnemy();
+                firstEnemy.clear();
                 break;
             case CUT_30:
                 cut_bar_30 = false;

@@ -29,9 +29,9 @@ public class BubbleBonus implements IBonusMalus {
     private static final int BONUS_BALL_MAX_NUM = 5;
 
     public BubbleBonus(SimpleBaseGameActivity simpleBaseGameActivity, Ball ball) {
-        this.bubble = new GameObject(simpleBaseGameActivity, R.drawable.ball_petrol);
         this.simpleBaseGameActivity = simpleBaseGameActivity;
         this.ball = ball;
+        this.bubble = new GameObject(simpleBaseGameActivity, R.drawable.ball_petrol);
     }
 
     @Override

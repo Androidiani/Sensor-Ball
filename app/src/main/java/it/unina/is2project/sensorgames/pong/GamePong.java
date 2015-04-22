@@ -34,7 +34,6 @@ import java.io.IOException;
 import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.Bar;
-import it.unina.is2project.sensorgames.game.entity.GameObject;
 
 public abstract class GamePong extends SimpleBaseGameActivity {
 
@@ -79,8 +78,9 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected Bar bar;
 
     // First Enemy
-    protected GameObject firstEnemy;
+    protected FirstEnemyBonus firstEnemy;
 
+    // Rush Hour
     protected RushHourBonus rushHour;
 
     // Game Theme
@@ -299,9 +299,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
      */
     protected void loadAdditionalGraphics() {
         // First Enemy
-        firstEnemy = new GameObject(this, theme_bar);
-
-        //Game object da cui copiare nella addToScene pre creare la lista
+        firstEnemy = new FirstEnemyBonus(this, ball);
         // Rush Hour
         rushHour = new RushHourBonus(ball);
 
@@ -570,7 +568,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         previous_event = PAUSE;
         touch.stop();
         pause = true;
-
         // Stopping Rush Hour Balls
         rushHour.pause();
     }
@@ -611,22 +608,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected abstract void gameOver();
 
     protected abstract void saveGame(String s);
-
-
-    protected void firstEnemyLogic() {
-        firstEnemy.addToScene(scene, 1f);
-        firstEnemy.setPosition(GameObject.TOP);
-    }
-
-    protected void clearFirstEnemy() {
-        firstEnemy.detach();
-    }
-
-    protected void firstEnemyCollisions() {
-        if (ball.collidesWith(firstEnemy) && previous_event != TOP) {
-            collidesTop();
-        }
-    }
 
     protected void cutBar30Logic() {
         bar.setObjectWidth(0.7f * bar.getBarWidth());
