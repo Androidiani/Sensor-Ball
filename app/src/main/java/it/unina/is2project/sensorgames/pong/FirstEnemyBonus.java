@@ -4,7 +4,6 @@ import org.andengine.audio.sound.Sound;
 import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
-import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 
@@ -18,9 +17,9 @@ public class FirstEnemyBonus implements IBonusMalus {
     // First Enemy
     private GameObject firstEnemy;
 
-    public FirstEnemyBonus(SimpleBaseGameActivity simpleBaseGameActivity, Ball ball4) {
+    public FirstEnemyBonus(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable, Ball ball) {
         this.ball = ball;
-        this.firstEnemy = new GameObject(simpleBaseGameActivity, R.drawable.bar_white);
+        this.firstEnemy = new GameObject(simpleBaseGameActivity, idDrawable);
     }
 
     @Override

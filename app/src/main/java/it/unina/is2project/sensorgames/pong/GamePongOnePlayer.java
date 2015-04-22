@@ -16,7 +16,6 @@ import java.util.Random;
 
 import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
-import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
@@ -44,16 +43,15 @@ public class GamePongOnePlayer extends GamePong {
     private BubbleBonus bubble;
 
     // Life bonus
-    private GameObject lifeBonus;
+    private LifeBonus lifeBonus;
 
     /**
      * Game data
      */
-    private Integer score = 0;
-    private int gain;
+    private int score = 0;
+    private int gain = 0;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
-    private int old_life = 0;
     private int reach_count = 1;
     private static final int MIN_REACH_COUNT = 2;
     private static final int MAX_REACH_COUNT = 6;
@@ -122,10 +120,6 @@ public class GamePongOnePlayer extends GamePong {
     private static final int FREEZE = 8;
     private static final int RUSH_HOUR = 9;
 
-    // Events' data
-
-    private boolean life_detached = false;
-
     @Override
     protected Scene onCreateScene() {
         super.onCreateScene();
@@ -179,11 +173,12 @@ public class GamePongOnePlayer extends GamePong {
                 theme_star = R.drawable.star_blue;
                 break;
         }
+
         // Life texture loading
         lifeStar = new GameObject(this, theme_star);
 
         // Life Bonus
-        lifeBonus = new GameObject(this, theme_star);
+        lifeBonus = new LifeBonus(this, theme_star, ball);
 
         // Bonus ball loading
         bubble = new BubbleBonus(this, ball);
@@ -220,9 +215,10 @@ public class GamePongOnePlayer extends GamePong {
         textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
         Log.d(TAG, "Score: " + score);
 
-        // Game levels section
-        gameLevels();
-        Log.d(TAG, "Level " + level);
+        //TODO - Valutare dove mettere gameLevels()
+//        // Game levels section
+//        gameLevels();
+//        Log.d(TAG, "Level " + level);
 
         // Game events section
         reach_count--;
@@ -246,7 +242,6 @@ public class GamePongOnePlayer extends GamePong {
 
         // Clear game data
         life = MAX_LIFE - 1;
-        old_life = 0;
         score = 0;
         gain = 0;
         level = LEVEL_ONE;
@@ -320,7 +315,7 @@ public class GamePongOnePlayer extends GamePong {
                 score = bubble.collision(score, level, textScore);
                 break;
             case LIFE_BONUS:
-                lifeBonusCollisions();
+                life = lifeBonus.collision(life, lifeStars);
                 break;
             case RUSH_HOUR:
                 rushHour.collision();
@@ -534,7 +529,7 @@ public class GamePongOnePlayer extends GamePong {
             case LIFE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_lifebonus));
                 life_bonus = true;
-                lifeBonusLogic();
+                lifeBonus.addToScene(scene, life);
                 break;
             case CUT_BAR_50:
                 textEvnt.setText(getResources().getString(R.string.text_cut_bar_50));
@@ -583,7 +578,7 @@ public class GamePongOnePlayer extends GamePong {
                 break;
             case LIFE_BONUS:
                 life_bonus = false;
-                clearLifeBonus();
+                lifeBonus.clear();
                 break;
             case CUT_BAR_50:
                 cut_bar_50 = false;
@@ -609,38 +604,15 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void callEvent() {
-/*        // Generating a new event, different from current event
-        Random random = new Random();
-        int random_int;
-        do {
-            random_int = random.nextInt(level + 1);
-        }
-        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
-        game_event = random_int;*/
+//        // Generating a new event, different from current event
+//        Random random = new Random();
+//        int random_int;
+//        do {
+//            random_int = random.nextInt(level + 1);
+//        }
+//        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
+//        game_event = random_int;
         game_event = LIFE_BONUS;
-    }
-
-    private void lifeBonusLogic() {
-        old_life = life;
-        lifeBonus.addToScene(scene, 0.1f);
-        lifeBonus.getSprite().setHeight(CAMERA_WIDTH * 0.1f);
-        lifeBonus.setRandomPosition();
-    }
-
-    private void clearLifeBonus() {
-        if (!life_detached)
-            lifeBonus.detach();
-        life_detached = false;
-    }
-
-    private void lifeBonusCollisions() {
-        if (ball.collidesWith(lifeBonus) && old_life == life) {
-            lifeBonus.detach();
-            life++;
-            lifeStars.get(life).attach();
-            life_detached = true;
-            Log.d(TAG, "Life Collision. Current Life: " + life);
-        }
     }
 
     private void bigBarLogic() {

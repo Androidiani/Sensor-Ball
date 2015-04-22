@@ -299,7 +299,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
      */
     protected void loadAdditionalGraphics() {
         // First Enemy
-        firstEnemy = new FirstEnemyBonus(this, ball);
+        firstEnemy = new FirstEnemyBonus(this, theme_bar, ball);
         // Rush Hour
         rushHour = new RushHourBonus(ball);
 
