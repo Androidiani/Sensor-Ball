@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import it.unina.is2project.sensorgames.FSMGame;
 import it.unina.is2project.sensorgames.R;
@@ -188,6 +191,8 @@ public class GamePongTwoPlayer extends GamePong {
     private float SPEED_X3;
     private float SPEED_X4;
 
+    BallPossessionThread ballControl;
+
 
     @Override
     protected Scene onCreateScene() {
@@ -264,6 +269,11 @@ public class GamePongTwoPlayer extends GamePong {
             AppMessage messageSync = new AppMessage(Constants.MSG_TYPE_SYNC);
             sendBluetoothMessage(messageSync);
             fsmGame.setState(FSMGame.STATE_IN_GAME);
+            // SAVE PLAYED GAMES
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            String nickname = sharedPreferences.getString(Constants.PREF_NICKNAME,
+                    getString(R.string.txt_no_name));
+            increasePartiteGiocate(nickname);
         }
 
         return scene;
@@ -421,7 +431,18 @@ public class GamePongTwoPlayer extends GamePong {
                     COS_X,
                     SIN_X,
                     xRatio);
+            //----------------
+//            ballControl = new BallPossessionThread(
+//                    (int)Math.signum(handler.getVelocityX()),
+//                    COS_X,
+//                    SIN_X,
+//                    xRatio
+//            );
+//            ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+            //-----------------
             sendBluetoothMessage(messageCoords);
+//            scheduledExecutorService.schedule(ballControl, 500, TimeUnit.MILLISECONDS);
+
             haveBall = false;
             transferringBall = true;
             previous_event = TOP;
@@ -498,6 +519,7 @@ public class GamePongTwoPlayer extends GamePong {
 
     @Override
     protected void gameOver() {
+        Log.d(TAG, "gameOver() - winner: " + winner);
         handler.setVelocity(0, 0);
         BAR_SPEED = 0;
         if(timer != null) timer.cancel();
@@ -508,6 +530,31 @@ public class GamePongTwoPlayer extends GamePong {
         saveGame(nickname);
     }
 
+    private void increasePartiteGiocate(String user){
+        PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
+        Player currentPlayer = playerDAO.findByNome(user);
+        long idPlayer;
+
+        if(currentPlayer == null){
+            currentPlayer = new Player(user);
+            idPlayer = playerDAO.insert(currentPlayer);
+        }else idPlayer = currentPlayer.getId();
+
+        StatTwoPlayerDAO statTwoPlayerDAO = new StatTwoPlayerDAO(getApplicationContext());
+        StatTwoPlayer currentPlayerStats = statTwoPlayerDAO.findById((int)idPlayer);
+
+        if(currentPlayerStats == null){
+            currentPlayerStats = new StatTwoPlayer((int)idPlayer, 0, 0);
+            statTwoPlayerDAO.insert(currentPlayerStats);
+        }
+
+        currentPlayerStats.increasePartiteGiocate();
+
+        statTwoPlayerDAO.update(currentPlayerStats);
+
+        playerDAO.close();
+        statTwoPlayerDAO.close();
+    }
 
     @Override
     protected void saveGame(String user) {
@@ -528,7 +575,7 @@ public class GamePongTwoPlayer extends GamePong {
             statTwoPlayerDAO.insert(currentPlayerStats);
         }
 
-        currentPlayerStats.increasePartiteGiocate();
+//        currentPlayerStats.increasePartiteGiocate();
 
         if(winner)
             currentPlayerStats.increasePartiteVinte();
@@ -597,6 +644,11 @@ public class GamePongTwoPlayer extends GamePong {
             backPressed = true;
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
+            if(fsmGame.getState() != FSMGame.STATE_IN_GAME_WAITING &&
+                    fsmGame.getState() != FSMGame.STATE_OPPONENT_NOT_READY){
+                winner = false;
+                gameOver();
+            }
         }
         if(rush_hour){
             runOnUpdateThread(new Runnable() {
@@ -619,7 +671,7 @@ public class GamePongTwoPlayer extends GamePong {
     //----------------------------------------------
     // MISCELLANEA
     //----------------------------------------------
-    private void sendBluetoothMessage(AppMessage message) {
+    private synchronized void sendBluetoothMessage(AppMessage message) {
         if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
             return;
@@ -956,6 +1008,11 @@ public class GamePongTwoPlayer extends GamePong {
                             case BluetoothService.STATE_LISTEN:
                                 break;
                             case BluetoothService.STATE_NONE:
+                                if(fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED){
+                                    winner = true;
+                                    gameOver();
+                                }
                                 fsmGame.setState(FSMGame.STATE_DISCONNECTED);
                                 break;
                             default:
@@ -1007,6 +1064,11 @@ public class GamePongTwoPlayer extends GamePong {
                                     Log.d(TAG, "Received : MSG_TYPE_SYNC");
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
                                         fsmGame.setState(FSMGame.STATE_IN_GAME);
+                                        // SAVE GAME
+                                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                        String nickname = sharedPreferences.getString(Constants.PREF_NICKNAME,
+                                                getString(R.string.txt_no_name));
+                                        increasePartiteGiocate(nickname);
                                     }
                                     break;
                                 //------------------------FAIL------------------------
@@ -1067,9 +1129,9 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_STOP_REQUEST:
                                     Log.d(TAG, "Received : MSG_TYPE_STOP_REQUEST");
                                     // TODO da valutare
-//                                    if(!haveBall && ballSprite.getY() < ballSprite.getHeight()){
-//                                        ballSprite.detachSelf();
-//                                    }
+                                    if(!haveBall && ballSprite.getY() < ballSprite.getHeight()){
+                                        ballSprite.detachSelf();
+                                    }
                                     if(fsmGame.getState() == FSMGame.STATE_IN_GAME){
                                         saveHandlerState();
                                     }
@@ -1107,6 +1169,20 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_GAME_OVER:
                                     Log.d(TAG, "Received : MSG_TYPE_GAME_OVER");
                                     fsmGame.setState(FSMGame.STATE_GAME_LOSER);
+                                    break;
+
+                                case Constants.MSG_TYPE_BALL_ACK:
+                                    Log.d(TAG, "BallPossession BALL ACK");
+//                                    ballControl.notify();
+                                    ballControl.interrupt();
+                                    break;
+                                case Constants.MSG_TYPE_BALL_REQUEST:
+                                    Log.d(TAG, "BallPossession BALL REQUEST");
+                                    if(haveBall){
+                                        Log.d(TAG, "BallPossession REQUEST OK: Send Ack");
+                                        AppMessage ballAck = new AppMessage(Constants.MSG_TYPE_BALL_ACK);
+                                        sendBluetoothMessage(ballAck);
+                                    }
                                     break;
                                 //------------------------BONUS SPEED X2------------------------
                                 case Constants.MSG_TYPE_BONUS_SPEEDX2:
@@ -1282,7 +1358,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 mConnectedDeviceName = "";
                                 handler.setVelocity(0, 0);
                                 BAR_SPEED = 0;
-                                if(timer != null)timer.cancel();
+//                                if(timer != null)timer.cancel();
                                 break;
                             case FSMGame.STATE_GAME_SUSPENDED:
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To "
@@ -1302,8 +1378,10 @@ public class GamePongTwoPlayer extends GamePong {
                                         }
                                     });
                                 }
-                                if(timer != null)timer.cancel();
+//                                if(timer != null)timer.cancel();
                                 textInfo.setText(getResources().getString(R.string.text_opponent_left));
+                                winner = true;
+                                gameOver();
                                 break;
                             case FSMGame.STATE_GAME_WINNER:
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To "
@@ -1645,6 +1723,41 @@ public class GamePongTwoPlayer extends GamePong {
             }
             return super.cancel();
         }
+    }
+
+    private class BallPossessionThread extends Thread{
+        private int signX;
+        private float cosx;
+        private float sinx;
+        private float xratio;
+
+        BallPossessionThread(int signX, float cosx, float sinx, float xratio){
+            this.signX = signX;
+            this.cosx = cosx;
+            this.sinx = sinx;
+            this.xratio = xratio;
+        }
+
+        @Override
+        public void run() {
+            Log.d(TAG, "BallPossessionThread Called Run()");
+            AppMessage ballRequest = new AppMessage(Constants.MSG_TYPE_BALL_REQUEST);
+            sendBluetoothMessage(ballRequest);
+            try {
+                sleep(1500);
+//                wait(1500);
+                if(!Thread.currentThread().isInterrupted()) {
+                    Log.d(TAG, "BallPossessionThread...No ACK Received...COORDS MESSAGE");
+                    AppMessage coordsMessage = new AppMessage(Constants.MSG_TYPE_COORDS, signX, cosx, sinx, xratio);
+                    sendBluetoothMessage(coordsMessage);
+                }
+            } catch (InterruptedException e) {
+                Log.d(TAG, "BallPossessionThread Interrupted");
+                return;
+            }
+        }
+
+
     }
 
     //----------------------------------------------
