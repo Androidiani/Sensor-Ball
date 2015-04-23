@@ -26,6 +26,12 @@ public class GameObject {
     protected Point displaySize;
     protected Drawable gDraw;
     protected BitmapTextureAtlas gTexture;
+
+    // TODO Da eliminare
+    public ITextureRegion getgTextureRegion() {
+        return gTextureRegion;
+    }
+
     protected ITextureRegion gTextureRegion;
     protected Sprite gSprite;
     protected Scene scene;

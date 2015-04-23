@@ -212,6 +212,7 @@ public class GamePongTwoPlayer extends GamePong {
         Intent i = getIntent();
 
         super.onCreateScene();
+        handler = ball.getHandler();
 
         if (i.getIntExtra(TwoPlayerActivity.EXTRA_BALL, 0) == 1) {
             haveBall = true;
@@ -1629,6 +1630,7 @@ public class GamePongTwoPlayer extends GamePong {
         Random random = new Random();
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
+            ballTextureRegion = ball.getgTextureRegion();
             Sprite rush = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
             rush.setWidth(CAMERA_WIDTH * 0.1f);
             rush.setHeight(CAMERA_WIDTH * 0.1f);

@@ -8,6 +8,11 @@ public class Ball extends GameObject {
     // Ball Field
     private float ballSpeed;
 
+    // TODO Da cancellare
+    public PhysicsHandler getHandler() {
+        return handler;
+    }
+
     // Handler
     private PhysicsHandler handler;
 
@@ -37,6 +42,8 @@ public class Ball extends GameObject {
         this.handler = new PhysicsHandler(this.gSprite);
         this.gSprite.registerUpdateHandler(handler);
     }
+
+
 
     public void setHandlerSpeed(float xSpeed, float ySpeed) {
         this.handler.setVelocity(xSpeed, ySpeed);
