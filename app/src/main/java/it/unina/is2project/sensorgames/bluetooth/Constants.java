@@ -25,8 +25,7 @@ public interface Constants {
     int MSG_TYPE_STOP_REQUEST = 25;
     int MSG_TYPE_SUSPEND_REQUEST = 26;
     int MSG_TYPE_RESUME_AFTER_SUSPEND = 27;
-    int MSG_TYPE_BALL_REQUEST = 28;
-    int MSG_TYPE_BALL_ACK = 29;
+    int MSG_TYPE_GAME_TIMEOUT = 28;
 
     // Message Bonus Types
     int MSG_TYPE_BONUS_SPEEDX2 = 17;
