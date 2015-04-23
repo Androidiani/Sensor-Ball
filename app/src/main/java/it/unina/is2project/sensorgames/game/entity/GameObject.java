@@ -148,6 +148,6 @@ public class GameObject {
 
     public void setObjectDimension(float xRatio, float yRatio) {
         this.gSprite.setWidth(this.displaySize.x * xRatio);
-        this.gSprite.setHeight(this.displaySize.x *yRatio);
+        this.gSprite.setHeight(this.displaySize.x * yRatio);
     }
 }

@@ -52,8 +52,6 @@ public class GamePongOnePlayer extends GamePong {
     private int gain = 0;
     private int level = 1;
     private int oldLevel = 0;
-    private int levelCount1 = 0;
-    private int levelCount2 = 10;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
     private int reach_count = 1;
@@ -114,7 +112,7 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     protected void onStop() {
         super.onStop();
-        if(!pause && !animActive)
+        if (!pause && !animActive)
             pauseGame();
     }
 

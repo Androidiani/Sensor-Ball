@@ -238,8 +238,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (!pause && !animActive)
-            pauseGame();
     }
 
     private void setBackground() {
