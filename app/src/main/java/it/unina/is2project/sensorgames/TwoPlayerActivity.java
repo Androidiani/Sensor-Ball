@@ -37,7 +37,7 @@ import it.unina.is2project.sensorgames.bluetooth.Serializer;
 import it.unina.is2project.sensorgames.bluetooth.messages.AppMessage;
 import it.unina.is2project.sensorgames.pong.GamePongTwoPlayer;
 
-public class TwoPlayerActivity extends ActionBarActivity {
+public class TwoPlayerActivity extends Activity {
 
     //----------------------------------------------
     // DEBUG

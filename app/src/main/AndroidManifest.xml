@@ -35,7 +35,8 @@
         </activity>
         <activity
             android:name=".TwoPlayerActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/ThemeSensorPong">
         </activity>
         <activity
             android:name=".pong.TrainingSettings"
@@ -72,8 +73,6 @@
             android:name=".Settings"
             android:theme="@style/ThemeSensorPong">
         </activity>
-
-        <!-- Base.ThemeOverlay.AppCompat.Dark -->
 
         <activity android:name=".FirstAccess"/>
 
