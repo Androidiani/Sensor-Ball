@@ -70,8 +70,10 @@
 
         <activity
             android:name=".Settings"
-            android:theme="@style/Base.ThemeOverlay.AppCompat.Dark">
+            android:theme="@style/ThemeSensorPong">
         </activity>
+
+        <!-- Base.ThemeOverlay.AppCompat.Dark -->
 
         <activity android:name=".FirstAccess"/>
 
