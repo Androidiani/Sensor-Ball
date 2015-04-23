@@ -3,7 +3,6 @@ package it.unina.is2project.sensorgames.pong;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -21,10 +20,6 @@ import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.util.FPSLogger;
-import org.andengine.input.sensor.SensorDelay;
-import org.andengine.input.sensor.acceleration.AccelerationData;
-import org.andengine.input.sensor.acceleration.AccelerationSensorOptions;
-import org.andengine.input.sensor.acceleration.IAccelerationListener;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
@@ -37,14 +32,15 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import java.io.IOException;
 
 import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.game.entity.Ball;
+import it.unina.is2project.sensorgames.game.entity.Bar;
 
-import static org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory.createFromResource;
-
-public abstract class GamePong extends SimpleBaseGameActivity implements IAccelerationListener {
+public abstract class GamePong extends SimpleBaseGameActivity {
 
     /**
      * Camera
      */
+    //TODO - Da Rivedere
     protected Camera camera;
     protected int CAMERA_WIDTH;
     protected int CAMERA_HEIGHT;
@@ -53,21 +49,31 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     /**
      * Graphics
      */
+    // Game Theme
+    protected int theme;
+    protected int theme_ball;
+    protected int theme_bar;
+    //    protected int theme_star = 0;
+    protected static final int CLASSIC = 0;
+    protected static final int GOLD = 1;
+    protected static final int BLUE = 2;
 
     // Ball
-    protected BitmapTextureAtlas ballTexture;
+    protected Ball ball;
+    //TODO - Da Eliminare
     protected ITextureRegion ballTextureRegion;
     protected Sprite ballSprite;
 
     // Bar
-    protected BitmapTextureAtlas barTexture;
-    protected ITextureRegion barTextureRegion;
+    protected Bar bar;
+    //TODO - Da Eliminare
     protected Sprite barSprite;
 
-    // Game Theme
-    private final int CLASSIC = 0;
-    private final int GOLD = 1;
-    private final int BLUE = 2;
+    // First Enemy
+    protected FirstEnemyBonus firstEnemy;
+
+    // Rush Hour
+    protected RushHourBonus rushHour;
 
     /**
      * Sounds
@@ -81,11 +87,6 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected Font font;
 
     /**
-     * Sensors
-     */
-    protected AccelerationSensorOptions mAccelerationOptions;
-
-    /**
      * Scene
      */
     protected Scene scene;
@@ -96,7 +97,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     /**
      * Collision Events
      */
-    protected int previous_event = 0;
+    protected int previous_event;
     protected static final int NO_COLL = 0;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
@@ -155,14 +156,17 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
 
     @Override
     public EngineOptions onCreateEngineOptions() {
+        //TODO - Da Rivedere poichè CaMERA_WIDTH e CAMERA_HEIGHT ora vengono calcolati da ogni GameObject nel costruttore,
+        //TODO - In ogni caso servono nel costruttore di EngineOptions()
         // Understanding the device display's dimensions
         Display display = getWindow().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        CAMERA_WIDTH = size.x;
-        CAMERA_HEIGHT = size.y;
+        Point displaySize = new Point();
+        display.getSize(displaySize);
+        CAMERA_WIDTH = displaySize.x;
+        CAMERA_HEIGHT = displaySize.y;
         DEVICE_RATIO = (float) CAMERA_WIDTH / 480;
         Log.d("Camera", "Camera Width = " + CAMERA_WIDTH + ", Camera Height = " + CAMERA_HEIGHT + ", Device Ratio = " + DEVICE_RATIO);
+
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
         // Setting up the andEngine options
@@ -193,7 +197,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
             }
         };
 
-        // Setting up the background color
+        // Setting background
         setBackground();
 
         // Adding the textPause to the scene
@@ -201,27 +205,30 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         textPause = new Text((CAMERA_WIDTH - textPause_util.getWidth()) / 2, (CAMERA_HEIGHT - textPause_util.getHeight()) / 2, font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textPause);
 
-        // Adding the ballSprite to the scene
-        ballSprite = new Sprite(0, 0, ballTextureRegion, getVertexBufferObjectManager());
-        ballSprite.setWidth(CAMERA_WIDTH * 0.1f);
-        ballSprite.setHeight(CAMERA_WIDTH * 0.1f);
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 3);
-        attachBall();
+        // Adding the ball to the scene
+        ball.addToScene(scene, 0.1f, 0.1f);
+        ball.setPosition(Ball.TOP);
 
-        // Adding the barSprite to the scene
-        barSprite = new Sprite(0, 0, barTextureRegion, getVertexBufferObjectManager());
-        barSprite.setWidth(CAMERA_WIDTH * 0.3f);
-        barSprite.setPosition((CAMERA_WIDTH - barSprite.getWidth()) / 2, (CAMERA_HEIGHT - 2 * barSprite.getHeight()));
-        scene.attachChild(barSprite);
+        // Adding the bar to the scene
+        bar.addToScene(scene, 0.3f, 0.05f);
+        bar.setPosition(Bar.BOTTOM);
 
-        //Set game velocity
+        //TODO - Da Eliminare
+        ballSprite = ball.getSprite();
+        barSprite = bar.getSprite();
+
+        //TODO - Da Rivedere
+        // Setting game velocity
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
 
-        /** Enable the Acceleration Sensor
-         * - Option: SensorDelay.GAME */
-        this.enableAccelerationSensor(this);
-        mAccelerationOptions = new AccelerationSensorOptions(SensorDelay.GAME);
+        // Setting Bar fields
+        bar.setBarSpeed(BAR_SPEED);
+        bar.setBarWidth((float) bar.getObjectWidth());
+
+        // Setting Ball fields
+        ball.setBallSpeed(BALL_SPEED);
+        ball.createHandler();
 
         this.mEngine.registerUpdateHandler(new FPSLogger());
 
@@ -229,40 +236,14 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     @Override
-    public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {
-    }
-
-    @Override
-    public void onAccelerationChanged(AccelerationData pAccelerationData) {
-        // The bar is moving only on X
-        float new_position = barSprite.getX() + pAccelerationData.getX() * BAR_SPEED;
-        // There's the edges' condition that do not hide the bar beyond the walls
-//        if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 && new_position > -barSprite.getWidth() / 2)
-//            barSprite.setX(new_position);
-        if(BAR_SPEED > 0) {
-            if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
-                if (new_position > -barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
-                    barSprite.setX(new_position);
-        }else{
-            if (new_position < CAMERA_WIDTH - barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) > 0)
-                if (new_position > -barSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
-                    barSprite.setX(new_position);
-        }
-
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
+        if (!pause && !animActive)
+            pauseGame();
     }
 
-    private void setBackground(){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme","0"));
-
-        Log.d("loadGraphics.GamePong", "Theme background " + choice);
-
-        switch (choice){
+    private void setBackground() {
+        switch (theme) {
             case CLASSIC:
                 scene.setBackground(new Background(0f, 0f, 0f));
                 break;
@@ -273,56 +254,42 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
                 scene.setBackground(new Background(0.082f, 0.2f, 0.678f));
                 break;
         }
-
     }
 
     protected void loadGraphics() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme","0"));
-
-        Log.d("loadGraphics.GamePong", "Theme " + choice);
-
-        Drawable ballDraw, barDraw;
-
-        // White Ball texture loading
-        switch (choice){
+        theme = Integer.parseInt(sharedPreferences.getString("prefGameTheme", "0"));
+        Log.d("Selecting Theme", "Theme " + theme);
+        switch (theme) {
             case CLASSIC:
-                ballDraw = getResources().getDrawable(R.drawable.ball_white);
-                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
-                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_white, 0, 0);
+                theme_ball = R.drawable.ball_white;
+                theme_bar = R.drawable.bar_white;
                 break;
             case GOLD:
-                ballDraw = getResources().getDrawable(R.drawable.ball_gold);
-                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
-                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_gold, 0, 0);
+                theme_ball = R.drawable.ball_gold;
+                theme_bar = R.drawable.bar_gold;
                 break;
             case BLUE:
-                ballDraw = getResources().getDrawable(R.drawable.ball_blue);
-                ballTexture = new BitmapTextureAtlas(getTextureManager(), ballDraw.getIntrinsicWidth(), ballDraw.getIntrinsicHeight());
-                ballTextureRegion = createFromResource(ballTexture, this, R.drawable.ball_blue, 0, 0);
+                theme_ball = R.drawable.ball_blue;
+                theme_bar = R.drawable.bar_blue;
                 break;
         }
-        ballTexture.load();
+        // Ball and Bar texture loading
+        ball = new Ball(this, theme_ball);
+        bar = new Bar(this, theme_bar);
 
-        // White Bar texture loading
-        switch (choice){
-            case CLASSIC:
-                barDraw = getResources().getDrawable(R.drawable.bar_white);
-                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
-                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_white, 0, 0);
-                break;
-            case GOLD:
-                barDraw = getResources().getDrawable(R.drawable.bar_gold);
-                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
-                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_gold, 0, 0);
-                break;
-            case BLUE:
-                barDraw = getResources().getDrawable(R.drawable.bar_blue);
-                barTexture = new BitmapTextureAtlas(getTextureManager(), barDraw.getIntrinsicWidth(), barDraw.getIntrinsicHeight());
-                barTextureRegion = createFromResource(barTexture, this, R.drawable.bar_blue, 0, 0);
-                break;
-        }
-        barTexture.load();
+        loadAdditionalGraphics();
+    }
+
+    /**
+     * Questo metodo è ereditato da tutti. In 2Players override con corpo vuoto.
+     */
+    protected void loadAdditionalGraphics() {
+        // First Enemy
+        firstEnemy = new FirstEnemyBonus(this, theme_bar, ball);
+        // Rush Hour
+        rushHour = new RushHourBonus(ball);
+
     }
 
     protected void loadFonts() {
@@ -330,8 +297,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         FontFactory.setAssetBasePath("font/");
         // "secrcode.ttf" texture loading
         int fontSize = (int) getResources().getDimension(R.dimen.text_font);
-        fontTexture = new BitmapTextureAtlas(getTextureManager(), 512, 512,
-                TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        fontTexture = new BitmapTextureAtlas(getTextureManager(), 512, 512, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
         font = FontFactory.createFromAsset(getFontManager(), fontTexture, getAssets(), "secrcode.ttf", fontSize, true, Color.WHITE);
         font.load();
     }
@@ -348,6 +314,7 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void settingPhysics() {
+        //TODO - Da Rivedere, sostituire con un Thread fatto bene (TimerTask)
         Thread physicsThread = new Thread() {
             public void run() {
                 try {
@@ -381,46 +348,18 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     }
 
     protected void doPhysics() {
-        // A physics handler is linked to the ballSprite
-        handler = new PhysicsHandler(ballSprite);
-        ballSprite.registerUpdateHandler(handler);
-
-        // Setting the initial ball velocity
-        setBallVeloctity();
+        // Setting initial ball velocity
+        setBallVelocity();
 
         // The Update Handler is linked to the scene. It evalutates the condition of the scene every frame
         scene.registerUpdateHandler(new IUpdateHandler() {
             @Override
             public void onUpdate(float pSecondsElapsed) {
-                // Edge collision
+                // Collision Detection
                 if (!pause) {
-                    if (leftCondition()) {
-                        collidesLeft();
-                    }
-                    if (rightCondition()) {
-                        collidesRight();
-                    }
-                    if (topCondition()) {
-                        collidesTop();
-                    }
-
-                    // Extra action relative to the TOP side, needed for two player game
+                    collides(condition());
+                    // Extra action relative to 2Player Game
                     bluetoothExtra();
-
-                    if (bottomCondition()) {
-                        collidesBottom();
-                    }
-
-                    // Bar and Ball collision
-                    if (ballSprite.collidesWith(barSprite)) {
-                        if (overBarCondition()) {
-                            collidesOverBar();
-                        }
-                        if (sideBarCondition()) {
-                            collidesSideBar();
-                        }
-                    }
-
                     // Game events collision
                     gameEventsCollisionLogic();
                 }
@@ -432,180 +371,161 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
         });
     }
 
-    protected void attachBall() {
-        scene.attachChild(ballSprite);
+    //TODO - Da Rivedere, rinominare in setGameVelocity() e inserire anche il set della velocità della barra
+    protected void setBallVelocity() {
+        ball.setHandlerSpeed(0, -ball.getBallSpeed());
     }
 
-    protected void setBallVeloctity() {
-        handler.setVelocity(0, -BALL_SPEED);
-    }
-
-    protected boolean leftCondition() {
-        return (ballSprite.getX() < 0) && (previous_event != LEFT);
-    }
-
-    protected boolean rightCondition() {
-        return (ballSprite.getX() > CAMERA_WIDTH - (int) ballSprite.getWidth()) && (previous_event != RIGHT);
+    protected int condition() {
+        if ((ball.getXCoordinate() < 0) && (previous_event != LEFT)) {
+            return LEFT;
+        } else if ((ball.getXCoordinate() > CAMERA_WIDTH - ball.getObjectWidth()) && (previous_event != RIGHT)) {
+            return RIGHT;
+        } else if (topCondition()) {
+            return TOP;
+        } else if ((ball.getYCoordinate() > CAMERA_HEIGHT) && (previous_event != BOTTOM)) {
+            return BOTTOM;
+        }
+        if (ball.collidesWith(bar)) {
+            if ((ball.getYCoordinate() + ball.getObjectHeight() < bar.getYCoordinate() + bar.getObjectHeight()) && (previous_event != OVER) && (previous_event != SIDE)) {
+                return OVER;
+            } else if ((previous_event != SIDE) && (previous_event != OVER)) {
+                return SIDE;
+            }
+        }
+        return NO_COLL;
     }
 
     protected boolean topCondition() {
-        return (ballSprite.getY() < 0) && (previous_event != TOP);
+        return (ball.getYCoordinate() < 0) && (previous_event != TOP);
     }
 
-    protected boolean bottomCondition() {
-        return (ballSprite.getY() > CAMERA_HEIGHT) && (previous_event != BOTTOM);
-    }
-
-    protected void collidesLeft() {
-        Log.d("CollisionEdge", "LEFT EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = LEFT;
-        handler.setVelocityX(-handler.getVelocityX());
-        touch.play();
-    }
-
-    protected void collidesRight() {
-        Log.d("CollisionEdge", "RIGHT EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = RIGHT;
-        handler.setVelocityX(-handler.getVelocityX());
-        touch.play();
+    protected void collides(int collision_event) {
+        switch (collision_event) {
+            case RIGHT:
+            case LEFT:
+            case SIDE:
+                Log.d("CollisionEdge", "RIGHT - LEFT - SIDE EDGE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
+                previous_event = collision_event;
+                ball.setHandlerSpeedX(-ball.getHandlerSpeedX());
+                touch.play();
+                break;
+            case TOP:
+                collidesTop();
+                break;
+            case BOTTOM:
+                collidesBottom();
+                break;
+            case OVER:
+                collidesOverBar();
+                break;
+        }
     }
 
     protected void collidesTop() {
-        Log.d("CollisionEdge", "TOP EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        Log.d("CollisionEdge", "TOP EDGE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
         previous_event = TOP;
-        handler.setVelocityY(-handler.getVelocityY());
+        ball.setHandlerSpeedY(-ball.getHandlerSpeedY());
         touch.play();
     }
 
     protected void collidesBottom() {
-        Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
         previous_event = BOTTOM;
-        ballSprite.detachSelf();
-        ballSprite.setPosition((CAMERA_WIDTH - ballSprite.getWidth()) / 2, (CAMERA_HEIGHT - ballSprite.getHeight()) / 2);
-        handler.setVelocityY(-handler.getVelocityY());
-        attachBall();
-    }
-
-    protected boolean overBarCondition() {
-        return (ballSprite.getY() + ballSprite.getHeight() < barSprite.getY() + barSprite.getHeight()) && (previous_event != OVER) && (previous_event != SIDE);
-    }
-
-    protected boolean sideBarCondition() {
-        return (previous_event != SIDE) && (previous_event != OVER);
+        ball.onBallLost();
+        ball.setHandlerSpeedY(-ball.getHandlerSpeedY());
     }
 
     protected void collidesOverBar() {
-        Log.d("CollisionBar", "OVER BAR. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
+        Log.d("CollisionBar", "OVER BAR. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
         previous_event = OVER;
 
-        // Necessarily in that order because getSceneCenterCoordinates return a shared float
-        float[] bar_center_coords = barSprite.getSceneCenterCoordinates();
-        float barX = bar_center_coords[0];
-        float[] ball_center_coords = ballSprite.getSceneCenterCoordinates();
-        float ballX = ball_center_coords[0];
-        myModule = (float) Math.sqrt(Math.pow(handler.getVelocityX(), 2) + Math.pow(handler.getVelocityY(), 2));
+        float ballX = ball.getXCentreCoordinate();
+        float barX = bar.getXCentreCoordinate();
+        myModule = (float) Math.sqrt(Math.pow(ball.getHandlerSpeedX(), 2) + Math.pow(ball.getHandlerSpeedY(), 2));
 
-        if (ballX - barX <= (-(13 * barSprite.getWidth()) / 30)) {
+        //TODO - DA Rivedere, forse si può sostituire con 2 cicli for
+        if (ballX - barX <= (-(13 * bar.getObjectWidth()) / 30)) {
             Log.d("CollisionBar", "20° LEFT");
             SIN_X = SIN_20;
             COS_X = COS_20;
-            handler.setVelocity(-myModule * COS_20, -myModule * SIN_20);
-        }
-        if ((ballX - barX > (-(13 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-(11 * barSprite.getWidth()) / 30))) {
+            ball.setHandlerSpeed(-myModule * COS_20, -myModule * SIN_20);
+        } else if ((ballX - barX > (-(13 * bar.getObjectWidth()) / 30)) && (ballX - barX <= (-(11 * bar.getObjectWidth()) / 30))) {
             Log.d("CollisionBar", "30° LEFT");
             SIN_X = SIN_30;
             COS_X = COS_30;
-            handler.setVelocity(-myModule * COS_30, -myModule * SIN_30);
-        }
-        if ((ballX - barX > (-(11 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-(3 * barSprite.getWidth()) / 10))) {
+            ball.setHandlerSpeed(-myModule * COS_30, -myModule * SIN_30);
+        } else if ((ballX - barX > (-(11 * bar.getObjectWidth()) / 30)) && (ballX - barX <= (-(3 * bar.getObjectWidth()) / 10))) {
             Log.d("CollisionBar", "40° LEFT");
             SIN_X = SIN_40;
             COS_X = COS_40;
-            handler.setVelocity(-myModule * COS_40, -myModule * SIN_40);
-        }
-        if ((ballX - barX > (-(3 * barSprite.getWidth()) / 10)) && (ballX - barX <= (-(7 * barSprite.getWidth()) / 30))) {
+            ball.setHandlerSpeed(-myModule * COS_40, -myModule * SIN_40);
+        } else if ((ballX - barX > (-(3 * bar.getObjectWidth()) / 10)) && (ballX - barX <= (-(7 * bar.getObjectWidth()) / 30))) {
             Log.d("CollisionBar", "50° LEFT");
             SIN_X = SIN_50;
             COS_X = COS_50;
-            handler.setVelocity(-myModule * COS_50, -myModule * SIN_50);
-        }
-        if ((ballX - barX > (-(7 * barSprite.getWidth()) / 30)) && (ballX - barX <= (-barSprite.getWidth() / 6))) {
+            ball.setHandlerSpeed(-myModule * COS_50, -myModule * SIN_50);
+        } else if ((ballX - barX > (-(7 * bar.getObjectWidth()) / 30)) && (ballX - barX <= (-bar.getObjectWidth() / 6))) {
             Log.d("CollisionBar", "60° LEFT");
             SIN_X = SIN_60;
             COS_X = COS_60;
-            handler.setVelocity(-myModule * COS_60, -myModule * SIN_60);
-        }
-        if ((ballX - barX > (-barSprite.getWidth() / 6)) && (ballX - barX <= (-barSprite.getWidth() / 10))) {
+            ball.setHandlerSpeed(-myModule * COS_60, -myModule * SIN_60);
+        } else if ((ballX - barX > (-bar.getObjectWidth() / 6)) && (ballX - barX <= (-bar.getObjectWidth() / 10))) {
             Log.d("CollisionBar", "70° LEFT");
             SIN_X = SIN_70;
             COS_X = COS_70;
-            handler.setVelocity(-myModule * COS_70, -myModule * SIN_70);
-        }
-        if ((ballX - barX > (-barSprite.getWidth() / 10)) && (ballX - barX <= (-barSprite.getWidth() / 30))) {
+            ball.setHandlerSpeed(-myModule * COS_70, -myModule * SIN_70);
+        } else if ((ballX - barX > (-bar.getObjectWidth() / 10)) && (ballX - barX <= (-bar.getObjectWidth() / 30))) {
             Log.d("CollisionBar", "80° LEFT");
             SIN_X = SIN_80;
             COS_X = COS_80;
-            handler.setVelocity(-myModule * COS_80, -myModule * SIN_80);
-        }
-        if ((ballX - barX > (-barSprite.getWidth() / 30)) && (ballX - barX < (barSprite.getWidth() / 30))) {
+            ball.setHandlerSpeed(-myModule * COS_80, -myModule * SIN_80);
+        } else if ((ballX - barX > (-bar.getObjectWidth() / 30)) && (ballX - barX < (bar.getObjectWidth() / 30))) {
             Log.d("CollisionBar", "90°");
             SIN_X = SIN_90;
             COS_X = COS_90;
-            handler.setVelocity(myModule * COS_90, -myModule * SIN_90);
-        }
-        if ((ballX - barX >= (barSprite.getWidth() / 30)) && (ballX - barX < (barSprite.getWidth() / 10))) {
+            ball.setHandlerSpeed(myModule * COS_90, -myModule * SIN_90);
+        } else if ((ballX - barX >= (bar.getObjectWidth() / 30)) && (ballX - barX < (bar.getObjectWidth() / 10))) {
             Log.d("CollisionBar", "80° RIGHT");
             SIN_X = SIN_80;
             COS_X = COS_80;
-            handler.setVelocity(myModule * COS_80, -myModule * SIN_80);
-        }
-        if ((ballX - barX >= (barSprite.getWidth() / 10)) && (ballX - barX < (barSprite.getWidth() / 6))) {
+            ball.setHandlerSpeed(myModule * COS_80, -myModule * SIN_80);
+        } else if ((ballX - barX >= (bar.getObjectWidth() / 10)) && (ballX - barX < (bar.getObjectWidth() / 6))) {
             Log.d("CollisionBar", "70° RIGHT");
             SIN_X = SIN_70;
             COS_X = COS_70;
-            handler.setVelocity(myModule * COS_70, -myModule * SIN_70);
-        }
-        if ((ballX - barX >= (barSprite.getWidth() / 6)) && (ballX - barX < ((7 * barSprite.getWidth()) / 30))) {
+            ball.setHandlerSpeed(myModule * COS_70, -myModule * SIN_70);
+        } else if ((ballX - barX >= (bar.getObjectWidth() / 6)) && (ballX - barX < ((7 * bar.getObjectWidth()) / 30))) {
             Log.d("CollisionBar", "60° RIGHT");
             SIN_X = SIN_60;
             COS_X = COS_60;
-            handler.setVelocity(myModule * COS_60, -myModule * SIN_60);
-        }
-        if ((ballX - barX >= ((7 * barSprite.getWidth()) / 30)) && (ballX - barX < ((3 * barSprite.getWidth()) / 10))) {
+            ball.setHandlerSpeed(myModule * COS_60, -myModule * SIN_60);
+        } else if ((ballX - barX >= ((7 * bar.getObjectWidth()) / 30)) && (ballX - barX < ((3 * bar.getObjectWidth()) / 10))) {
             Log.d("CollisionBar", "50° RIGHT");
             SIN_X = SIN_50;
             COS_X = COS_50;
-            handler.setVelocity(myModule * COS_50, -myModule * SIN_50);
-        }
-        if ((ballX - barX >= ((3 * barSprite.getWidth()) / 10)) && (ballX - barX < ((11 * barSprite.getWidth()) / 30))) {
+            ball.setHandlerSpeed(myModule * COS_50, -myModule * SIN_50);
+        } else if ((ballX - barX >= ((3 * bar.getObjectWidth()) / 10)) && (ballX - barX < ((11 * bar.getObjectWidth()) / 30))) {
             Log.d("CollisionBar", "40° RIGHT");
             SIN_X = SIN_40;
             COS_X = COS_40;
-            handler.setVelocity(myModule * COS_40, -myModule * SIN_40);
-        }
-        if ((ballX - barX >= ((11 * barSprite.getWidth()) / 30)) && (ballX - barX < ((13 * barSprite.getWidth()) / 30))) {
+            ball.setHandlerSpeed(myModule * COS_40, -myModule * SIN_40);
+        } else if ((ballX - barX >= ((11 * bar.getObjectWidth()) / 30)) && (ballX - barX < ((13 * bar.getObjectWidth()) / 30))) {
             Log.d("CollisionBar", "30° RIGHT");
             SIN_X = SIN_30;
             COS_X = COS_30;
-            handler.setVelocity(myModule * COS_30, -myModule * SIN_30);
-        }
-        if (ballX - barX >= ((13 * barSprite.getWidth()) / 30)) {
+            ball.setHandlerSpeed(myModule * COS_30, -myModule * SIN_30);
+        } else if (ballX - barX >= ((13 * bar.getObjectWidth()) / 30)) {
             Log.d("CollisionBar", "20° RIGHT");
             SIN_X = SIN_20;
             COS_X = COS_20;
-            handler.setVelocity(myModule * COS_20, -myModule * SIN_20);
+            ball.setHandlerSpeed(myModule * COS_20, -myModule * SIN_20);
         }
 
         touch.play();
     }
 
-    protected void collidesSideBar() {
-        Log.d("CollisionBar", "SIDE BAR. V(X,Y): " + handler.getVelocityX() + "," + handler.getVelocityY());
-        previous_event = SIDE;
-        handler.setVelocityX(-handler.getVelocityX());
-        touch.play();
-    }
-
+    //TODO - Da Rivedere
     protected void clearGame() {
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
@@ -625,39 +545,32 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected void pauseGame() {
         Log.d("Pause", "Game Paused");
         textPause.setText(getResources().getString(R.string.text_pause));
-        // Saving Game Data
-        old_x_speed = handler.getVelocityX();
-        old_y_speed = handler.getVelocityY();
-        old_bar_speed = BAR_SPEED;
+        // Saving Game Speed
+        old_x_speed = ball.getHandlerSpeedX();
+        old_y_speed = ball.getHandlerSpeedY();
+        old_bar_speed = bar.getBarSpeed();
         // Stop the Game
-        handler.setVelocity(0);
-        BAR_SPEED = 0;
+        ball.setHandlerSpeed(0f, 0f);
+        bar.setBarSpeed(0f);
+        // Setting pause utils
         firstTap = System.currentTimeMillis();
         previous_event = PAUSE;
         touch.stop();
         pause = true;
+        // Stopping Rush Hour Balls
+        rushHour.pause();
     }
 
     protected void restartGameAfterPause() {
         Log.d("Pause", "Game Restarted");
         textPause.setText("");
-        // Setting the old game velocity
-        handler.setVelocity(old_x_speed, old_y_speed);
-        BAR_SPEED = old_bar_speed;
+        // Setting old game speed
+        ball.setHandlerSpeed(old_x_speed, old_y_speed);
+        bar.setBarSpeed(old_bar_speed);
+        // Setting pause utils
         pause = false;
-    }
-
-    /**
-     * Get the directions of the ball
-     */
-    protected Point getDirections() {
-        Point mPoint = new Point();
-        int x = handler.getVelocityX() > 0 ? 1 : -1;
-        int y = handler.getVelocityY() > 0 ? 1 : -1;
-        x = handler.getVelocityX() == 0 ? 0 : x;
-        y = handler.getVelocityY() == 0 ? 0 : y;
-        mPoint.set(x, y);
-        return mPoint;
+        // Setting old Rush Hour ball speed
+        rushHour.restartAfterPause();
     }
 
     protected abstract void bluetoothExtra();
@@ -669,5 +582,4 @@ public abstract class GamePong extends SimpleBaseGameActivity implements IAccele
     protected abstract void gameOver();
 
     protected abstract void saveGame(String s);
-
 }
