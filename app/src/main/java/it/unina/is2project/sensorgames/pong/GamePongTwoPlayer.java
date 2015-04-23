@@ -77,8 +77,7 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean resumeAllowed;
     private boolean receivedStop;
     private final long BONUS_REPEATING_TIME_MILLIS = 7000;
-//    private final long TIMEOUT_FOR_GAMEOVER = 120000;
-    private final long TIMEOUT_FOR_GAMEOVER = 10000;
+    private final long TIMEOUT_FOR_GAMEOVER = 120000;
     // Connections Utils
     private boolean isConnected;
     private String mConnectedDeviceName = "";
