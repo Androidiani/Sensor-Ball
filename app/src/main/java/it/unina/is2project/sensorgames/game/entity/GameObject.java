@@ -21,22 +21,20 @@ public class GameObject {
     public final static int MIDDLE = 1;
     public final static int BOTTOM = 2;
 
+    protected SimpleBaseGameActivity simpleBaseGameActivity;
+    protected Context context;
+    protected Point displaySize;
     protected Drawable gDraw;
     protected BitmapTextureAtlas gTexture;
     protected ITextureRegion gTextureRegion;
     protected Sprite gSprite;
-    protected Point displaySize;
-    protected SimpleBaseGameActivity simpleBaseGameActivity;
-    protected Context context;
     protected Scene scene;
 
-    public GameObject(SimpleBaseGameActivity simpleBaseGameActivity, final int idDrawable) {
+    public GameObject(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable) {
         this.simpleBaseGameActivity = simpleBaseGameActivity;
         this.context = simpleBaseGameActivity.getApplicationContext();
-
         this.displaySize = new Point();
         simpleBaseGameActivity.getWindow().getWindowManager().getDefaultDisplay().getSize(this.displaySize);
-
         this.gDraw = this.context.getResources().getDrawable(idDrawable);
         this.gTexture = new BitmapTextureAtlas(simpleBaseGameActivity.getTextureManager(), this.gDraw.getIntrinsicWidth(), this.gDraw.getIntrinsicHeight());
         this.gTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromResource(this.gTexture, this.context, idDrawable, 0, 0);
@@ -53,7 +51,7 @@ public class GameObject {
         this.scene = gameObject.scene;
     }
 
-    public void addToScene(Scene scene, float spriteRatio) {
+    public void addToScene(Scene scene, float xRatio, float yRatio) {
         this.scene = scene;
         this.gSprite = new Sprite(0, 0, this.gTextureRegion, this.simpleBaseGameActivity.getVertexBufferObjectManager()) {
             @Override
@@ -62,7 +60,7 @@ public class GameObject {
                 return true;
             }
         };
-        this.gSprite.setWidth(this.displaySize.x * spriteRatio);
+        setObjectDimension(xRatio, yRatio);
         attach();
     }
 
@@ -70,24 +68,20 @@ public class GameObject {
         Log.d("onTouch()", "Sprite touched");
     }
 
-
-    /**
-     * Se chiamato addToScene, aggiunge lo sprite alla scena.
-     */
     public void attach() {
         this.scene.attachChild(gSprite);
     }
 
-    /**
-     * Rimuove lo sprite con operazione dei detach
-     */
     public void detach() {
         this.gSprite.detachSelf();
     }
 
     public Sprite getSprite() {
-        //Se gsprite è null vuol dire che non è stata chiamata addToScene
         return this.gSprite;
+    }
+
+    public Point getDisplaySize() {
+        return displaySize;
     }
 
     public boolean collidesWith(GameObject gameObject) {
@@ -152,20 +146,8 @@ public class GameObject {
         this.gSprite.setHeight(height);
     }
 
-    public Drawable getgDraw() {
-        return gDraw;
+    public void setObjectDimension(float xRatio, float yRatio) {
+        this.gSprite.setWidth(this.displaySize.x * xRatio);
+        this.gSprite.setHeight(this.displaySize.x *yRatio);
     }
-
-    public BitmapTextureAtlas getgTexture() {
-        return gTexture;
-    }
-
-    public ITextureRegion getgTextureRegion() {
-        return gTextureRegion;
-    }
-
-    public Point getDisplaySize() {
-        return displaySize;
-    }
-
 }

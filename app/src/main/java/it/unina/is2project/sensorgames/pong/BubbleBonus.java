@@ -16,10 +16,10 @@ import it.unina.is2project.sensorgames.game.entity.GameObject;
 
 public class BubbleBonus implements IBonusMalus {
 
-    //Per getResources()
+    //Necessario per getResources() (settare lo score)
     private SimpleBaseGameActivity simpleBaseGameActivity;
 
-    //Campo ball per le collisioni del bonus con la palla
+    //Necessario per le collisioni della palla con le bubble
     private Ball ball;
 
     // Bubble Bonus
@@ -38,12 +38,9 @@ public class BubbleBonus implements IBonusMalus {
     public void addToScene(Scene scene) {
         Random random = new Random();
         int BONUS_BALL_NUM = BONUS_BALL_MIN_NUM + random.nextInt(BONUS_BALL_MAX_NUM - BONUS_BALL_MIN_NUM + 1);
-
-        // Adding the bonus ball sprites to the scene
         for (int i = 0; i < BONUS_BALL_NUM; i++) {
             GameObject bubbleTemp = new GameObject(bubble);
-            bubbleTemp.addToScene(scene, 0.1f);
-            bubbleTemp.setObjectHeight(bubble.getDisplaySize().x * 0.1f);
+            bubbleTemp.addToScene(scene, 0.1f, 0.1f);
             bubbleTemp.setPosition(bubbleTemp.getObjectWidth() + random.nextInt(bubble.getDisplaySize().x - (bubbleTemp.getObjectWidth() * 2)), (bubbleTemp.getObjectHeight() * 2) * (i + 1));
             bubbles.add(bubbleTemp);
         }
@@ -54,7 +51,7 @@ public class BubbleBonus implements IBonusMalus {
     public void collision() {
     }
 
-    public int collision(Integer score, int level, Text text) {
+    public int collision(int score, int level, Text text) {
         for (int i = 0; i < bubbles.size(); i++) {
             if (ball.collidesWith(bubbles.get(i))) {
                 Log.d("Bubble Bonus", "Bonus Ball " + i + " removed");
@@ -70,7 +67,7 @@ public class BubbleBonus implements IBonusMalus {
 
     @Override
     public void clear() {
-        while (bubbles.size() > 0) {
+        while (!bubbles.isEmpty()) {
             bubbles.get(0).detach();
             bubbles.remove(0);
         }

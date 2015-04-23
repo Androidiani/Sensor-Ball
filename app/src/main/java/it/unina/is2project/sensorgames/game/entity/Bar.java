@@ -57,8 +57,8 @@ public class Bar extends GameObject implements IAccelerationListener {
     }
 
     @Override
-    public void addToScene(Scene scene, float spriteRatio) {
-        super.addToScene(scene, spriteRatio);
+    public void addToScene(Scene scene, float xRatio, float yRatio) {
+        super.addToScene(scene, xRatio, yRatio);
 
         /** Enable the Acceleration Sensor
          * - Option: SensorDelay.GAME */

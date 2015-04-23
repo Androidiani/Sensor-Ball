@@ -46,7 +46,7 @@ public class GamePongOnePlayer extends GamePong {
     private LifeBonus lifeBonus;
 
     /**
-     * Game data
+     * Game Data
      */
     private int score = 0;
     private int gain = 0;
@@ -102,12 +102,6 @@ public class GamePongOnePlayer extends GamePong {
      */
     private int game_event;
 
-    // Events' enable
-    private boolean bubble_bonus = false;
-    private boolean life_bonus = false;
-    private boolean big_bar = false;
-    private boolean freeze = false;
-
     // Events' number
     private static final int NO_EVENT = 0;
     private static final int FIRST_ENEMY = 1;
@@ -141,8 +135,7 @@ public class GamePongOnePlayer extends GamePong {
         // Adding the life sprites to the scene
         for (int i = 1; i <= life + 1; i++) {
             GameObject lifeTemp = new GameObject(lifeStar);
-            lifeTemp.addToScene(scene, 0.05f);
-            lifeTemp.setObjectHeight(0.05f * CAMERA_WIDTH);
+            lifeTemp.addToScene(scene, 0.05f, 0.05f);
             lifeTemp.setPosition(CAMERA_WIDTH - i * lifeTemp.getObjectWidth(), 0);
             lifeStars.add(lifeTemp);
         }
@@ -159,10 +152,7 @@ public class GamePongOnePlayer extends GamePong {
     protected void loadGraphics() {
         super.loadGraphics();
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int choice = Integer.parseInt(sharedPreferences.getString("prefGameTheme", "0"));
-        Log.d("loadGraphics.GamePong", "Theme " + choice);
-        switch (choice) {
+        switch (theme) {
             case CLASSIC:
                 theme_star = R.drawable.star_white;
                 break;
@@ -249,17 +239,6 @@ public class GamePongOnePlayer extends GamePong {
         reach_count = 1;
         textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
         textLvl.setText(getResources().getString(R.string.text_lv1));
-        // Setting false all events
-        no_event = false;
-        first_enemy = false;
-        bubble_bonus = false;
-        cut_bar_30 = false;
-        life_bonus = false;
-        cut_bar_50 = false;
-        big_bar = false;
-        reverse = false;
-        freeze = false;
-        rush_hour = false;
         // Setting true level one
         level_one = true;
         // Setting false other levels
@@ -379,6 +358,72 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     @Override
+    protected void gameLevels() {
+        if (score >= 0 && score < BARRIER_ONE && level_one) {
+            level = LEVEL_ONE;
+            level_one = true;
+            textLvl.setText(getResources().getString(R.string.text_lv1));
+        } else if (score >= BARRIER_ONE && score < BARRIER_TWO && !level_two) {
+            level = LEVEL_TWO;
+            level_two = true;
+            textLvl.setText(getResources().getString(R.string.text_lv2));
+        } else if (score >= BARRIER_TWO && score < BARRIER_THREE && !level_three) {
+            level = LEVEL_THREE;
+            level_three = true;
+            textLvl.setText(getResources().getString(R.string.text_lv3));
+            bar.setBarSpeed(1.5f * bar.getBarSpeed());
+            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
+        } else if (score >= BARRIER_THREE && score < BARRIER_FOUR && !level_four) {
+            level = LEVEL_FOUR;
+            level_four = true;
+            textLvl.setText(getResources().getString(R.string.text_lv4));
+        } else if (score >= BARRIER_FOUR && score < BARRIER_FIVE && !level_five) {
+            level = LEVEL_FIVE;
+            level_five = true;
+            textLvl.setText(getResources().getString(R.string.text_lv5));
+        } else if (score >= BARRIER_FIVE && score < BARRIER_SIX && !level_six) {
+            level = LEVEL_SIX;
+            level_six = true;
+            textLvl.setText(getResources().getString(R.string.text_lv6));
+            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
+        } else if (score >= BARRIER_SIX && score < BARRIER_SEVEN && !level_seven) {
+            level = LEVEL_SEVEN;
+            level_seven = true;
+            textLvl.setText(getResources().getString(R.string.text_lv7));
+        } else if (score >= BARRIER_SEVEN && score < BARRIER_EIGHT && !level_eight) {
+            level = LEVEL_EIGHT;
+            level_eight = true;
+            textLvl.setText(getResources().getString(R.string.text_lv8));
+        } else if (score >= BARRIER_EIGHT && score < BARRIER_NINE && !level_nine) {
+            level = LEVEL_NINE;
+            level_nine = true;
+            textLvl.setText(getResources().getString(R.string.text_lv9));
+            bar.setBarSpeed(2f * bar.getBarSpeed());
+            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
+        } else if (score >= BARRIER_NINE && score < BARRIER_TEN && !level_ten) {
+            level = LEVEL_TEN;
+            level_ten = true;
+            textLvl.setText(getResources().getString(R.string.text_lv10));
+        } else if (score >= BARRIER_TEN && score < BARRIER_ELEVEN && !level_eleven) {
+            level = LEVEL_ELEVEN;
+            level_eleven = true;
+            textLvl.setText(getResources().getString(R.string.text_lv11));
+        } else if (score >= BARRIER_ELEVEN && score < BARRIER_TWELVE && !level_twelve) {
+            level = LEVEL_TWELVE;
+            level_twelve = true;
+            textLvl.setText(getResources().getString(R.string.text_lv12));
+            bar.setBarSpeed(2.5f * bar.getBarSpeed());
+            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
+        } else if (score >= BARRIER_TWELVE && !level_max) {
+            level = LEVEL_MAX;
+            level_max = true;
+            textLvl.setText(getResources().getString(R.string.text_lv13));
+            bar.setBarSpeed(3f * bar.getBarSpeed());
+            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
+        }
+    }
+
+    @Override
     protected void gameOver() {
         ball.setHandlerSpeed(0f, 0f);
         bar.setBarSpeed(0f);
@@ -438,122 +483,45 @@ public class GamePongOnePlayer extends GamePong {
         statOnePlayerDAO.close();
     }
 
-    @Override
-    protected void gameLevels() {
-        if (score >= 0 && score < BARRIER_ONE && level_one) {
-            level = LEVEL_ONE;
-            level_one = true;
-            textLvl.setText(getResources().getString(R.string.text_lv1));
-        } else if (score >= BARRIER_ONE && score < BARRIER_TWO && !level_two) {
-            level = LEVEL_TWO;
-            level_two = true;
-            textLvl.setText(getResources().getString(R.string.text_lv2));
-        } else if (score >= BARRIER_TWO && score < BARRIER_THREE && !level_three) {
-            level = LEVEL_THREE;
-            level_three = true;
-            textLvl.setText(getResources().getString(R.string.text_lv3));
-            bar.setBarSpeed(1.5f * bar.getBarSpeed());
-            ball.setHandlerSpeed(1.5f * ball.getBallSpeed(), 1.5f * ball.getBallSpeed());
-        } else if (score >= BARRIER_THREE && score < BARRIER_FOUR && !level_four) {
-            level = LEVEL_FOUR;
-            level_four = true;
-            textLvl.setText(getResources().getString(R.string.text_lv4));
-        } else if (score >= BARRIER_FOUR && score < BARRIER_FIVE && !level_five) {
-            level = LEVEL_FIVE;
-            level_five = true;
-            textLvl.setText(getResources().getString(R.string.text_lv5));
-        } else if (score >= BARRIER_FIVE && score < BARRIER_SIX && !level_six) {
-            level = LEVEL_SIX;
-            level_six = true;
-            textLvl.setText(getResources().getString(R.string.text_lv6));
-            bar.setBarSpeed(2f * bar.getBarSpeed());
-            ball.setHandlerSpeed(2f * ball.getBallSpeed(), 2f * ball.getBallSpeed());
-        } else if (score >= BARRIER_SIX && score < BARRIER_SEVEN && !level_seven) {
-            level = LEVEL_SEVEN;
-            level_seven = true;
-            textLvl.setText(getResources().getString(R.string.text_lv7));
-        } else if (score >= BARRIER_SEVEN && score < BARRIER_EIGHT && !level_eight) {
-            level = LEVEL_EIGHT;
-            level_eight = true;
-            textLvl.setText(getResources().getString(R.string.text_lv8));
-        } else if (score >= BARRIER_EIGHT && score < BARRIER_NINE && !level_nine) {
-            level = LEVEL_NINE;
-            level_nine = true;
-            textLvl.setText(getResources().getString(R.string.text_lv9));
-            bar.setBarSpeed(2.5f * bar.getBarSpeed());
-            ball.setHandlerSpeed(2.5f * ball.getBallSpeed(), 2.5f * ball.getBallSpeed());
-        } else if (score >= BARRIER_NINE && score < BARRIER_TEN && !level_ten) {
-            level = LEVEL_TEN;
-            level_ten = true;
-            textLvl.setText(getResources().getString(R.string.text_lv10));
-        } else if (score >= BARRIER_TEN && score < BARRIER_ELEVEN && !level_eleven) {
-            level = LEVEL_ELEVEN;
-            level_eleven = true;
-            textLvl.setText(getResources().getString(R.string.text_lv11));
-        } else if (score >= BARRIER_ELEVEN && score < BARRIER_TWELVE && !level_twelve) {
-            level = LEVEL_TWELVE;
-            level_twelve = true;
-            textLvl.setText(getResources().getString(R.string.text_lv12));
-            bar.setBarSpeed(3f * bar.getBarSpeed());
-            ball.setHandlerSpeed(3f * ball.getBallSpeed(), 3f * ball.getBallSpeed());
-        } else if (score >= BARRIER_TWELVE && !level_max) {
-            level = LEVEL_MAX;
-            level_max = true;
-            textLvl.setText(getResources().getString(R.string.text_lv13));
-            bar.setBarSpeed(3.5f * bar.getBarSpeed());
-            ball.setHandlerSpeed(3.5f * ball.getBallSpeed(), 3.5f * ball.getBallSpeed());
-        }
-    }
-
     private void gameEvent() {
         switch (game_event) {
             case NO_EVENT:
                 textEvnt.setText("");
-                no_event = true;
                 break;
             case FIRST_ENEMY:
                 textEvnt.setText(getResources().getString(R.string.text_first_enemy));
-                first_enemy = true;
                 firstEnemy.addToScene(scene);
                 break;
             case BUBBLE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_bubble));
-                bubble_bonus = true;
                 bubble.addToScene(scene);
                 break;
             case CUT_BAR_30:
                 textEvnt.setText(getResources().getString(R.string.text_cut_bar_30));
-                cut_bar_30 = true;
-                cutBar30Logic();
+                bar.setObjectWidth(0.7f * bar.getBarWidth());
                 break;
             case LIFE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_lifebonus));
-                life_bonus = true;
                 lifeBonus.addToScene(scene, life);
                 break;
             case CUT_BAR_50:
                 textEvnt.setText(getResources().getString(R.string.text_cut_bar_50));
-                cut_bar_50 = true;
-                cutBar50Logic();
+                bar.setObjectWidth(0.5f * bar.getBarWidth());
                 break;
             case BIG_BAR:
                 textEvnt.setText(getResources().getString(R.string.text_big_bar));
-                big_bar = true;
-                bigBarLogic();
+                bar.setObjectWidth(1.5f * bar.getBarWidth());
                 break;
             case REVERSE:
                 textEvnt.setText(getResources().getString(R.string.text_reverse));
-                reverse = true;
-                reverseLogic();
+                bar.setBarSpeed(-bar.getBarSpeed());
                 break;
             case FREEZE:
                 textEvnt.setText(getResources().getString(R.string.text_freeze));
-                freeze = true;
-                freezeLogic();
+                ball.setHandlerSpeed(ball.getHandlerSpeedX() / 2, ball.getHandlerSpeedY() / 2);
                 break;
             case RUSH_HOUR:
                 textEvnt.setText(getResources().getString(R.string.text_rush));
-                rush_hour = true;
                 rushHour.addToScene(scene);
                 break;
         }
@@ -562,72 +530,45 @@ public class GamePongOnePlayer extends GamePong {
     private void clearEvent() {
         switch (game_event) {
             case NO_EVENT:
-                no_event = false;
                 break;
             case FIRST_ENEMY:
-                first_enemy = false;
                 firstEnemy.clear();
                 break;
             case BUBBLE_BONUS:
-                bubble_bonus = false;
                 bubble.clear();
                 break;
             case CUT_BAR_30:
-                cut_bar_30 = false;
-                clearCutBar30();
+                bar.setObjectWidth(bar.getBarWidth());
                 break;
             case LIFE_BONUS:
-                life_bonus = false;
                 lifeBonus.clear();
                 break;
             case CUT_BAR_50:
-                cut_bar_50 = false;
-                clearCutBar50();
+                bar.setObjectWidth(bar.getBarWidth());
                 break;
             case BIG_BAR:
-                big_bar = false;
-                clearBigBar();
+                bar.setObjectWidth(bar.getBarWidth());
                 break;
             case REVERSE:
-                reverse = false;
-                clearReverse();
+                bar.setBarSpeed(-bar.getBarSpeed());
                 break;
             case FREEZE:
-                freeze = false;
-                clearFreeze();
+                ball.setHandlerSpeed(ball.getHandlerSpeedX() * 2, ball.getHandlerSpeedY() * 2);
                 break;
             case RUSH_HOUR:
-                rush_hour = false;
                 rushHour.clear();
                 break;
         }
     }
 
     private void callEvent() {
-//        // Generating a new event, different from current event
-//        Random random = new Random();
-//        int random_int;
-//        do {
-//            random_int = random.nextInt(level + 1);
-//        }
-//        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
-//        game_event = random_int;
-        game_event = LIFE_BONUS;
-    }
-
-    private void bigBarLogic() {
-        bar.setObjectWidth(1.5f * bar.getBarWidth());
-    }
-
-    private void clearBigBar() {
-        bar.setObjectWidth(bar.getBarWidth());
-    }
-
-    private void freezeLogic() {
-        ball.setHandlerSpeed(ball.getHandlerSpeedX() / 2, ball.getHandlerSpeedY() / 2);
-    }
-
-    private void clearFreeze() {
-        ball.setHandlerSpeed(ball.getHandlerSpeedX() * 2, ball.getHandlerSpeedY() * 2);
+        // Generating a new event, different from current event
+        Random random = new Random();
+        int random_int;
+        do {
+            random_int = random.nextInt(level + 1);
+        }
+        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
+        game_event = random_int;
     }
 }

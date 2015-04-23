@@ -11,7 +11,7 @@ public class FirstEnemyBonus implements IBonusMalus {
 
     private static final int ENEMY = 100;
 
-    //Campo ball per le collisioni della palla con first enemy
+    //Necessario per le collisioni della palla con first enemy
     private Ball ball;
 
     // First Enemy
@@ -24,7 +24,7 @@ public class FirstEnemyBonus implements IBonusMalus {
 
     @Override
     public void addToScene(Scene scene) {
-        firstEnemy.addToScene(scene, 1f);
+        firstEnemy.addToScene(scene, 1f, 0.05f);
         firstEnemy.setPosition(GameObject.TOP);
     }
 

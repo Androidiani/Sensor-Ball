@@ -31,7 +31,7 @@ public class RushHourBonus implements IBonusMalus {
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
         for (int i = 0; i < RUSH_HOUR_NUM; i++) {
             Ball rushTemp = new Ball(ball);
-            rushTemp.addToScene(scene, 0.1f);
+            rushTemp.addToScene(scene, 0.1f, 0.1f);
             rushTemp.setRandomPosition();
             rushTemp.createHandler();
             rushTemp.setHandlerSpeed(ball.getBallSpeed() * (random.nextFloat() - random.nextFloat()), ball.getBallSpeed() * (random.nextFloat() - random.nextFloat()));

@@ -1,7 +1,6 @@
 package it.unina.is2project.sensorgames.game.entity;
 
 import org.andengine.engine.handler.physics.PhysicsHandler;
-import org.andengine.entity.scene.Scene;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 public class Ball extends GameObject {
@@ -28,12 +27,6 @@ public class Ball extends GameObject {
         this.ballSpeed = ballSpeed;
     }
 
-    @Override
-    public void addToScene(Scene scene, float spriteRatio) {
-        super.addToScene(scene, spriteRatio);
-        this.gSprite.setHeight(this.displaySize.x * spriteRatio);
-    }
-
     public void onBallLost() {
         this.detach();
         this.setPosition(Ball.MIDDLE);
@@ -43,10 +36,6 @@ public class Ball extends GameObject {
     public void createHandler() {
         this.handler = new PhysicsHandler(this.gSprite);
         this.gSprite.registerUpdateHandler(handler);
-    }
-
-    public PhysicsHandler getHandler() {
-        return handler;
     }
 
     public void setHandlerSpeed(float xSpeed, float ySpeed) {

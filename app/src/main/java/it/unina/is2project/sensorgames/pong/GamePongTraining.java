@@ -15,6 +15,9 @@ public class GamePongTraining extends GamePong {
 
     private final String TAG = "TrainingGame";
 
+    /**
+     * Graphics
+     */
     // Setting button
     private GameObject setting;
 
@@ -22,6 +25,9 @@ public class GamePongTraining extends GamePong {
     private Text textHit;
     private Text textEvent;
 
+    /**
+     * Game Data
+     */
     // Hit count
     private int hit_count = 0;
 
@@ -38,8 +44,6 @@ public class GamePongTraining extends GamePong {
     protected Scene onCreateScene() {
         super.onCreateScene();
 
-        Log.d(TAG, "Creating Scene Training Game");
-
         // Adding the textHit to the scene
         textHit = new Text(10, 10, font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textHit);
@@ -50,8 +54,7 @@ public class GamePongTraining extends GamePong {
         scene.attachChild(textEvent);
 
         // Adding the settingSprite to the scene
-        setting.addToScene(scene, 0.1f);
-        setting.setObjectHeight(CAMERA_WIDTH * 0.1f);
+        setting.addToScene(scene, 0.1f, 0.1f);
         setting.setPosition(CAMERA_WIDTH - setting.getObjectWidth(), 0);
         scene.registerTouchArea(setting.getSprite());
 
@@ -96,6 +99,7 @@ public class GamePongTraining extends GamePong {
         super.collidesBottom();
         hit_count = 0;
         textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+        Log.d(TAG, "Hit: " + hit_count);
     }
 
     @Override
@@ -103,6 +107,7 @@ public class GamePongTraining extends GamePong {
         super.collidesOverBar();
         hit_count++;
         textHit.setText(getResources().getString(R.string.text_hit) + ": " + hit_count);
+        Log.d(TAG, "Hit: " + hit_count);
     }
 
     @Override
@@ -146,12 +151,12 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
-    protected void gameLevels() {
+    protected void addScore() {
         //do nothing
     }
 
     @Override
-    protected void addScore() {
+    protected void gameLevels() {
         //do nothing
     }
 
@@ -182,31 +187,25 @@ public class GamePongTraining extends GamePong {
         switch (event) {
             case NO_EVENT:
                 textEvent.setText("");
-                no_event = true;
                 break;
             case FIRST_ENEMY:
                 textEvent.setText(getResources().getString(R.string.text_first_enemy));
-                first_enemy = true;
                 firstEnemy.addToScene(scene);
                 break;
             case CUT_30:
                 textEvent.setText(getResources().getString(R.string.text_cut_bar_30));
-                cut_bar_30 = true;
-                cutBar30Logic();
+                bar.setObjectWidth(0.7f * bar.getBarWidth());
                 break;
             case CUT_50:
                 textEvent.setText(getResources().getString(R.string.text_cut_bar_50));
-                cut_bar_50 = true;
-                cutBar50Logic();
+                bar.setObjectWidth(0.5f * bar.getBarWidth());
                 break;
             case REVERSE:
                 textEvent.setText(getResources().getString(R.string.text_reverse));
-                reverse = true;
-                reverseLogic();
+                bar.setBarSpeed(-bar.getBarSpeed());
                 break;
             case RUSH_HOUR:
                 textEvent.setText(getResources().getString(R.string.text_rush));
-                rush_hour = true;
                 rushHour.addToScene(scene);
                 break;
         }
@@ -215,26 +214,20 @@ public class GamePongTraining extends GamePong {
     private void clearEvent() {
         switch (event) {
             case NO_EVENT:
-                no_event = false;
                 break;
             case FIRST_ENEMY:
-                first_enemy = false;
                 firstEnemy.clear();
                 break;
             case CUT_30:
-                cut_bar_30 = false;
-                clearCutBar30();
+                bar.setObjectWidth(bar.getBarWidth());
                 break;
             case CUT_50:
-                cut_bar_50 = false;
-                clearCutBar50();
+                bar.setObjectWidth(bar.getBarWidth());
                 break;
             case REVERSE:
-                reverse = false;
-                clearReverse();
+                bar.setBarSpeed(-bar.getBarSpeed());
                 break;
             case RUSH_HOUR:
-                rush_hour = false;
                 rushHour.clear();
                 break;
         }

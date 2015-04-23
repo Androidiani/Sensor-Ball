@@ -12,10 +12,10 @@ import it.unina.is2project.sensorgames.game.entity.GameObject;
 
 public class LifeBonus implements IBonusMalus {
 
-    //Campo ball per le collisioni della palla con first enemy
+    //Necessario per le collisioni della palla con life bonus
     private Ball ball;
 
-    // First Enemy
+    // Life Bonus
     private GameObject lifeBonus;
     private int old_life = 0;
 
@@ -31,8 +31,7 @@ public class LifeBonus implements IBonusMalus {
 
     public void addToScene(Scene scene, int life) {
         old_life = life;
-        lifeBonus.addToScene(scene, 0.1f);
-        lifeBonus.getSprite().setHeight(lifeBonus.getDisplaySize().x * 0.1f);
+        lifeBonus.addToScene(scene, 0.1f, 0.1f);
         lifeBonus.setRandomPosition();
     }
 
