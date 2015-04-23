@@ -167,6 +167,7 @@ public class GamePongTwoPlayer extends GamePong {
     public final static int CUTBAR50 = 7;
     public final static int REVERTEDBAR = 8;
     public final static int RUSHHOUR = 9;
+    private float SPRITE_ICON_SIZE;
     // Bonus Icon Constants
     public final static int SPEEDX2_ICON = 10;
     public final static int SPEEDX3_ICON = 11;
@@ -251,11 +252,12 @@ public class GamePongTwoPlayer extends GamePong {
         textInfo = new Text(10, 10, font, "", 30, getVertexBufferObjectManager());
         scene.attachChild(textInfo);
 
-        Text textPointUtils = new Text(10, 10, font, "Score", 30, getVertexBufferObjectManager());
+        Text textPointUtils = new Text(10, 10, font, "Score 10-10 [10]", 30, getVertexBufferObjectManager());
 
         // Attachning textPoint
-        textPoint = new Text(10, CAMERA_HEIGHT - textPointUtils.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore + " [" + points + "]", 30, getVertexBufferObjectManager());
+        textPoint = new Text(10, CAMERA_HEIGHT - textPointUtils.getHeight(), font, getResources().getString(R.string.sts_score) + " " + score + "-" + opponentScore + " [" + points + "]", 30, getVertexBufferObjectManager());
         scene.attachChild(textPoint);
+        SPRITE_ICON_SIZE = textPointUtils.getHeight();
 
         // Traslating bar
         barSprite.setY(textPoint.getY() - barSprite.getHeight());
@@ -797,6 +799,8 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X2 ICON INITIALIZING
 
         speedIconSprite_X2 = new Sprite(0, 0, speedIconTextureRegion_X2, getVertexBufferObjectManager());
+        speedIconSprite_X2.setWidth(SPRITE_ICON_SIZE);
+        speedIconSprite_X2.setHeight(SPRITE_ICON_SIZE);
         speedIconSprite_X2.setX(CAMERA_WIDTH - speedIconSprite_X2.getWidth());
         speedIconSprite_X2.setY(textPoint.getY() + textPoint.getHeight() / 2 - speedIconSprite_X2.getHeight() / 2);
 
@@ -823,6 +827,8 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X3 ICON INITIALIZING
 
         speedIconSprite_X3 = new Sprite(0, 0, speedIconTextureRegion_X3, getVertexBufferObjectManager());
+        speedIconSprite_X3.setWidth(SPRITE_ICON_SIZE);
+        speedIconSprite_X3.setHeight(SPRITE_ICON_SIZE);
         speedIconSprite_X3.setX(speedIconSprite_X2.getX() - speedIconSprite_X2.getWidth());
         speedIconSprite_X3.setY(textPoint.getY() + textPoint.getHeight() / 2 - speedIconSprite_X3.getHeight() / 2);
 
@@ -849,6 +855,8 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X4 ICON INITIALIZING
 
         speedIconSprite_X4 = new Sprite(0, 0, speedIconTextureRegion_X4, getVertexBufferObjectManager());
+        speedIconSprite_X4.setWidth(SPRITE_ICON_SIZE);
+        speedIconSprite_X4.setHeight(SPRITE_ICON_SIZE);
         speedIconSprite_X4.setX(speedIconSprite_X3.getX() - speedIconSprite_X3.getWidth());
         speedIconSprite_X4.setY(textPoint.getY() + textPoint.getHeight() / 2 - speedIconSprite_X4.getHeight() / 2);
 
@@ -874,6 +882,8 @@ public class GamePongTwoPlayer extends GamePong {
         // LOCK FIELD ICON INITIALIZING
 
         lockFieldIconSprite = new Sprite(0, 0, lockFieldIconTextureRegion, getVertexBufferObjectManager());
+        lockFieldIconSprite.setWidth(SPRITE_ICON_SIZE);
+        lockFieldIconSprite.setHeight(SPRITE_ICON_SIZE);
         lockFieldIconSprite.setX(speedIconSprite_X4.getX() - speedIconSprite_X4.getWidth());
         lockFieldIconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - lockFieldIconSprite.getHeight() / 2);
 
@@ -899,6 +909,8 @@ public class GamePongTwoPlayer extends GamePong {
         // CUT BAR 30 ICON INITIALIZING
 
         cutBar30IconSprite = new Sprite(0, 0, cutBar30IconTextureRegion, getVertexBufferObjectManager());
+        cutBar30IconSprite.setWidth(SPRITE_ICON_SIZE);
+        cutBar30IconSprite.setHeight(SPRITE_ICON_SIZE);
         cutBar30IconSprite.setX(lockFieldIconSprite.getX() - lockFieldIconSprite.getWidth());
         cutBar30IconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - cutBar30IconSprite.getHeight() / 2);
 
@@ -924,6 +936,8 @@ public class GamePongTwoPlayer extends GamePong {
         // CUT BAR 50 ICON INITIALIZING
 
         cutBar50IconSprite = new Sprite(0, 0, cutBar50IconTextureRegion, getVertexBufferObjectManager());
+        cutBar50IconSprite.setWidth(SPRITE_ICON_SIZE);
+        cutBar50IconSprite.setHeight(SPRITE_ICON_SIZE);
         cutBar50IconSprite.setX(cutBar30IconSprite.getX() - cutBar30IconSprite.getWidth());
         cutBar50IconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - cutBar50IconSprite.getHeight() / 2);
 
@@ -949,6 +963,8 @@ public class GamePongTwoPlayer extends GamePong {
         // REVERTED ICON INITIALIZING
 
         revertedBarIconSprite = new Sprite(0, 0, revertedBarIconTextureRegion, getVertexBufferObjectManager());
+        revertedBarIconSprite.setWidth(SPRITE_ICON_SIZE);
+        revertedBarIconSprite.setHeight(SPRITE_ICON_SIZE);
         revertedBarIconSprite.setX(cutBar50IconSprite.getX() - cutBar50IconSprite.getWidth());
         revertedBarIconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - revertedBarIconSprite.getHeight() / 2);
 
@@ -974,8 +990,11 @@ public class GamePongTwoPlayer extends GamePong {
         // RUSH HOUR ICON INITIALIZING
 
         rushHourIconSprite = new Sprite(0, 0, rushHourIconTextureRegion, getVertexBufferObjectManager());
+        rushHourIconSprite.setWidth(SPRITE_ICON_SIZE);
+        rushHourIconSprite.setHeight(SPRITE_ICON_SIZE);
         rushHourIconSprite.setX(revertedBarIconSprite.getX() - revertedBarIconSprite.getWidth());
         rushHourIconSprite.setY(textPoint.getY() + textPoint.getHeight() / 2 - rushHourIconSprite.getHeight() / 2);
+
     }
 
 
