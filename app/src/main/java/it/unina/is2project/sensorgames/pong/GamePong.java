@@ -362,9 +362,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
                     bluetoothExtra();
                     // Game events collision
                     gameEventsCollisionLogic();
-                    //TODO - Da Rivedere, valutare se rimuovere gameLevels() dal Thread onUpdate()
-                    // Game Levels
-                    gameLevels();
                 }
             }
 
@@ -579,8 +576,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected abstract void bluetoothExtra();
 
     protected abstract void gameEventsCollisionLogic();
-
-    protected abstract void gameLevels();
 
     protected abstract void addScore();
 

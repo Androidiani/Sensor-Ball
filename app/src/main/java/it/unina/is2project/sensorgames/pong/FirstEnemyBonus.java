@@ -7,7 +7,7 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 
-public class FirstEnemyBonus implements IBonusMalus {
+public class FirstEnemyBonus {
 
     private static final int ENEMY = 100;
 
@@ -22,14 +22,9 @@ public class FirstEnemyBonus implements IBonusMalus {
         this.firstEnemy = new GameObject(simpleBaseGameActivity, idDrawable);
     }
 
-    @Override
     public void addToScene(Scene scene) {
         firstEnemy.addToScene(scene, 1f, 0.05f);
         firstEnemy.setPosition(GameObject.TOP);
-    }
-
-    @Override
-    public void collision() {
     }
 
     public int collision(int previous_event, Sound touch) {
@@ -41,7 +36,6 @@ public class FirstEnemyBonus implements IBonusMalus {
         return previous_event;
     }
 
-    @Override
     public void clear() {
         firstEnemy.detach();
     }

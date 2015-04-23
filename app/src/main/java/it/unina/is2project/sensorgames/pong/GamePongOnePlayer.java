@@ -50,59 +50,25 @@ public class GamePongOnePlayer extends GamePong {
      */
     private int score = 0;
     private int gain = 0;
+    private int level = 1;
+    private int oldLevel = 0;
+    private int levelCount1 = 0;
+    private int levelCount2 = 10;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
     private int reach_count = 1;
     private static final int MIN_REACH_COUNT = 2;
     private static final int MAX_REACH_COUNT = 6;
 
-    // Levels
-    private int level;
-    private boolean level_one = true;
-    private static final int LEVEL_ONE = 0;
-    private static final int BARRIER_ONE = 50;
-    private boolean level_two = false;
-    private static final int LEVEL_TWO = 1;
-    private static final int BARRIER_TWO = 250;
-    private boolean level_three = false;
-    private static final int LEVEL_THREE = 2;
-    private static final int BARRIER_THREE = 1000;
-    private boolean level_four = false;
-    private static final int LEVEL_FOUR = 3;
-    private static final int BARRIER_FOUR = 2000;
-    private boolean level_five = false;
-    private static final int LEVEL_FIVE = 4;
-    private static final int BARRIER_FIVE = 5000;
-    private boolean level_six = false;
-    private static final int LEVEL_SIX = 5;
-    private static final int BARRIER_SIX = 10000;
-    private boolean level_seven = false;
-    private static final int LEVEL_SEVEN = 6;
-    private static final int BARRIER_SEVEN = 20000;
-    private boolean level_eight = false;
-    private static final int LEVEL_EIGHT = 7;
-    private static final int BARRIER_EIGHT = 50000;
-    private boolean level_nine = false;
-    private static final int LEVEL_NINE = 8;
-    private static final int BARRIER_NINE = 100000;
-    private boolean level_ten = false;
-    private static final int LEVEL_TEN = 9;
-    private static final int BARRIER_TEN = 200000;
-    private boolean level_eleven = false;
-    private static final int LEVEL_ELEVEN = 10;
-    private static final int BARRIER_ELEVEN = 500000;
-    private boolean level_twelve = false;
-    private static final int LEVEL_TWELVE = 11;
-    private static final int BARRIER_TWELVE = 1000000;
-    private boolean level_max = false;
-    private static final int LEVEL_MAX = 12;
-
     /**
-     * Events
+     * Event
      */
     private int game_event;
 
-    // Events' number
+    /*
+    * BONUS
+    */
+    private static final int NUM_BONUS = 10;
     private static final int NO_EVENT = 0;
     private static final int FIRST_ENEMY = 1;
     private static final int BUBBLE_BONUS = 2;
@@ -126,7 +92,6 @@ public class GamePongOnePlayer extends GamePong {
         // Adding the level text to the scene
         textLvl = new Text(10, textScore.getY() + textScore.getHeight(), font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textLvl);
-        textLvl.setText(getResources().getString(R.string.text_lv1));
 
         // Adding the level text to the scene
         textEvnt = new Text(10, textLvl.getY() + textLvl.getHeight(), font, "", 20, getVertexBufferObjectManager());
@@ -142,9 +107,7 @@ public class GamePongOnePlayer extends GamePong {
 
         // Setting up the physics of the game
         settingPhysics();
-
         clearGame();
-
         return scene;
     }
 
@@ -166,10 +129,8 @@ public class GamePongOnePlayer extends GamePong {
 
         // Life texture loading
         lifeStar = new GameObject(this, theme_star);
-
         // Life Bonus
         lifeBonus = new LifeBonus(this, theme_star, ball);
-
         // Bonus ball loading
         bubble = new BubbleBonus(this, ball);
     }
@@ -204,11 +165,7 @@ public class GamePongOnePlayer extends GamePong {
         addScore();
         textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
         Log.d(TAG, "Score: " + score);
-
-        //TODO - Valutare dove mettere gameLevels()
-//        // Game levels section
-//        gameLevels();
-//        Log.d(TAG, "Level " + level);
+        changeSpeedByLevel();
 
         // Game events section
         reach_count--;
@@ -229,31 +186,14 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     protected void clearGame() {
         super.clearGame();
-
         // Clear game data
         life = MAX_LIFE - 1;
         score = 0;
         gain = 0;
-        level = LEVEL_ONE;
+        level = 1;
         game_event = NO_EVENT;
         reach_count = 1;
         textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
-        textLvl.setText(getResources().getString(R.string.text_lv1));
-        // Setting true level one
-        level_one = true;
-        // Setting false other levels
-        level_two = false;
-        level_three = false;
-        level_four = false;
-        level_five = false;
-        level_six = false;
-        level_seven = false;
-        level_eight = false;
-        level_nine = false;
-        level_ten = false;
-        level_eleven = false;
-        level_twelve = false;
-        level_max = false;
     }
 
     @Override
@@ -304,122 +244,35 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     public void addScore() {
-        if (score >= 0 && score < BARRIER_ONE && level_one) {
-            score += 10;
-            gain = 10;
-        } else if (score >= BARRIER_ONE && score < BARRIER_TWO && level_two) {
-            score += 20;
-            gain = 20;
-        } else if (score >= BARRIER_TWO && score < BARRIER_THREE && level_three) {
-            score += 30;
-            gain = 30;
-        } else if (score >= BARRIER_THREE && score < BARRIER_FOUR && level_four) {
-            score += 40;
-            gain = 40;
-        } else if (score >= BARRIER_FOUR && score < BARRIER_FIVE && level_five) {
-            score += 50;
-            gain = 50;
-        } else if (score >= BARRIER_FIVE && score < BARRIER_SIX && level_six) {
-            score += 100;
-            gain = 100;
-        } else if (score >= BARRIER_SIX && score < BARRIER_SEVEN && level_seven) {
-            score += 200;
-            gain = 200;
-        } else if (score >= BARRIER_SEVEN && score < BARRIER_EIGHT && level_eight) {
-            score += 300;
-            gain = 300;
-        } else if (score >= BARRIER_EIGHT && score < BARRIER_NINE && level_nine) {
-            score += 400;
-            gain = 400;
-        } else if (score >= BARRIER_NINE && score < BARRIER_TEN && level_ten) {
-            score += 500;
-            gain = 500;
-        } else if (score >= BARRIER_TEN && score < BARRIER_ELEVEN && level_eleven) {
-            score += 1000;
-            gain = 1000;
-        } else if (score >= BARRIER_ELEVEN && score < BARRIER_TWELVE && level_twelve) {
-            score += 2000;
-            gain = 2000;
-        } else if (score >= BARRIER_TWELVE && level_max) {
-            score += 5000;
-            gain = 5000;
-        }
-
+        gain = getLevel() * 10;
+        score += gain;
         if (game_event == FIRST_ENEMY)
             score += gain * 2;
         if (game_event == CUT_BAR_30)
             score += gain * 4;
         if (game_event == CUT_BAR_50)
-            score += gain * 6;
-        if (game_event == REVERSE)
             score += gain * 8;
-        if (game_event == RUSH_HOUR)
+        if (game_event == REVERSE)
             score += gain * 10;
+        if (game_event == RUSH_HOUR)
+            score += gain * 12;
     }
 
-    @Override
-    protected void gameLevels() {
-        if (score >= 0 && score < BARRIER_ONE && level_one) {
-            level = LEVEL_ONE;
-            level_one = true;
-            textLvl.setText(getResources().getString(R.string.text_lv1));
-        } else if (score >= BARRIER_ONE && score < BARRIER_TWO && !level_two) {
-            level = LEVEL_TWO;
-            level_two = true;
-            textLvl.setText(getResources().getString(R.string.text_lv2));
-        } else if (score >= BARRIER_TWO && score < BARRIER_THREE && !level_three) {
-            level = LEVEL_THREE;
-            level_three = true;
-            textLvl.setText(getResources().getString(R.string.text_lv3));
+    protected int getLevel() {
+        float a = 0.02567f;
+        float b = 1;
+        level = (int) Math.round((Math.log(a * score + 1) + b));
+        Log.d("LEVEL", "livello : " + level);
+        textLvl.setText(getResources().getString(R.string.text_lvl) + " " + level);
+        return level;
+    }
+
+    private void changeSpeedByLevel() {
+        if (oldLevel != getLevel() && getLevel() % 3 == 0) {
+            oldLevel = getLevel();
             bar.setBarSpeed(1.5f * bar.getBarSpeed());
             ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
-        } else if (score >= BARRIER_THREE && score < BARRIER_FOUR && !level_four) {
-            level = LEVEL_FOUR;
-            level_four = true;
-            textLvl.setText(getResources().getString(R.string.text_lv4));
-        } else if (score >= BARRIER_FOUR && score < BARRIER_FIVE && !level_five) {
-            level = LEVEL_FIVE;
-            level_five = true;
-            textLvl.setText(getResources().getString(R.string.text_lv5));
-        } else if (score >= BARRIER_FIVE && score < BARRIER_SIX && !level_six) {
-            level = LEVEL_SIX;
-            level_six = true;
-            textLvl.setText(getResources().getString(R.string.text_lv6));
-            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
-        } else if (score >= BARRIER_SIX && score < BARRIER_SEVEN && !level_seven) {
-            level = LEVEL_SEVEN;
-            level_seven = true;
-            textLvl.setText(getResources().getString(R.string.text_lv7));
-        } else if (score >= BARRIER_SEVEN && score < BARRIER_EIGHT && !level_eight) {
-            level = LEVEL_EIGHT;
-            level_eight = true;
-            textLvl.setText(getResources().getString(R.string.text_lv8));
-        } else if (score >= BARRIER_EIGHT && score < BARRIER_NINE && !level_nine) {
-            level = LEVEL_NINE;
-            level_nine = true;
-            textLvl.setText(getResources().getString(R.string.text_lv9));
-            bar.setBarSpeed(2f * bar.getBarSpeed());
-            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
-        } else if (score >= BARRIER_NINE && score < BARRIER_TEN && !level_ten) {
-            level = LEVEL_TEN;
-            level_ten = true;
-            textLvl.setText(getResources().getString(R.string.text_lv10));
-        } else if (score >= BARRIER_TEN && score < BARRIER_ELEVEN && !level_eleven) {
-            level = LEVEL_ELEVEN;
-            level_eleven = true;
-            textLvl.setText(getResources().getString(R.string.text_lv11));
-        } else if (score >= BARRIER_ELEVEN && score < BARRIER_TWELVE && !level_twelve) {
-            level = LEVEL_TWELVE;
-            level_twelve = true;
-            textLvl.setText(getResources().getString(R.string.text_lv12));
-            bar.setBarSpeed(2.5f * bar.getBarSpeed());
-            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
-        } else if (score >= BARRIER_TWELVE && !level_max) {
-            level = LEVEL_MAX;
-            level_max = true;
-            textLvl.setText(getResources().getString(R.string.text_lv13));
-            bar.setBarSpeed(3f * bar.getBarSpeed());
-            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
+            Log.d(TAG, "Speed changed.");
         }
     }
 
@@ -566,9 +419,9 @@ public class GamePongOnePlayer extends GamePong {
         Random random = new Random();
         int random_int;
         do {
-            random_int = random.nextInt(level + 1);
+            random_int = random.nextInt(level) % NUM_BONUS;
         }
-        while ((random_int == game_event && level > LEVEL_ONE) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1) || (random_int == 10) || (random_int == 11) || (random_int == 12));
+        while ((random_int == game_event && level > 1) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1));
         game_event = random_int;
     }
 }

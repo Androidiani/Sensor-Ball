@@ -10,7 +10,7 @@ import java.util.Random;
 
 import it.unina.is2project.sensorgames.game.entity.Ball;
 
-public class RushHourBonus implements IBonusMalus {
+public class RushHourBonus {
 
     // Rush Hour
     protected Ball ball;
@@ -25,7 +25,6 @@ public class RushHourBonus implements IBonusMalus {
         this.ball = ball;
     }
 
-    @Override
     public void addToScene(Scene scene) {
         Random random = new Random();
         int RUSH_HOUR_NUM = RUSH_HOUR_MIN_NUM + random.nextInt(RUSH_HOUR_MAX_NUM - RUSH_HOUR_MIN_NUM + 1);
@@ -40,7 +39,6 @@ public class RushHourBonus implements IBonusMalus {
         Log.d("Rush Hour", "RUSH_HOUR_NUM: " + RUSH_HOUR_NUM + ", rushHour.size(): " + rushHour.size());
     }
 
-    @Override
     public void collision() {
         for (int i = 0; i < rushHour.size(); i++) {
             Ball rush = rushHour.get(i);
@@ -59,7 +57,6 @@ public class RushHourBonus implements IBonusMalus {
         }
     }
 
-    @Override
     public void clear() {
         while (!rushHour.isEmpty()) {
             rushHour.get(0).detach();

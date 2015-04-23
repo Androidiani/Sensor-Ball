@@ -14,7 +14,7 @@ import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 
-public class BubbleBonus implements IBonusMalus {
+public class BubbleBonus {
 
     //Necessario per getResources() (settare lo score)
     private SimpleBaseGameActivity simpleBaseGameActivity;
@@ -34,7 +34,6 @@ public class BubbleBonus implements IBonusMalus {
         this.bubble = new GameObject(simpleBaseGameActivity, R.drawable.ball_petrol);
     }
 
-    @Override
     public void addToScene(Scene scene) {
         Random random = new Random();
         int BONUS_BALL_NUM = BONUS_BALL_MIN_NUM + random.nextInt(BONUS_BALL_MAX_NUM - BONUS_BALL_MIN_NUM + 1);
@@ -45,10 +44,6 @@ public class BubbleBonus implements IBonusMalus {
             bubbles.add(bubbleTemp);
         }
         Log.d("Bubble Bonus", "BONUS_BALL_NUM: " + BONUS_BALL_NUM + " bonusBalls.size(): " + bubbles.size());
-    }
-
-    @Override
-    public void collision() {
     }
 
     public int collision(int score, int level, Text text) {
@@ -65,7 +60,6 @@ public class BubbleBonus implements IBonusMalus {
         return score;
     }
 
-    @Override
     public void clear() {
         while (!bubbles.isEmpty()) {
             bubbles.get(0).detach();

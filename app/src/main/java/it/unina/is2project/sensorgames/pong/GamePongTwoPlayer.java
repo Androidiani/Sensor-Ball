@@ -453,11 +453,6 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
-    protected void gameLevels() {
-        //do nothing
-    }
-
-    @Override
     protected void gameOver() {
         handler.setVelocity(0, 0);
         BAR_SPEED = 0;

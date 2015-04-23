@@ -156,11 +156,6 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
-    protected void gameLevels() {
-        //do nothing
-    }
-
-    @Override
     protected void gameOver() {
         //do nothing
     }
