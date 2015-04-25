@@ -8,7 +8,8 @@ import java.io.ObjectOutputStream;
 
 public class Serializer {
 
-    public Serializer(){}
+    public Serializer() {
+    }
 
     public static byte[] serializeObject(Object o) {
 
