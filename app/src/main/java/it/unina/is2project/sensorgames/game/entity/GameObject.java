@@ -15,7 +15,7 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 
 import java.util.Random;
 
-public class GameObject {
+public class GameObject implements Runnable {
 
     public final static int TOP = 0;
     public final static int MIDDLE = 1;
@@ -103,23 +103,12 @@ public class GameObject {
     }
 
     public void detachOnUIThread() {
-        this.simpleBaseGameActivity.runOnUpdateThread(new DetachRunnable(scene, gSprite));
+        this.simpleBaseGameActivity.runOnUpdateThread(this);
     }
 
-    private class DetachRunnable implements Runnable {
-
-        private Scene scene;
-        private Sprite sprite;
-
-        public DetachRunnable(Scene scene, Sprite sprite) {
-            this.sprite = sprite;
-            this.scene = scene;
-        }
-
-        @Override
-        public void run() {
-            scene.detachChild(sprite);
-        }
+    @Override
+    public void run() {
+        this.scene.detachChild(this.gSprite);
     }
 
     public Sprite getSprite() {
