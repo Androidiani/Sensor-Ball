@@ -34,13 +34,23 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
+            android:name=".pong.TrainingSettings"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name=".TwoPlayerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeSensorPong">
         </activity>
         <activity
-            android:name=".pong.TrainingSettings"
-            android:screenOrientation="portrait" >
+            android:name=".Settings"
+            android:screenOrientation="portrait"
+            android:theme="@style/ThemeSensorPong">
+        </activity>
+        <activity
+            android:name=".FirstAccess"
+            android:screenOrientation="portrait"
+            android:theme="@style/ThemeSensorPongNoActionBar">
         </activity>
         <activity
             android:name=".pong.GamePongTraining" >
@@ -68,13 +78,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".Settings"
-            android:theme="@style/ThemeSensorPong">
-        </activity>
-
-        <activity android:name=".FirstAccess"/>
 
     </application>
 

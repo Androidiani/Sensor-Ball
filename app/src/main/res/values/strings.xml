@@ -2,10 +2,6 @@
     <!-- General -->
     <string name="app_name">Sensor Pong</string>
 
-    <!-- Menu Entries -->
-    <string name="action_settings">Settings</string>
-    <string name="text_discoverable">Discoverable</string>
-
     <!-- Image Descriptors -->
     <string name="btn1desc">Button for 1 player games</string>
     <string name="btn2desc">Button for 2 players games</string>
@@ -19,6 +15,7 @@
     <string name="two_player">Two Players</string>
     <string name="training">Training</string>
     <string name="stats">Stats</string>
+    <string name="settings">Settings</string>
     <string name="about">About Us</string>
     <string name="ttl_main_adv">Exit Game</string>
     <string name="txt_main_adv">Do you really want to exit game?</string>
@@ -35,9 +32,9 @@
     </string>
 
     <!-- First access -->
-    <string name="hello_view">\n\nPlease, enter your nickname</string>
+    <string name="hello_view">Please, enter your nickname</string>
     <string name="nickname">Nickname</string>
-    <string name="submit">Ok</string>
+    <string name="submit">OK</string>
 
     <!-- General game -->
     <string name="text_pause">Pause</string>
@@ -55,6 +52,7 @@
     <!-- 2 Player Game -->
     <string name="text_disconnected">Disconnected</string>
     <string name="text_disconnect">Disconnect</string>
+    <string name="text_discoverable">Discoverable</string>
     <string name="text_opponent_left">Your opponent\nleft the game</string>
     <string name="text_opponent_pause">Your opponent\npaused the game</string>
     <string name="text_opponent_not_ready">Your opponent\nis not ready</string>
@@ -65,9 +63,8 @@
     <string name="text_you_lose">You lose\nthe game</string>
     <string name="pause_stop">Temporarily\nstop the game</string>
     <string name="text_game_suspended">Game temporarily\nsuspended</string>
-
-    <string name="text_first_to">First to</string>
-    <string name="text_win">win</string>
+    <!--<string name="text_first_to">First to</string>-->
+    <!--<string name="text_win">win</string>-->
 
 
     <!-- Toasts -->
@@ -96,19 +93,6 @@
     <!-- One Player -->
     <string name="text_score">Score</string>
     <string name="text_lvl">Level</string>
-    <string name="text_lv1">Level One</string>
-    <string name="text_lv2">Level Two</string>
-    <string name="text_lv3">Level Three</string>
-    <string name="text_lv4">Level Four</string>
-    <string name="text_lv5">Level Five</string>
-    <string name="text_lv6">Level Six</string>
-    <string name="text_lv7">Level Seven</string>
-    <string name="text_lv8">Level Eight</string>
-    <string name="text_lv9">Level Nine</string>
-    <string name="text_lv10">Level Ten</string>
-    <string name="text_lv11">Level Eleven</string>
-    <string name="text_lv12">Level Twelve</string>
-    <string name="text_lv13">Level MAX</string>
     <string name="text_first_enemy">First Enemy</string>
     <string name="text_bubble">Bubble Bonus</string>
     <string name="text_cut_bar_30">Cut Bar 30%</string>
@@ -158,8 +142,8 @@
     <string name="general_settings">General Settings</string>
     <string name="settings_nickname">Nickname</string>
     <string name="settings_nickname_info">Set Your Nickname</string>
-    <string name="settings_2p_win">2P Goals to win</string>
-    <string name="settings_2p_goal_info">Set the number of goals to win a game in 2P mode</string>
+    <string name="settings_theme">Game Theme</string>
+    <string name="settings_theme_info">Set the Game Theme</string>
     <string name="txt_no_name">No Name</string>
 
     <string name="hello_world">Hello world!</string>

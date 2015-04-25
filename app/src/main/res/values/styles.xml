@@ -12,4 +12,6 @@
 
     <style name="ThemeSensorPong" parent="android:Theme.Holo" />
 
+    <style name="ThemeSensorPongNoActionBar" parent="android:Theme.Holo.NoActionBar" />
+
 </resources>

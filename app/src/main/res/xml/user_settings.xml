@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/general_settings" >
+    <PreferenceCategory android:title="@string/general_settings">
         <EditTextPreference
-            android:title="@string/settings_nickname"
+            android:key="prefNickname"
             android:summary="@string/settings_nickname_info"
-            android:key="prefNickname"/>
+            android:title="@string/settings_nickname"/>
 
         <ListPreference
-            android:key="prefGameTheme"
-            android:title="Game Theme"
-            android:summary="Set the Game Theme"
             android:entries="@array/selectTheme"
             android:entryValues="@array/selectThemeValues"
-            />
+            android:key="prefGameTheme"
+            android:summary="@string/settings_theme_info"
+            android:title="@string/settings_theme"/>
     </PreferenceCategory>
 </PreferenceScreen>

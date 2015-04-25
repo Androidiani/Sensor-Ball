@@ -19,7 +19,6 @@ public class SplashScreenMain extends Activity {
     protected long ms = 0;
     protected long splashTime = 3000;
     protected boolean splashActive = true;
-    protected boolean paused = false;
 
     Animation animMove;
     Animation animFadeIn;
@@ -52,16 +51,14 @@ public class SplashScreenMain extends Activity {
             public void run() {
                 try {
                     while (splashActive && ms < splashTime) {
-                        if(!paused)
-                            ms=ms+100;
+                        ms = ms + 100;
                         sleep(100);
                     }
-                } catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     Intent intent;
-                    if(sharedPreferences.getString("prefNickname",getString(R.string.txt_no_name)).compareTo(getString(R.string.txt_no_name)) == 0)
+                    if (sharedPreferences.getString("prefNickname", getString(R.string.txt_no_name)).compareTo(getString(R.string.txt_no_name)) == 0)
                         intent = new Intent(SplashScreenMain.this, FirstAccess.class);
                     else intent = new Intent(SplashScreenMain.this, MainActivity.class);
                     startActivity(intent);
@@ -70,5 +67,10 @@ public class SplashScreenMain extends Activity {
             }
         };
         mythread.start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing
     }
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -46,8 +47,6 @@ public class FirstAccess extends Activity {
         nickname.getLayoutParams().width = (int) (0.7f * p.x);
         Log.d(TAG, "Width set to: " + (int) (0.7f * p.x));
         Log.d(TAG, "Nickname form width: " + nickname.getWidth());
-
-
     }
 
     /**
@@ -104,18 +103,23 @@ public class FirstAccess extends Activity {
         // Save shared preference
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Log.d(TAG, "Nickname found " + nickname.getText().toString());
-        sharedPreferences.edit().putString("prefNickname", nickname.getText().toString()).commit();
-        Log.d(TAG, "Nickname saved as " + sharedPreferences.getString("prefNickname", getString(R.string.txt_no_name)));
-        // Intent to MainActivity
-        Intent i = new Intent(FirstAccess.this, MainActivity.class);
-        startActivity(i);
-        overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
-        finish();
+        if (nickname.getText().toString().compareTo("") != 0) {
+            sharedPreferences.edit().putString("prefNickname", nickname.getText().toString()).apply();
+            Log.d(TAG, "Nickname saved as " + sharedPreferences.getString("prefNickname", getString(R.string.txt_no_name)));
+            // Intent to MainActivity
+            Intent i = new Intent(FirstAccess.this, MainActivity.class);
+            startActivity(i);
+            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+            finish();
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.show();
+        }
     }
-
 
     @Override
     public void onBackPressed() {
-        // do nothing
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

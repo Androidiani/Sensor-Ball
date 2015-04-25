@@ -1,47 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="#ff000000"
-    android:orientation="horizontal">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
         android:id="@+id/nameFirstAccess"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:textColor="#ffffffff"
-        android:textSize="@dimen/home_font" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/home_font"
+        />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_view"
         android:id="@+id/helloView"
-        android:textColor="#ffffffff"
+        android:text="@string/hello_view"
+        android:textColor="#FFFFFF"
         android:textSize="@dimen/medium_font"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
         android:id="@+id/nicknameForm"
-        android:layout_below="@+id/helloView"
-        android:layout_centerHorizontal="true"
-        android:text="@string/nickname"
-        android:textColor="#ff3f3f3f"
-        android:background="#ffffffff"
-        android:layout_alignParentEnd="false" />
+        android:inputType="textPersonName"
+        android:hint="@string/nickname"
+        android:textColor="#000000"
+        android:textSize="@dimen/medium_font"
+        android:background="#FFFFFF"
+        />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.05"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/submit"
         android:id="@+id/btnSubmit"
-        android:layout_below="@+id/nicknameForm"
-        android:layout_centerHorizontal="true" />
+        android:text="@string/submit"
+        android:textSize="@dimen/text_font"/>
 
-</RelativeLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"/>
+
+</LinearLayout>
