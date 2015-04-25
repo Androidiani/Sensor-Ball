@@ -102,6 +102,26 @@ public class GameObject {
         this.gSprite.detachSelf();
     }
 
+    public void detachOnUIThread() {
+        this.simpleBaseGameActivity.runOnUpdateThread(new DetachRunnable(scene, gSprite));
+    }
+
+    private class DetachRunnable implements Runnable {
+
+        private Scene scene;
+        private Sprite sprite;
+
+        public DetachRunnable(Scene scene, Sprite sprite) {
+            this.sprite = sprite;
+            this.scene = scene;
+        }
+
+        @Override
+        public void run() {
+            scene.detachChild(sprite);
+        }
+    }
+
     public Sprite getSprite() {
         return this.gSprite;
     }
@@ -181,4 +201,5 @@ public class GameObject {
         this.gSprite.setWidth(size);
         this.gSprite.setHeight(size);
     }
+
 }

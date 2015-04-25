@@ -1579,8 +1579,8 @@ public class GamePongTwoPlayer extends GamePong {
             case SPEEDX2:
 //                Log.d(TAG, "Sprite - Detaching SPEEDX2");
                 speedX2Bonus.unregisterTouch();
-//                speedX2Bonus.detach();
-                detachOnUIThread(speedX2Bonus.getSprite());
+                speedX2Bonus.detachOnUIThread();
+//                detachOnUIThread(speedX2Bonus.getSprite());
                 activedBonusSprite = SPRITE_NONE;
                 deletedBonusSprite = true;
                 break;

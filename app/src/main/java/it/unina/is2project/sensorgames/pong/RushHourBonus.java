@@ -32,7 +32,6 @@ public class RushHourBonus {
             Ball rushTemp = new Ball(ball);
             rushTemp.addToScene(scene, 0.1f, 0.1f);
             rushTemp.setRandomPosition();
-            rushTemp.createHandler();
             rushTemp.setHandlerSpeed(ball.getBallSpeed() * (random.nextFloat() - random.nextFloat()), ball.getBallSpeed() * (random.nextFloat() - random.nextFloat()));
             rushHour.add(rushTemp);
         }

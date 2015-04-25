@@ -204,13 +204,11 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
 
-        // Setting Bar fields
+        // Setting Bar speed
         bar.setBarSpeed(BAR_SPEED);
-        bar.setBarWidth(bar.getObjectWidth());
 
-        // Setting Ball fields
+        // Setting Ball speed
         ball.setBallSpeed(BALL_SPEED);
-        ball.createHandler();
 
         this.mEngine.registerUpdateHandler(new FPSLogger());
 

@@ -36,6 +36,16 @@ public class Bar extends GameObject implements IAccelerationListener {
     }
 
     @Override
+    public void addToScene(Scene scene, float xRatio, float yRatio) {
+        super.addToScene(scene, xRatio, yRatio);
+        this.barWidth = this.gSprite.getWidth();
+        /** Enable the Acceleration Sensor
+         * - Option: SensorDelay.GAME */
+        this.simpleBaseGameActivity.getEngine().enableAccelerationSensor(context, this);
+        this.accelerationSensorOptions = new AccelerationSensorOptions(SensorDelay.GAME);
+    }
+
+    @Override
     public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {
     }
 
@@ -53,15 +63,5 @@ public class Bar extends GameObject implements IAccelerationListener {
                 if (newXPosition > -gSprite.getWidth() / 2 || Math.signum(pAccelerationData.getX()) < 0)
                     gSprite.setX(newXPosition);
         }
-    }
-
-    @Override
-    public void addToScene(Scene scene, float xRatio, float yRatio) {
-        super.addToScene(scene, xRatio, yRatio);
-
-        /** Enable the Acceleration Sensor
-         * - Option: SensorDelay.GAME */
-        this.simpleBaseGameActivity.getEngine().enableAccelerationSensor(context, this);
-        this.accelerationSensorOptions = new AccelerationSensorOptions(SensorDelay.GAME);
     }
 }
