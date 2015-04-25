@@ -399,7 +399,10 @@ public class GamePongTwoPlayer extends GamePong {
                 AppMessage suspendMessage = new AppMessage(Constants.MSG_TYPE_SUSPEND_REQUEST);
                 sendBluetoothMessage(suspendMessage);
                 fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
+                if(timerTimeout != null)timerTimeout.cancel();
+                if(taskTimeout != null)taskTimeout.cancel();
             }
+            //TODO Contemplare il caso in cui ti trovi IN GAME WAITING
         }
         super.onStop();
     }
@@ -615,8 +618,7 @@ public class GamePongTwoPlayer extends GamePong {
                 fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
                 fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING ||
                 fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP ||
-                fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED ||
-                fsmGame.getState() == FSMGame.STATE_OPPONENT_NOT_READY) {
+                fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED) {
             backPressed = true;
             AppMessage messageFail = new AppMessage(Constants.MSG_TYPE_FAIL);
             sendBluetoothMessage(messageFail);
@@ -892,6 +894,8 @@ public class GamePongTwoPlayer extends GamePong {
                                             fsmGame.getState() == FSMGame.STATE_GAME_EXIT_PAUSE ||
                                             fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP) {
                                         fsmGame.setState(FSMGame.STATE_IN_GAME);
+                                        if(taskTimeout != null)taskTimeout.cancel();
+                                        if(timerTimeout != null)timerTimeout.cancel();
                                     } else if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED) {
                                         AppMessage resumeNotReadyMessage = new AppMessage(Constants.MSG_TYPE_RESUME_NOREADY);
                                         sendBluetoothMessage(resumeNotReadyMessage);
