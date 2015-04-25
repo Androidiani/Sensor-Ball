@@ -114,16 +114,15 @@ public class GamePongTwoPlayer extends GamePong {
     private GameObject rushHourBonusIcon;
 
     // Bonus Constants
-    private static final int NO_BONUS = 1;
-    private static final int SPEED_X2 = 2;
-    private static final int SPEED_X3 = 3;
-    private static final int SPEED_X4 = 4;
-    private static final int LOCK_FIELD = 5;
-    private static final int CUT_BAR_30 = 6;
-    private static final int CUT_BAR_50 = 7;
-    private static final int REVERTED_BAR = 8;
-    private static final int RUSH_HOUR = 9;
-    private float SPRITE_ICON_SIZE;
+    public static final int NO_BONUS = 1;
+    public static final int SPEED_X2 = 2;
+    public static final int SPEED_X3 = 3;
+    public static final int SPEED_X4 = 4;
+    public static final int LOCK_FIELD = 5;
+    public static final int CUT_BAR_30 = 6;
+    public static final int CUT_BAR_50 = 7;
+    public static final int REVERTED_BAR = 8;
+    public static final int RUSH_HOUR = 9;
     // Bonus Icon Constants
     private static final int SPEED_X2_ICON = 10;
     private static final int SPEED_X3_ICON = 11;
@@ -135,6 +134,7 @@ public class GamePongTwoPlayer extends GamePong {
     private static final int RUSH_HOUR_ICON = 17;
     // Bonus Utils
     private int activedBonusSprite = SPRITE_NONE;
+    private float SPRITE_ICON_SIZE;
     private boolean deletedBonusSprite = true;
     private List<Integer> bonusStatusArray = new ArrayList<>();
     TimerTask taskBonus;

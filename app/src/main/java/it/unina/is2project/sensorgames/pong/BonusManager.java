@@ -25,8 +25,8 @@ public class BonusManager {
         this.handler = handler;
     }
 
-    public static BonusManager getBonusInstance(Handler h){
-        if(bonusManagerInstance == null){
+    public static BonusManager getBonusInstance(Handler h) {
+        if (bonusManagerInstance == null) {
             bonusManagerInstance = new BonusManager(h);
         }
         bonusManagerInstance.setHandler(h);
@@ -42,75 +42,75 @@ public class BonusManager {
         throw new CloneNotSupportedException();
     }
 
-    public void addBonus(int bonusID, int reachCount){
+    public void addBonus(int bonusID, int reachCount) {
         if (reachCount <= 0) reachCount = DEFAULT_BONUS_COUNT;
 
-        int previousBonus = GamePongTwoPlayer.NOBONUS;
+        int previousBonus = GamePongTwoPlayer.NO_BONUS;
 
-        if(bonusID == GamePongTwoPlayer.SPEEDX2 ||
-                bonusID == GamePongTwoPlayer.SPEEDX3 ||
-                bonusID == GamePongTwoPlayer.SPEEDX4){
-            if(bonusMap.remove(GamePongTwoPlayer.SPEEDX2) != null){
-                previousBonus = GamePongTwoPlayer.SPEEDX2;
+        if (bonusID == GamePongTwoPlayer.SPEED_X2 ||
+                bonusID == GamePongTwoPlayer.SPEED_X3 ||
+                bonusID == GamePongTwoPlayer.SPEED_X4) {
+            if (bonusMap.remove(GamePongTwoPlayer.SPEED_X2) != null) {
+                previousBonus = GamePongTwoPlayer.SPEED_X2;
             }
-            if(bonusMap.remove(GamePongTwoPlayer.SPEEDX3) != null){
-                previousBonus = GamePongTwoPlayer.SPEEDX3;
+            if (bonusMap.remove(GamePongTwoPlayer.SPEED_X3) != null) {
+                previousBonus = GamePongTwoPlayer.SPEED_X3;
             }
-            if(bonusMap.remove(GamePongTwoPlayer.SPEEDX4) != null){
-                previousBonus = GamePongTwoPlayer.SPEEDX4;
+            if (bonusMap.remove(GamePongTwoPlayer.SPEED_X4) != null) {
+                previousBonus = GamePongTwoPlayer.SPEED_X4;
             }
         }
 
-        if(bonusID == GamePongTwoPlayer.CUTBAR30 ||
-                bonusID == GamePongTwoPlayer.CUTBAR50){
-            bonusMap.remove(GamePongTwoPlayer.CUTBAR30);
-            bonusMap.remove(GamePongTwoPlayer.CUTBAR50);
+        if (bonusID == GamePongTwoPlayer.CUT_BAR_30 ||
+                bonusID == GamePongTwoPlayer.CUT_BAR_50) {
+            bonusMap.remove(GamePongTwoPlayer.CUT_BAR_30);
+            bonusMap.remove(GamePongTwoPlayer.CUT_BAR_50);
         }
 
         // If the map previously contained a mapping for the key, the old value is replaced.
         bonusMap.put(bonusID, reachCount);
         Log.d(TAG, "Added Bonus With ID: " + bonusID + " and reachCount " + reachCount);
 
-        if(previousBonus != GamePongTwoPlayer.NOBONUS)
+        if (previousBonus != GamePongTwoPlayer.NO_BONUS)
             Log.d(TAG, "Exist Previous bonus ID: " + previousBonus);
 
         handler.obtainMessage(BONUS_CREATED, bonusID, previousBonus, -1).sendToTarget();
     }
 
-    public void deleteBonus(int bonusID){
+    public void deleteBonus(int bonusID) {
         bonusMap.remove(bonusID);
         handler.obtainMessage(BONUS_EXPIRED, bonusID, -1).sendToTarget();
         Log.d("BonusManager", "Removed bonus ID: " + bonusID);
     }
 
-    public void decrementCount(){
+    public void decrementCount() {
         Iterator it = bonusMap.entrySet().iterator();
         Integer value;
-        while (it.hasNext()){
-            Map.Entry pair = (Map.Entry)it.next();
-            value = (Integer)pair.getValue();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            value = (Integer) pair.getValue();
             value--;
             Log.d("BonusManager", "Remain " + value + " of ID: " + pair.getKey());
-            if (value == 0){
+            if (value == 0) {
                 it.remove();
                 Log.d("BonusManager", "Removed bonus ID: " + pair.getKey());
-                handler.obtainMessage(BONUS_EXPIRED, (Integer)pair.getKey(),-1).sendToTarget();
-            }else{
-                bonusMap.put((Integer)pair.getKey(), value);
+                handler.obtainMessage(BONUS_EXPIRED, (Integer) pair.getKey(), -1).sendToTarget();
+            } else {
+                bonusMap.put((Integer) pair.getKey(), value);
             }
         }
     }
 
-    public void clearAll(){
+    public void clearAll() {
         Iterator it = bonusMap.entrySet().iterator();
-        while (it.hasNext()){
-            Map.Entry pair = (Map.Entry)it.next();
-            handler.obtainMessage(BONUS_EXPIRED, (Integer)pair.getKey(), -1).sendToTarget();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            handler.obtainMessage(BONUS_EXPIRED, (Integer) pair.getKey(), -1).sendToTarget();
             it.remove();
         }
     }
 
-    public boolean alreadyExist(int bonusID){
+    public boolean alreadyExist(int bonusID) {
         return bonusMap.containsKey(bonusID);
     }
 }
