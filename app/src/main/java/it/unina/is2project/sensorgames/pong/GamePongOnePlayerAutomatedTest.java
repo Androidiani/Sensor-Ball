@@ -21,10 +21,10 @@ public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
      * X of Bar can get value between range: [ball_x_pos - (bar_width - ball_width) ; ball_x_pos]
      */
     private void setRandomBarPosition() {
-        bar.setPosition(ball.getXCoordinate() - random_number);
+        bar.setPosition(ball.getXCoordinate() - random_number, bar.getYCoordinate());
         if (ball.collidesWith(bar)) {
             Random random = new Random();
-            random_number = random.nextInt((bar.getObjectWidth() - ball.getObjectWidth()) + 1);
+            random_number = random.nextInt((int)(bar.getObjectWidth() - ball.getObjectWidth()) + 1);
             Log.d(TAG, "Bar X = " + (ball.getXCoordinate() - random_number));
             Log.d(TAG, "Bar width = " + bar.getObjectWidth() + ", Ball width = " + ball.getObjectWidth());
         }

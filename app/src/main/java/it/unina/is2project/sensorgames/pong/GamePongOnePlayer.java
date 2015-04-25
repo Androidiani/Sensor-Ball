@@ -51,7 +51,7 @@ public class GamePongOnePlayer extends GamePong {
     private int score = 0;
     private int gain = 0;
     private int level = 1;
-    private int oldLevel = 0;
+    private int old_level = 0;
     private static final int MAX_LIFE = 3;
     private int life = MAX_LIFE - 1;
     private int reach_count = 1;
@@ -61,11 +61,7 @@ public class GamePongOnePlayer extends GamePong {
     /**
      * Event
      */
-    private int game_event;
-
-    /*
-    * BONUS
-    */
+    private int event;
     private static final int NUM_BONUS = 10;
     private static final int NO_EVENT = 0;
     private static final int FIRST_ENEMY = 1;
@@ -95,17 +91,20 @@ public class GamePongOnePlayer extends GamePong {
         textEvnt = new Text(10, textLvl.getY() + textLvl.getHeight(), font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textEvnt);
 
-        // Adding the life sprites to the scene
+        // Adding lifes to the scene
         for (int i = 1; i <= life + 1; i++) {
             GameObject lifeTemp = new GameObject(lifeStar);
             lifeTemp.addToScene(scene, 0.05f, 0.05f);
-            lifeTemp.setPosition(CAMERA_WIDTH - i * lifeTemp.getObjectWidth(), 0);
+            lifeTemp.setPosition(lifeTemp.getDisplaySize().x - i * lifeTemp.getObjectWidth(), 0);
             lifeStars.add(lifeTemp);
         }
 
         // Setting up the physics of the game
         settingPhysics();
+
+        // Clear Game variables
         clearGame();
+
         return scene;
     }
 
@@ -148,13 +147,16 @@ public class GamePongOnePlayer extends GamePong {
         Log.d(TAG, "Life: " + life);
         lifeStars.get(life).detach();
         life--;
+
         // Clear current event
         clearEvent();
         Log.d(TAG, "Event Cleared");
-        // Setting NO EVENT for 1 reach_count
-        game_event = NO_EVENT;
+
+        // Setting NO EVENT for 1 reach count
+        event = NO_EVENT;
         gameEvent();
         reach_count = 1;
+
         // Game Over section
         if (life < 0) {
             Log.d(TAG, "Game Over");
@@ -170,16 +172,19 @@ public class GamePongOnePlayer extends GamePong {
         addScore();
         textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
         Log.d(TAG, "Score: " + score);
-        changeSpeedByLevel();
 
-        // Game events section
+        // Level section
+        changeSpeedByLevel();
+        Log.d(TAG, "Level: " + level);
+
+        // Event section
         reach_count--;
-        Log.d(TAG, "Reach count " + reach_count);
+        Log.d(TAG, "Reach count: " + reach_count);
         if (reach_count == 0) {
             clearEvent();
             Log.d(TAG, "Event Cleared");
             callEvent();
-            Log.d(TAG, "New Game Event: " + game_event);
+            Log.d(TAG, "New Game Event: " + event);
             gameEvent();
             // Generating a new reach count
             Random random = new Random();
@@ -188,6 +193,7 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
+    //TODO - Da Rivedere, valutare se eliminare il metodo
     @Override
     protected void clearGame() {
         super.clearGame();
@@ -196,7 +202,7 @@ public class GamePongOnePlayer extends GamePong {
         score = 0;
         gain = 0;
         level = 1;
-        game_event = NO_EVENT;
+        event = NO_EVENT;
         reach_count = 1;
         textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
     }
@@ -231,7 +237,7 @@ public class GamePongOnePlayer extends GamePong {
 
     @Override
     protected void gameEventsCollisionLogic() {
-        switch (game_event) {
+        switch (event) {
             case FIRST_ENEMY:
                 previous_event = firstEnemy.collision(previous_event, touch);
                 break;
@@ -244,40 +250,6 @@ public class GamePongOnePlayer extends GamePong {
             case RUSH_HOUR:
                 rushHour.collision();
                 break;
-        }
-    }
-
-    @Override
-    public void addScore() {
-        gain = getLevel() * 10;
-        score += gain;
-        if (game_event == FIRST_ENEMY)
-            score += gain * 2;
-        if (game_event == CUT_BAR_30)
-            score += gain * 4;
-        if (game_event == CUT_BAR_50)
-            score += gain * 8;
-        if (game_event == REVERSE)
-            score += gain * 10;
-        if (game_event == RUSH_HOUR)
-            score += gain * 12;
-    }
-
-    protected int getLevel() {
-        float a = 0.02567f;
-        float b = 1;
-        level = (int) Math.round((Math.log(a * score + 1) + b));
-        Log.d("LEVEL", "livello : " + level);
-        textLvl.setText(getResources().getString(R.string.text_lvl) + " " + level);
-        return level;
-    }
-
-    private void changeSpeedByLevel() {
-        if (oldLevel != getLevel() && getLevel() % 3 == 0) {
-            oldLevel = getLevel();
-            bar.setBarSpeed(1.5f * bar.getBarSpeed());
-            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
-            Log.d(TAG, "Speed changed.");
         }
     }
 
@@ -298,21 +270,17 @@ public class GamePongOnePlayer extends GamePong {
 
                 alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-
                         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         String user_input_name = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
-
                         saveGame(user_input_name);
                         finish();
                     }
                 });
-
                 alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         finish();
                     }
                 });
-
                 alert.show();
             }
         });
@@ -341,8 +309,41 @@ public class GamePongOnePlayer extends GamePong {
         statOnePlayerDAO.close();
     }
 
+    @Override
+    protected void addScore() {
+        gain = getLevel() * 10;
+        score += gain;
+        if (event == FIRST_ENEMY)
+            score += gain * 2;
+        if (event == CUT_BAR_30)
+            score += gain * 4;
+        if (event == CUT_BAR_50)
+            score += gain * 8;
+        if (event == REVERSE)
+            score += gain * 16;
+        if (event == RUSH_HOUR)
+            score += gain * 32;
+    }
+
+    private int getLevel() {
+        float a = 0.02567f;
+        float b = 1;
+        level = (int) Math.round((Math.log(a * score + 1) + b));
+        textLvl.setText(getResources().getString(R.string.text_lvl) + " " + level);
+        return level;
+    }
+
+    private void changeSpeedByLevel() {
+        if (old_level != getLevel() && getLevel() % 3 == 0) {
+            old_level = getLevel();
+            bar.setBarSpeed(1.5f * bar.getBarSpeed());
+            ball.setHandlerSpeed(1.5f * ball.getHandlerSpeedX(), 1.5f * ball.getHandlerSpeedY());
+            Log.d(TAG, "Speed changed");
+        }
+    }
+
     private void gameEvent() {
-        switch (game_event) {
+        switch (event) {
             case NO_EVENT:
                 textEvnt.setText("");
                 break;
@@ -386,7 +387,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private void clearEvent() {
-        switch (game_event) {
+        switch (event) {
             case NO_EVENT:
                 break;
             case FIRST_ENEMY:
@@ -422,11 +423,11 @@ public class GamePongOnePlayer extends GamePong {
     private void callEvent() {
         // Generating a new event, different from current event
         Random random = new Random();
-        int random_int;
+        int new_event;
         do {
-            random_int = random.nextInt(level) % NUM_BONUS;
+            new_event = random.nextInt(level) % NUM_BONUS;
         }
-        while ((random_int == game_event && level > 1) || (random_int == LIFE_BONUS && life == MAX_LIFE - 1));
-        game_event = random_int;
+        while ((new_event == event && level > 1) || (new_event == LIFE_BONUS && life == MAX_LIFE - 1));
+        event = new_event;
     }
 }

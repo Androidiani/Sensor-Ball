@@ -26,8 +26,6 @@ public class FirstAccess extends Activity {
     private EditText nickname;
     private Button okButton;
 
-    private Toast toast;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +43,6 @@ public class FirstAccess extends Activity {
         Point p = getScreenDimensions();
         Log.d(TAG, "Screen dimensions: " + p.x + ", " + p.y);
         Log.d(TAG, "Previous nickname form width: " + nickname.getWidth());
-        //nickname.setWidth((int) (0.7f * p.x));
         nickname.getLayoutParams().width = (int) (0.7f * p.x);
         Log.d(TAG, "Width set to: " + (int) (0.7f * p.x));
         Log.d(TAG, "Nickname form width: " + nickname.getWidth());
@@ -88,7 +85,7 @@ public class FirstAccess extends Activity {
 
     }
 
-     /**
+    /**
      * Get the screen dimensions
      */
     private Point getScreenDimensions() {
@@ -107,8 +104,8 @@ public class FirstAccess extends Activity {
         // Save shared preference
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Log.d(TAG, "Nickname found " + nickname.getText().toString());
-        sharedPreferences.edit().putString("prefNickname",nickname.getText().toString()).commit();
-        Log.d(TAG, "Nickname saved as " + sharedPreferences.getString("prefNickname",getString(R.string.txt_no_name)));
+        sharedPreferences.edit().putString("prefNickname", nickname.getText().toString()).commit();
+        Log.d(TAG, "Nickname saved as " + sharedPreferences.getString("prefNickname", getString(R.string.txt_no_name)));
         // Intent to MainActivity
         Intent i = new Intent(FirstAccess.this, MainActivity.class);
         startActivity(i);
@@ -119,6 +116,6 @@ public class FirstAccess extends Activity {
 
     @Override
     public void onBackPressed() {
-       // do nothing
+        // do nothing
     }
 }

@@ -7,13 +7,7 @@ public class Ball extends GameObject {
 
     // Ball Field
     private float ballSpeed;
-
-    // TODO Da cancellare
-    public PhysicsHandler getHandler() {
-        return handler;
-    }
-
-    // Handler
+    // Handler Field
     private PhysicsHandler handler;
 
     public Ball(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable) {
@@ -42,8 +36,6 @@ public class Ball extends GameObject {
         this.handler = new PhysicsHandler(this.gSprite);
         this.gSprite.registerUpdateHandler(handler);
     }
-
-
 
     public void setHandlerSpeed(float xSpeed, float ySpeed) {
         this.handler.setVelocity(xSpeed, ySpeed);

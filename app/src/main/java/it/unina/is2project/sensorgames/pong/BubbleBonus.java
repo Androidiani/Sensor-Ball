@@ -40,7 +40,7 @@ public class BubbleBonus {
         for (int i = 0; i < BONUS_BALL_NUM; i++) {
             GameObject bubbleTemp = new GameObject(bubble);
             bubbleTemp.addToScene(scene, 0.1f, 0.1f);
-            bubbleTemp.setPosition(bubbleTemp.getObjectWidth() + random.nextInt(bubble.getDisplaySize().x - (bubbleTemp.getObjectWidth() * 2)), (bubbleTemp.getObjectHeight() * 2) * (i + 1));
+            bubbleTemp.setPosition(bubbleTemp.getObjectWidth() + random.nextInt(bubble.getDisplaySize().x - (int)(bubbleTemp.getObjectWidth() * 2)), (bubbleTemp.getObjectHeight() * 2) * (i + 1));
             bubbles.add(bubbleTemp);
         }
         Log.d("Bubble Bonus", "BONUS_BALL_NUM: " + BONUS_BALL_NUM + " bonusBalls.size(): " + bubbles.size());

@@ -26,12 +26,6 @@ public class GameObject {
     protected Point displaySize;
     protected Drawable gDraw;
     protected BitmapTextureAtlas gTexture;
-
-    // TODO Da eliminare
-    public ITextureRegion getgTextureRegion() {
-        return gTextureRegion;
-    }
-
     protected ITextureRegion gTextureRegion;
     protected Sprite gSprite;
     protected Scene scene;
@@ -70,8 +64,34 @@ public class GameObject {
         attach();
     }
 
+    public void addToScene(Scene scene) {
+        this.scene = scene;
+        this.gSprite = new Sprite(0, 0, this.gTextureRegion, this.simpleBaseGameActivity.getVertexBufferObjectManager()) {
+            @Override
+            public boolean onAreaTouched(TouchEvent pSceneTouchEvent, float pTouchAreaLocalX, float pTouchAreaLocalY) {
+                onTouch();
+                return true;
+            }
+        };
+    }
+
     public void onTouch() {
         Log.d("onTouch()", "Sprite touched");
+    }
+
+    public boolean checkOnTouch(float x, float y){
+        return (x <= gSprite.getX() + gSprite.getWidth() &&
+                x >= gSprite.getX() &&
+                y >= gSprite.getY() &&
+                y <= gSprite.getY() + gSprite.getHeight());
+    }
+
+    public void registerTouch() {
+        this.scene.registerTouchArea(this.gSprite);
+    }
+
+    public void unregisterTouch() {
+        this.scene.unregisterTouchArea(this.gSprite);
     }
 
     public void attach() {
@@ -118,17 +138,17 @@ public class GameObject {
     public void setRandomPosition() {
         Random random = new Random();
         this.gSprite.setPosition(
-                getObjectWidth() * 2 + random.nextInt(this.displaySize.x - (getObjectWidth() * 2)),
-                getObjectHeight() * 4 + random.nextInt(this.displaySize.y - (getObjectHeight() * 4))
+                getObjectWidth() * 2 + random.nextInt(this.displaySize.x - (int)(getObjectWidth() * 4)),
+                getObjectHeight() * 2 + random.nextInt(this.displaySize.y - (int)(getObjectHeight() * 4))
         );
     }
 
-    public int getXCoordinate() {
-        return (int) this.gSprite.getX();
+    public float getXCoordinate() {
+        return this.gSprite.getX();
     }
 
-    public int getYCoordinate() {
-        return (int) this.gSprite.getY();
+    public float getYCoordinate() {
+        return this.gSprite.getY();
     }
 
     public float getXCentreCoordinate() {
@@ -136,12 +156,12 @@ public class GameObject {
         return center_coords[0];
     }
 
-    public int getObjectWidth() {
-        return (int) this.gSprite.getWidth();
+    public float getObjectWidth() {
+        return this.gSprite.getWidth();
     }
 
-    public int getObjectHeight() {
-        return (int) this.gSprite.getHeight();
+    public float getObjectHeight() {
+        return this.gSprite.getHeight();
     }
 
     public void setObjectWidth(float width) {
@@ -155,5 +175,10 @@ public class GameObject {
     public void setObjectDimension(float xRatio, float yRatio) {
         this.gSprite.setWidth(this.displaySize.x * xRatio);
         this.gSprite.setHeight(this.displaySize.x * yRatio);
+    }
+
+    public void setObjectDimension(float size) {
+        this.gSprite.setWidth(size);
+        this.gSprite.setHeight(size);
     }
 }

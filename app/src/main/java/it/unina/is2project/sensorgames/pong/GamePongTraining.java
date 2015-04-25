@@ -53,10 +53,10 @@ public class GamePongTraining extends GamePong {
         textEvent = new Text(10, textHit.getY() + textHit.getHeight(), font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textEvent);
 
-        // Adding the settingSprite to the scene
+        // Adding the setting button to the scene
         setting.addToScene(scene, 0.1f, 0.1f);
-        setting.setPosition(CAMERA_WIDTH - setting.getObjectWidth(), 0);
-        scene.registerTouchArea(setting.getSprite());
+        setting.setPosition(setting.getDisplaySize().x - setting.getObjectWidth(), 0);
+        setting.registerTouch();
 
         // Setting up the physics of the game
         settingPhysics();
@@ -158,17 +158,17 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
-    protected void addScore() {
-        //do nothing
-    }
-
-    @Override
     protected void gameOver() {
         //do nothing
     }
 
     @Override
     protected void saveGame(String s) {
+        //do nothing
+    }
+
+    @Override
+    protected void addScore() {
         //do nothing
     }
 

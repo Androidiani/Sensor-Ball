@@ -11,13 +11,11 @@ import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.handler.IUpdateHandler;
-import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
-import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
@@ -26,7 +24,6 @@ import org.andengine.opengl.font.FontFactory;
 import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
-import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 
 import java.io.IOException;
@@ -53,25 +50,17 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected int theme;
     protected int theme_ball;
     protected int theme_bar;
-    //    protected int theme_star = 0;
     protected static final int CLASSIC = 0;
     protected static final int GOLD = 1;
     protected static final int BLUE = 2;
-
     // Ball
     protected Ball ball;
-    //TODO - Da Eliminare
-    protected ITextureRegion ballTextureRegion;
-    protected Sprite ballSprite;
-
+    protected float BALL_SPEED;
     // Bar
     protected Bar bar;
-    //TODO - Da Eliminare
-    protected Sprite barSprite;
-
+    protected float BAR_SPEED;
     // First Enemy
     protected FirstEnemyBonus firstEnemy;
-
     // Rush Hour
     protected RushHourBonus rushHour;
 
@@ -90,9 +79,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
      * Scene
      */
     protected Scene scene;
-    protected PhysicsHandler handler;
-    protected float BAR_SPEED;
-    protected float BALL_SPEED;
 
     /**
      * Collision Events
@@ -213,10 +199,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         bar.addToScene(scene, 0.3f, 0.05f);
         bar.setPosition(Bar.BOTTOM);
 
-        //TODO - Da Eliminare
-        ballSprite = ball.getSprite();
-        barSprite = bar.getSprite();
-
         //TODO - Da Rivedere
         // Setting game velocity
         BAR_SPEED = 2 * DEVICE_RATIO;
@@ -224,7 +206,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
 
         // Setting Bar fields
         bar.setBarSpeed(BAR_SPEED);
-        bar.setBarWidth((float) bar.getObjectWidth());
+        bar.setBarWidth(bar.getObjectWidth());
 
         // Setting Ball fields
         ball.setBallSpeed(BALL_SPEED);
@@ -279,9 +261,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         loadAdditionalGraphics();
     }
 
-    /**
-     * Questo metodo è ereditato da tutti. In 2Players override con corpo vuoto.
-     */
+    //TODO - Da Rivedere, ora viene ereditato pari pari anche da 2 player
     protected void loadAdditionalGraphics() {
         // First Enemy
         firstEnemy = new FirstEnemyBonus(this, theme_bar, ball);
@@ -369,7 +349,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         });
     }
 
-    //TODO - Da Rivedere, rinominare in setGameVelocity() e inserire anche il set della velocità della barra
+    //TODO - Da Rivedere, rinominare in setGameVelocity() e inserire anche il set della velocità della barra (forse no)
     protected void setBallVelocity() {
         ball.setHandlerSpeed(0, -ball.getBallSpeed());
     }
@@ -377,13 +357,14 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected int condition() {
         if ((ball.getXCoordinate() < 0) && (previous_event != LEFT)) {
             return LEFT;
-        } else if ((ball.getXCoordinate() > CAMERA_WIDTH - ball.getObjectWidth()) && (previous_event != RIGHT)) {
+        } else if ((ball.getXCoordinate() > ball.getDisplaySize().x - ball.getObjectWidth()) && (previous_event != RIGHT)) {
             return RIGHT;
         } else if (topCondition()) {
             return TOP;
-        } else if ((ball.getYCoordinate() > CAMERA_HEIGHT) && (previous_event != BOTTOM)) {
+        } else if ((ball.getYCoordinate() > ball.getDisplaySize().y) && (previous_event != BOTTOM)) {
             return BOTTOM;
         }
+        //TODO - Inserire condizione di Alessandro per ridurre errori
         if (ball.collidesWith(bar)) {
             if ((ball.getYCoordinate() + ball.getObjectHeight() < bar.getYCoordinate() + bar.getObjectHeight()) && (previous_event != OVER) && (previous_event != SIDE)) {
                 return OVER;
@@ -403,7 +384,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
             case RIGHT:
             case LEFT:
             case SIDE:
-                Log.d("CollisionEdge", "RIGHT - LEFT - SIDE EDGE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
+                Log.d("Collision", "RIGHT - LEFT - SIDE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
                 previous_event = collision_event;
                 ball.setHandlerSpeedX(-ball.getHandlerSpeedX());
                 touch.play();
@@ -421,21 +402,21 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     }
 
     protected void collidesTop() {
-        Log.d("CollisionEdge", "TOP EDGE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
+        Log.d("Collision", "TOP EDGE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
         previous_event = TOP;
         ball.setHandlerSpeedY(-ball.getHandlerSpeedY());
         touch.play();
     }
 
     protected void collidesBottom() {
-        Log.d("CollisionEdge", "BOTTOM EDGE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
+        Log.d("Collision", "BOTTOM EDGE. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
         previous_event = BOTTOM;
         ball.onBallLost();
         ball.setHandlerSpeedY(-ball.getHandlerSpeedY());
     }
 
     protected void collidesOverBar() {
-        Log.d("CollisionBar", "OVER BAR. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
+        Log.d("Collision", "OVER BAR. V(X,Y): " + ball.getHandlerSpeedX() + "," + ball.getHandlerSpeedY());
         previous_event = OVER;
 
         float ballX = ball.getXCentreCoordinate();
@@ -444,77 +425,77 @@ public abstract class GamePong extends SimpleBaseGameActivity {
 
         //TODO - DA Rivedere, forse si può sostituire con 2 cicli for
         if (ballX - barX <= (-(13 * bar.getObjectWidth()) / 30)) {
-            Log.d("CollisionBar", "20° LEFT");
+            Log.d("Collision", "20° LEFT");
             SIN_X = SIN_20;
             COS_X = COS_20;
             ball.setHandlerSpeed(-myModule * COS_20, -myModule * SIN_20);
         } else if ((ballX - barX > (-(13 * bar.getObjectWidth()) / 30)) && (ballX - barX <= (-(11 * bar.getObjectWidth()) / 30))) {
-            Log.d("CollisionBar", "30° LEFT");
+            Log.d("Collision", "30° LEFT");
             SIN_X = SIN_30;
             COS_X = COS_30;
             ball.setHandlerSpeed(-myModule * COS_30, -myModule * SIN_30);
         } else if ((ballX - barX > (-(11 * bar.getObjectWidth()) / 30)) && (ballX - barX <= (-(3 * bar.getObjectWidth()) / 10))) {
-            Log.d("CollisionBar", "40° LEFT");
+            Log.d("Collision", "40° LEFT");
             SIN_X = SIN_40;
             COS_X = COS_40;
             ball.setHandlerSpeed(-myModule * COS_40, -myModule * SIN_40);
         } else if ((ballX - barX > (-(3 * bar.getObjectWidth()) / 10)) && (ballX - barX <= (-(7 * bar.getObjectWidth()) / 30))) {
-            Log.d("CollisionBar", "50° LEFT");
+            Log.d("Collision", "50° LEFT");
             SIN_X = SIN_50;
             COS_X = COS_50;
             ball.setHandlerSpeed(-myModule * COS_50, -myModule * SIN_50);
         } else if ((ballX - barX > (-(7 * bar.getObjectWidth()) / 30)) && (ballX - barX <= (-bar.getObjectWidth() / 6))) {
-            Log.d("CollisionBar", "60° LEFT");
+            Log.d("Collision", "60° LEFT");
             SIN_X = SIN_60;
             COS_X = COS_60;
             ball.setHandlerSpeed(-myModule * COS_60, -myModule * SIN_60);
         } else if ((ballX - barX > (-bar.getObjectWidth() / 6)) && (ballX - barX <= (-bar.getObjectWidth() / 10))) {
-            Log.d("CollisionBar", "70° LEFT");
+            Log.d("Collision", "70° LEFT");
             SIN_X = SIN_70;
             COS_X = COS_70;
             ball.setHandlerSpeed(-myModule * COS_70, -myModule * SIN_70);
         } else if ((ballX - barX > (-bar.getObjectWidth() / 10)) && (ballX - barX <= (-bar.getObjectWidth() / 30))) {
-            Log.d("CollisionBar", "80° LEFT");
+            Log.d("Collision", "80° LEFT");
             SIN_X = SIN_80;
             COS_X = COS_80;
             ball.setHandlerSpeed(-myModule * COS_80, -myModule * SIN_80);
         } else if ((ballX - barX > (-bar.getObjectWidth() / 30)) && (ballX - barX < (bar.getObjectWidth() / 30))) {
-            Log.d("CollisionBar", "90°");
+            Log.d("Collision", "90°");
             SIN_X = SIN_90;
             COS_X = COS_90;
             ball.setHandlerSpeed(myModule * COS_90, -myModule * SIN_90);
         } else if ((ballX - barX >= (bar.getObjectWidth() / 30)) && (ballX - barX < (bar.getObjectWidth() / 10))) {
-            Log.d("CollisionBar", "80° RIGHT");
+            Log.d("Collision", "80° RIGHT");
             SIN_X = SIN_80;
             COS_X = COS_80;
             ball.setHandlerSpeed(myModule * COS_80, -myModule * SIN_80);
         } else if ((ballX - barX >= (bar.getObjectWidth() / 10)) && (ballX - barX < (bar.getObjectWidth() / 6))) {
-            Log.d("CollisionBar", "70° RIGHT");
+            Log.d("Collision", "70° RIGHT");
             SIN_X = SIN_70;
             COS_X = COS_70;
             ball.setHandlerSpeed(myModule * COS_70, -myModule * SIN_70);
         } else if ((ballX - barX >= (bar.getObjectWidth() / 6)) && (ballX - barX < ((7 * bar.getObjectWidth()) / 30))) {
-            Log.d("CollisionBar", "60° RIGHT");
+            Log.d("Collision", "60° RIGHT");
             SIN_X = SIN_60;
             COS_X = COS_60;
             ball.setHandlerSpeed(myModule * COS_60, -myModule * SIN_60);
         } else if ((ballX - barX >= ((7 * bar.getObjectWidth()) / 30)) && (ballX - barX < ((3 * bar.getObjectWidth()) / 10))) {
-            Log.d("CollisionBar", "50° RIGHT");
+            Log.d("Collision", "50° RIGHT");
             SIN_X = SIN_50;
             COS_X = COS_50;
             ball.setHandlerSpeed(myModule * COS_50, -myModule * SIN_50);
         } else if ((ballX - barX >= ((3 * bar.getObjectWidth()) / 10)) && (ballX - barX < ((11 * bar.getObjectWidth()) / 30))) {
-            Log.d("CollisionBar", "40° RIGHT");
+            Log.d("Collision", "40° RIGHT");
             SIN_X = SIN_40;
             COS_X = COS_40;
             ball.setHandlerSpeed(myModule * COS_40, -myModule * SIN_40);
         } else if ((ballX - barX >= ((11 * bar.getObjectWidth()) / 30)) && (ballX - barX < ((13 * bar.getObjectWidth()) / 30))) {
-            Log.d("CollisionBar", "30° RIGHT");
+            Log.d("Collision", "30° RIGHT");
             SIN_X = SIN_30;
             COS_X = COS_30;
             ball.setHandlerSpeed(myModule * COS_30, -myModule * SIN_30);
         } else if (ballX - barX >= ((13 * bar.getObjectWidth()) / 30)) {
-            Log.d("CollisionBar", "20° RIGHT");
+            Log.d("Collision", "20° RIGHT");
             SIN_X = SIN_20;
             COS_X = COS_20;
             ball.setHandlerSpeed(myModule * COS_20, -myModule * SIN_20);
@@ -523,7 +504,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         touch.play();
     }
 
-    //TODO - Da Rivedere
+    //TODO - Da Rivedere, valutare se eliminare il metodo
     protected void clearGame() {
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
@@ -575,9 +556,9 @@ public abstract class GamePong extends SimpleBaseGameActivity {
 
     protected abstract void gameEventsCollisionLogic();
 
-    protected abstract void addScore();
-
     protected abstract void gameOver();
 
     protected abstract void saveGame(String s);
+
+    protected abstract void addScore();
 }

@@ -12,7 +12,6 @@ public class Bar extends GameObject implements IAccelerationListener {
     // Bar field
     private float barSpeed;
     private float barWidth;
-
     // Sensor
     private AccelerationSensorOptions accelerationSensorOptions;
 
