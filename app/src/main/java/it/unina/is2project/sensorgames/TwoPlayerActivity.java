@@ -14,7 +14,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -614,7 +613,7 @@ public class TwoPlayerActivity extends Activity {
 //                                    btnPlay.setEnabled(true);
                                     break;
                                 case Constants.MSG_TYPE_SYNC:
-                                    AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
+                                    AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NO_READY);
                                     sendBluetoothMessage(notReadyMessage);
                                     break;
                                 case Constants.MSG_TYPE_FAIL:

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import it.unina.is2project.sensorgames.bluetooth.Constants;
+
 
 public class BonusManager {
 
@@ -45,33 +47,33 @@ public class BonusManager {
     public void addBonus(int bonusID, int reachCount) {
         if (reachCount <= 0) reachCount = DEFAULT_BONUS_COUNT;
 
-        int previousBonus = GamePongTwoPlayer.NO_BONUS;
+        int previousBonus = Constants.NO_BONUS;
 
-        if (bonusID == GamePongTwoPlayer.SPEED_X2 ||
-                bonusID == GamePongTwoPlayer.SPEED_X3 ||
-                bonusID == GamePongTwoPlayer.SPEED_X4) {
-            if (bonusMap.remove(GamePongTwoPlayer.SPEED_X2) != null) {
-                previousBonus = GamePongTwoPlayer.SPEED_X2;
+        if (bonusID == Constants.SPEED_X2 ||
+                bonusID == Constants.SPEED_X3 ||
+                bonusID == Constants.SPEED_X4) {
+            if (bonusMap.remove(Constants.SPEED_X2) != null) {
+                previousBonus = Constants.SPEED_X2;
             }
-            if (bonusMap.remove(GamePongTwoPlayer.SPEED_X3) != null) {
-                previousBonus = GamePongTwoPlayer.SPEED_X3;
+            if (bonusMap.remove(Constants.SPEED_X3) != null) {
+                previousBonus = Constants.SPEED_X3;
             }
-            if (bonusMap.remove(GamePongTwoPlayer.SPEED_X4) != null) {
-                previousBonus = GamePongTwoPlayer.SPEED_X4;
+            if (bonusMap.remove(Constants.SPEED_X4) != null) {
+                previousBonus = Constants.SPEED_X4;
             }
         }
 
-        if (bonusID == GamePongTwoPlayer.CUT_BAR_30 ||
-                bonusID == GamePongTwoPlayer.CUT_BAR_50) {
-            bonusMap.remove(GamePongTwoPlayer.CUT_BAR_30);
-            bonusMap.remove(GamePongTwoPlayer.CUT_BAR_50);
+        if (bonusID == Constants.CUT_BAR_30 ||
+                bonusID == Constants.CUT_BAR_50) {
+            bonusMap.remove(Constants.CUT_BAR_30);
+            bonusMap.remove(Constants.CUT_BAR_50);
         }
 
         // If the map previously contained a mapping for the key, the old value is replaced.
         bonusMap.put(bonusID, reachCount);
         Log.d(TAG, "Added Bonus With ID: " + bonusID + " and reachCount " + reachCount);
 
-        if (previousBonus != GamePongTwoPlayer.NO_BONUS)
+        if (previousBonus != Constants.NO_BONUS)
             Log.d(TAG, "Exist Previous bonus ID: " + previousBonus);
 
         handler.obtainMessage(BONUS_CREATED, bonusID, previousBonus, -1).sendToTarget();
