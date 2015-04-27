@@ -33,124 +33,123 @@ import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
 
 public class GamePongTwoPlayer extends GamePong {
 
-    private final String TAG = "2PlayersGame";
+    //===========================================
+    // DEBUG
+    //===========================================
+    private final String TAG = "2PlayersGame";  // String for logcat debug
 
-    // Indicates the holding's ball
-    private boolean haveBall = false;
-    // Indicates who starts game
-    private boolean isMaster = false;
-    // Indicates when ball is passing
-    private boolean transferringBall;
-    // Indicates who backs activity
-    private boolean backPressed = false;
-    // Service bluetooth
-    private BluetoothService mBluetoothService = null;
-    // Finite State Machine
-    private FSMGame fsmGame = null;
-    // Bonus manager
-    private BonusManager bonusManager = null;
-    // Text information
-    private Text textInfo;
-    private Text textPoint;
-    // Points to reach
-    private int points;
-    // User nickname
-    private String nickname;
-    // Indicates the winner of the match
-    private boolean winner = false;
-    // Return intent extra
-    public static String EXTRA_MASTER = "isMaster_boolean";
-    public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";
-    public static String EXTRA_DEVICE = "deviceName_string";
-    // Pause Utils
-    private long tap;
-    private boolean proximityRegion;
-    private int PROXIMITY_ZONE;
-    private int previous_bonus;
-    private boolean resumeAllowed;
-    private boolean receivedStop;
-    private final long BONUS_REPEATING_TIME_MILLIS = 7000;
-    private final long TIMEOUT_FOR_GAME_OVER = 120000;
-    // Connections Utils
-    private boolean isConnected;
-    private String mConnectedDeviceName = "";
-    // Score variables
-    private int score;
-    private int opponentScore;
-    // Constant Utils
-    private final int SPRITE_NONE = -1;
+    //===========================================
+    // BOOLEAN UTILS
+    //===========================================
+    private boolean haveBall = false;           // Indicates the holding's ball
+    private boolean isMaster = false;           // Indicates who starts game
+    private boolean transferringBall = false;   // Indicates when ball is passing
+    private boolean backPressed = false;        // Indicates who backs activity
+    private boolean winner = false;             // Indicates the winner of the match
 
-    // Speed X2 Bonus
-    private GameObject speedX2Bonus;
-    // Speed X2 Icon
-    private GameObject speedX2BonusIcon;
-    // Speed X3 Bonus
-    private GameObject speedX3Bonus;
-    // Speed X3 Icon
-    private GameObject speedX3BonusIcon;
-    // Speed X4 Bonus
-    private GameObject speedX4Bonus;
-    // Speed X4 Icon
-    private GameObject speedX4BonusIcon;
-    // Lock Field Bonus
-    private GameObject lockFieldBonus;
-    // Lock Field Icon
-    private GameObject lockFieldBonusIcon;
-    // Cut Bar 30 Bonus
-    private GameObject cutBar30Bonus;
-    // Cut Bar 30 Icon
-    private GameObject cutBar30BonusIcon;
-    // Cut Bar 50 Bonus
-    private GameObject cutBar50Bonus;
-    // Cut Bar 50 Icon
-    private GameObject cutBar50BonusIcon;
-    // Reverted Bar Bonus
-    private GameObject reverseBonus;
-    // Reverted Bar Icon
-    private GameObject reverseBonusIcon;
-    // Rush-Hour Bonus
-    private GameObject rushHourBonus;
-    // Rush-Hour Icon
-    private GameObject rushHourBonusIcon;
+    //===========================================
+    // BLUETOOTH
+    //===========================================
+    private BluetoothService mBluetoothService = null;  // Service bluetooth
+    private String mConnectedDeviceName = "";           // Indicates paired device in game
+    private boolean isConnected;                        // Indicates if connection is up
 
-    // Bonus Constants
-    public static final int NO_BONUS = 1;
-    public static final int SPEED_X2 = 2;
-    public static final int SPEED_X3 = 3;
-    public static final int SPEED_X4 = 4;
-    public static final int LOCK_FIELD = 5;
-    public static final int CUT_BAR_30 = 6;
-    public static final int CUT_BAR_50 = 7;
-    public static final int REVERTED_BAR = 8;
-    public static final int RUSH_HOUR = 9;
-    // Bonus Icon Constants
-    private static final int SPEED_X2_ICON = 10;
-    private static final int SPEED_X3_ICON = 11;
-    private static final int SPEED_X4_ICON = 12;
-    private static final int LOCK_FIELD_ICON = 13;
-    private static final int CUT_BAR_30_ICON = 14;
-    private static final int CUT_BAR_50_ICON = 15;
-    private static final int REVERTED_BAR_ICON = 16;
-    private static final int RUSH_HOUR_ICON = 17;
-    // Bonus Utils
-    private int activedBonusSprite = SPRITE_NONE;
-    private float SPRITE_ICON_SIZE;
-    private boolean deletedBonusSprite = true;
-    private List<Integer> bonusStatusArray = new ArrayList<>();
-    TimerTask taskBonus;
-    Timer timerBonus;
-    private long scheduleDelay;
-    private long previousScheduleTime;
-    private boolean locksField = false;
-    private boolean rush_hour = false;
-    private float mSPEED_X1;
-    private float mSPEED_X2;
-    private float mSPEED_X3;
-    private float mSPEED_X4;
-    TimerTask taskTimeout;
-    Timer timerTimeout;
+    //===========================================
+    // GAME DATA
+    //===========================================
+    private int points;         // Points to reach
+    private int score;          // Score for current player in current game
+    private int opponentScore;  // Score for opponent player in current game
+    private String nickname;    // User nickname
+    private Text textInfo;      // TextView for game events
+    private Text textPoint;     // TextView for show points
 
+    //===========================================
+    // FINITE STATE MACHINE
+    //===========================================
+    private FSMGame fsmGame = null; // FSM to control game flow
 
+    //===========================================
+    // INTENT EXTRAS
+    //===========================================
+    public static String EXTRA_MASTER = "isMaster_boolean";                 // Returns master state
+    public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";    // Returns connection state
+    public static String EXTRA_DEVICE = "deviceName_string";                // Returns connected device
+
+    //===========================================
+    // GAME OBJECTS
+    //===========================================
+    private GameObject speedX2Bonus;        // Speed X2 Bonus
+    private GameObject speedX2BonusIcon;    // Speed X2 Icon
+    private GameObject speedX3Bonus;        // Speed X3 Bonus
+    private GameObject speedX3BonusIcon;    // Speed X3 Icon
+    private GameObject speedX4Bonus;        // Speed X4 Bonus
+    private GameObject speedX4BonusIcon;    // Speed X4 Icon
+    private GameObject lockFieldBonus;      // Lock Field Bonus
+    private GameObject lockFieldBonusIcon;  // Lock Field Icon
+    private GameObject cutBar30Bonus;       // Cut Bar 30 Bonus
+    private GameObject cutBar30BonusIcon;   // Cut Bar 30 Icon
+    private GameObject cutBar50Bonus;       // Cut Bar 50 Bonus
+    private GameObject cutBar50BonusIcon;   // Cut Bar 50 Icon
+    private GameObject reverseBonus;        // Reverted Bar Bonus
+    private GameObject reverseBonusIcon;    // Reverted Bar Icon
+    private GameObject rushHourBonus;       // Rush-Hour Bonus
+    private GameObject rushHourBonusIcon;   // Rush-Hour Icon
+
+    //===========================================
+    // PAUSE UTILS
+    //===========================================
+    private final long TIMEOUT_FOR_GAME_OVER = 120000;  // Time to wait to win the game if opponent pause game for too much time
+    private long tap;                                   // Register current milliseconds time to avoid fastest pause
+    private int PROXIMITY_ZONE;                         // Variable to avoid pause when ball is passing
+    private boolean proximityRegion;                    // Indicates when ball is in proximity zone
+    private boolean resumeAllowed;                      // Indicates that player can resume the game
+    private boolean receivedStop;                       // Indicates that player received a stop request
+
+    //===========================================
+    // BONUS SECTION
+    //===========================================
+    private BonusManager bonusManager = null;                   // Manager for created/expired bonus
+    private int previous_bonus;                                 // Indicates previous selectable bonus
+    private final long BONUS_REPEATING_TIME_MILLIS = 7000;      // Time between two selectable bonus
+    private final int SPRITE_NONE = -1;                         // There is no attached sprite
+    public static final int NO_BONUS = 1;                       // ID for no bonus
+    public static final int SPEED_X2 = 2;                       // ID for bonus speed x2
+    public static final int SPEED_X3 = 3;                       // ID for bonus speed x3
+    public static final int SPEED_X4 = 4;                       // ID for bonus speed x4
+    public static final int LOCK_FIELD = 5;                     // ID for bonus lock field
+    public static final int CUT_BAR_30 = 6;                     // ID for bonus cut bar 30%
+    public static final int CUT_BAR_50 = 7;                     // ID for bonus cut bar 50%
+    public static final int REVERTED_BAR = 8;                   // ID for bonus reverted bar
+    public static final int RUSH_HOUR = 9;                      // ID for bonus rush hour
+    private static final int SPEED_X2_ICON = 10;                // ID for bonus icon speed x2
+    private static final int SPEED_X3_ICON = 11;                // ID for bonus icon speed x3
+    private static final int SPEED_X4_ICON = 12;                // ID for bonus icon speed x4
+    private static final int LOCK_FIELD_ICON = 13;              // ID for bonus icon lock field
+    private static final int CUT_BAR_30_ICON = 14;              // ID for bonus icon cut bar 30%
+    private static final int CUT_BAR_50_ICON = 15;              // ID for bonus icon cut bar 50%
+    private static final int REVERTED_BAR_ICON = 16;            // ID for bonus icon reverted bar
+    private static final int RUSH_HOUR_ICON = 17;               // ID for bonus icon rush hour
+    private int activedBonusSprite;                             // Indicates currenct actived and selectable bonus
+    private float SPRITE_ICON_SIZE;                             // Size for bonus icons
+    private boolean deletedBonusSprite = true;                  // Indicates that current selectable bonus was pressed
+    private List<Integer> bonusStatusArray = new ArrayList<>(); // Indicates current activator bonus on scene
+    private long scheduleDelay;                                 // Time to wait for next selectable bonus
+    private long previousScheduleTime;                          // Register previous schedule time in millis
+    private boolean locksField = false;                         // Indicates that bonus lock field is actived
+    private boolean rush_hour = false;                          // Indicates that bonus rush hour is actived
+    private float mSPEED_X1;                                    // Constant module for velocity x1
+    private float mSPEED_X2;                                    // Constant module for velocity x2
+    private float mSPEED_X3;                                    // Constant module for velocity x3
+    private float mSPEED_X4;                                    // Constant module for velocity x4
+    private TimerTask taskBonus;                                // Task for selectable bonus activation
+    private Timer timerBonus;                                   // Timer for bonus task activation
+    private TimerTask taskTimeout;                              // Task for timeout termination game
+    private Timer timerTimeout;                                 // Time for timeout task activation
+
+    //===========================================
+    // OVERRIDEN METHODS
+    //===========================================
     @Override
     protected Scene onCreateScene() {
         Log.d("LifeCycle", "onCreateScene()");
@@ -184,10 +183,9 @@ public class GamePongTwoPlayer extends GamePong {
 
         // Setting variables
         isConnected = true;
-        proximityRegion = false;
-        transferringBall = false;
-        receivedStop = false;
         resumeAllowed = true;
+        proximityRegion = false;
+        receivedStop = false;
         score = 0;
         opponentScore = 0;
         scheduleDelay = 2000;
@@ -199,8 +197,9 @@ public class GamePongTwoPlayer extends GamePong {
         COS_X = COS_45;
         SIN_X = SIN_45;
         PROXIMITY_ZONE = CAMERA_HEIGHT / 8;
-        previous_event = -1;
+        previous_event = NO_COLL;
         previous_bonus = NO_BONUS;
+        activedBonusSprite = SPRITE_NONE;
 
         // Attaching textInfo
         textInfo = new Text(10, 10, font, "", 30, getVertexBufferObjectManager());
@@ -239,6 +238,7 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected void loadGraphics() {
         super.loadGraphics();
+
         // Speed X2 Bonus
         speedX2Bonus = new GameObject(this, R.drawable.speedx2) {
             @Override
@@ -433,16 +433,9 @@ public class GamePongTwoPlayer extends GamePong {
                     SIN_X,
                     xRatio);
             sendBluetoothMessage(messageCoords);
-
             haveBall = false;
             transferringBall = true;
             previous_event = TOP;
-//            Log.d(TAG, "CollisionTop - S: X: " + ball.getXCoordinate() + " of " + CAMERA_WIDTH);
-//            Log.d(TAG, "CollisionTop - S: XRatio: " + xRatio);
-//            Log.d(TAG, "CollisionTop - S: Module " + myModule);
-//            Log.d(TAG, "CollisionTop - S: VelX " + ball.getHandlerSpeedX());
-//            Log.d(TAG, "CollisionTop - S: VelY " + ball.getHandlerSpeedY());
-//            Log.d(TAG, "CollisionTop - S: Sign(Velx) " + Math.signum(ball.getHandlerSpeedX()));
         } else {
             super.collidesTop();
         }
@@ -470,12 +463,10 @@ public class GamePongTwoPlayer extends GamePong {
         if (!proximityRegion && ball.getYCoordinate() <= PROXIMITY_ZONE) {
             proximityRegion = true;
         }
-
         // Al rientro della pallina, proximity regione in ricezione (la metà di quella di invio, più critica)
         if (proximityRegion && ball.getYCoordinate() > PROXIMITY_ZONE / 2) {
             proximityRegion = false;
         }
-
         // Quando la palla ESCE COMPLETAMENTE dal device
         if (proximityRegion && ball.getYCoordinate() < -ball.getObjectHeight()) {
             ball.detach();
@@ -539,22 +530,10 @@ public class GamePongTwoPlayer extends GamePong {
         Player currentPlayer = playerDAO.findByNome(user);
         long idPlayer;
 
-//        if(currentPlayer == null){
-//            currentPlayer = new Player(user);
-//            idPlayer = playerDAO.insert(currentPlayer);
-//        }else idPlayer = currentPlayer.getId();
         idPlayer = currentPlayer.getId();
 
         StatTwoPlayerDAO statTwoPlayerDAO = new StatTwoPlayerDAO(getApplicationContext());
         StatTwoPlayer currentPlayerStats = statTwoPlayerDAO.findById((int) idPlayer);
-
-//        if(currentPlayerStats == null){
-//            currentPlayerStats = new StatTwoPlayer((int)idPlayer, 0, 0);
-//            statTwoPlayerDAO.insert(currentPlayerStats);
-//        }
-
-
-//        currentPlayerStats.increasePartiteGiocate();
 
         if (winner)
             currentPlayerStats.increasePartiteVinte();
@@ -591,9 +570,9 @@ public class GamePongTwoPlayer extends GamePong {
             }
 
             if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED && (System.currentTimeMillis() - tap > 500)) {
-                fsmGame.setState(FSMGame.STATE_IN_GAME);
                 AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_RESUME);
                 sendBluetoothMessage(resumeMessage);
+                fsmGame.setState(FSMGame.STATE_IN_GAME);
             }
 
             if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP && resumeAllowed) {
@@ -644,12 +623,17 @@ public class GamePongTwoPlayer extends GamePong {
         intent.putExtra(EXTRA_DEVICE, mConnectedDeviceName);
         setResult(Activity.RESULT_CANCELED, intent);
         if (timerBonus != null) timerBonus.cancel();
+        if (timerTimeout != null) timerTimeout.cancel();
         super.onBackPressed();
     }
 
-    //----------------------------------------------
+    //===========================================
     // MISCELLANEA
-    //----------------------------------------------
+    //===========================================
+    /**
+     * This routine is called to send a bluetooth message between two paired devices
+     * @param message Message to send.
+     */
     private synchronized void sendBluetoothMessage(AppMessage message) {
         if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
@@ -660,6 +644,13 @@ public class GamePongTwoPlayer extends GamePong {
         mBluetoothService.write(send);
     }
 
+    /**
+     * This routine is called to understand if bonus activator was touched
+     * @param bonusID ID of activator bonus
+     * @param x X coordinate of the touch
+     * @param y Y coordinate of the touch
+     * @return True if activator touched, false instead
+     */
     private boolean checkTouchOnSprite(int bonusID, float x, float y) {
         boolean checkTouchSpriteStatus;
         switch (bonusID) {
@@ -694,6 +685,9 @@ public class GamePongTwoPlayer extends GamePong {
         return checkTouchSpriteStatus;
     }
 
+    /**
+     * Use this to save the state of game's objects
+     */
     private void saveHandlerState() {
         Log.d(TAG, "Save Handler State");
         old_x_speed = ball.getHandlerSpeedX();
@@ -704,6 +698,9 @@ public class GamePongTwoPlayer extends GamePong {
         }
     }
 
+    /**
+     * Use this to initialize game's object on scene
+     */
     private void initializeSprite() {
 
         // SPEED X2 BONUS INITIALIZING
@@ -790,9 +787,9 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
 
-    //----------------------------------------------
+    //===========================================
     // HANDLERS
-    //----------------------------------------------
+    //===========================================
     @SuppressWarnings("all")
     private final Handler mHandler = new Handler() {
         @Override
@@ -834,23 +831,18 @@ public class GamePongTwoPlayer extends GamePong {
                                 case Constants.MSG_TYPE_COORDS:
                                     Log.d(TAG, "Received : MSG_TYPE_COORDS");
                                     if (!haveBall) {
-//                                        Log.d(TAG, "Received : COS_X " + recMsg.OP2);
-//                                        Log.d(TAG, "Received : SIN_X " + recMsg.OP3);
-                                        float offset = 0;
-                                        if (recMsg.OP1 == 0) {
-                                            offset = ball.getObjectWidth();
-                                        } else if (recMsg.OP1 > 0) {
-                                            offset = 2f * ball.getObjectWidth();
-                                        }
+//                                        float offset = 0;
+//                                        if (recMsg.OP1 == 0) {
+//                                            offset = ball.getObjectWidth();
+//                                        } else if (recMsg.OP1 > 0) {
+//                                            offset = 2f * ball.getObjectWidth();
+//                                        }
+                                        float offset = recMsg.OP1 * ball.getObjectWidth() + ball.getObjectWidth();
                                         float xPos = ((1 - recMsg.OP4) * CAMERA_WIDTH) - offset;
                                         float velX = -recMsg.OP1 * myModule * recMsg.OP2;
                                         float velY = myModule * recMsg.OP3;
                                         COS_X = recMsg.OP2;
                                         SIN_X = recMsg.OP3;
-//                                        Log.d(TAG, "Received : Module " + myModule);
-//                                        Log.d(TAG, "Received : VelX " + velX);
-//                                        Log.d(TAG, "Received : VelY " + velY);
-//                                        Log.d(TAG, "Received : X: " + xPos + " of " + CAMERA_WIDTH);
                                         ball.setPosition(xPos, -ball.getObjectHeight());
                                         ball.attach();
                                         ball.setHandlerSpeed(velX, velY);
@@ -911,7 +903,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 //------------------------INTEGER------------------------
                                 case Constants.MSG_TYPE_FIRST_START:
                                     Log.d(TAG, "Received : MSG_TYPE_FIRST_START");
-                                    //TODO
+                                    // Never happen
                                     break;
                                 //------------------------ALERT------------------------
                                 case Constants.MSG_TYPE_ALERT:
@@ -929,8 +921,6 @@ public class GamePongTwoPlayer extends GamePong {
                                 //------------------------STOP REQUEST------------------------
                                 case Constants.MSG_TYPE_STOP_REQUEST:
                                     Log.d(TAG, "Received : MSG_TYPE_STOP_REQUEST");
-                                    // TODO da valutare
-//                                    if(!haveBall && ball.getYCoordinate() < ball.getObjectHeight()){
                                     if (!haveBall && ball.getYCoordinate() < 0) {
                                         ball.detach();
                                     }
@@ -1057,22 +1047,21 @@ public class GamePongTwoPlayer extends GamePong {
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
                                 ball.setHandlerSpeed(old_x_speed, old_y_speed);
                                 bar.setBarSpeed(old_bar_speed);
-                                textInfo.setText(" ");
                                 if (rush_hour) {
                                     rushHour.restartAfterPause();
                                 }
                                 if (receivedStop && haveBall && Math.signum(ball.getHandlerSpeedY()) > 0) {
                                     ball.setHandlerSpeedX(-ball.getHandlerSpeedX());
                                     ball.setHandlerSpeedY(-ball.getHandlerSpeedY());
-                                    previous_event = -1;
+                                    previous_event = NO_COLL;
                                 }
                                 receivedStop = false;
                                 resumeAllowed = false;
                                 taskBonus = new TimerBonusTask();
                                 timerBonus = new Timer();
-//                                Log.d(TAG, "Try To Schedule Using : " + scheduleDelay);
                                 scheduleDelay = scheduleDelay < 0 ? 0 : scheduleDelay;
                                 timerBonus.schedule(taskBonus, scheduleDelay, BONUS_REPEATING_TIME_MILLIS);
+                                textInfo.setText(" ");
                                 break;
                             case FSMGame.STATE_IN_GAME_WAITING:
                                 Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
@@ -1090,8 +1079,6 @@ public class GamePongTwoPlayer extends GamePong {
                                     previousScheduleTime = taskBonus.scheduledExecutionTime();
                                 }
                                 scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
-                                Log.d(TAG, "Schedule - Current: " + System.currentTimeMillis() + " Task: " + previousScheduleTime);
-                                Log.d(TAG, "ScheduleDelay PAUSED : " + scheduleDelay);
                                 if (timerBonus != null) timerBonus.cancel();
                                 break;
                             case FSMGame.STATE_GAME_PAUSE_STOP:
@@ -1104,8 +1091,6 @@ public class GamePongTwoPlayer extends GamePong {
                                         previousScheduleTime = taskBonus.scheduledExecutionTime();
                                     }
                                     scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
-                                    Log.d(TAG, "Schedule - Current: " + System.currentTimeMillis() + " Task: " + previousScheduleTime);
-                                    Log.d(TAG, "ScheduleDelay PAUSED : " + scheduleDelay);
                                     taskBonus = null;
                                 }
                                 if (timerBonus != null) timerBonus.cancel();
@@ -1127,8 +1112,6 @@ public class GamePongTwoPlayer extends GamePong {
                                     previousScheduleTime = taskBonus.scheduledExecutionTime();
                                 }
                                 scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
-                                Log.d(TAG, "Schedule - Current: " + System.currentTimeMillis() + " Task: " + previousScheduleTime);
-                                Log.d(TAG, "ScheduleDelay PAUSED : " + scheduleDelay);
                                 if (timerBonus != null) timerBonus.cancel();
                                 break;
                             case FSMGame.STATE_OPPONENT_NOT_READY:
@@ -1318,6 +1301,10 @@ public class GamePongTwoPlayer extends GamePong {
         }
     };
 
+    /**
+     * Safetely attach and detach icon sprite
+     * @param spriteID ID of sprite to attach
+     */
     private void safeAttachSpriteIcon(Integer spriteID) {
         switch (spriteID) {
             case SPEED_X2_ICON:
@@ -1404,10 +1391,6 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     private void setVelocityBonus(int nextBonus) {
-//        Log.d(TAG, "BonusVelocity - Previous Module: " + myModule);
-//        Log.d(TAG, "BonusVelocity - Previous Velx: " + ball.getHandlerSpeedX());
-//        Log.d(TAG, "BonusVelocity - Previous Vely: " + ball.getHandlerSpeedY());
-
         switch (nextBonus) {
             case NO_BONUS:
                 myModule = mSPEED_X1;
@@ -1428,15 +1411,11 @@ public class GamePongTwoPlayer extends GamePong {
             ball.setHandlerSpeedX(Math.signum(ball.getHandlerSpeedX()) * myModule * COS_X);
             ball.setHandlerSpeedY(Math.signum(ball.getHandlerSpeedY()) * myModule * SIN_X);
         }
-//        Log.d(TAG, "BonusVelocity - New Module: " + myModule);
-//        Log.d(TAG, "BonusVelocity - New Velx: " + ball.getHandlerSpeedX());
-//        Log.d(TAG, "BonusVelocity - New Vely: " + ball.getHandlerSpeedY());
     }
 
-    //----------------------------------------------
-    // THREADS
-    //----------------------------------------------
-
+    //===========================================
+    // TASKS
+    //===========================================
     private class TimerBonusTask extends TimerTask {
 
         private int bonusChoice = NO_BONUS;
@@ -1448,7 +1427,6 @@ public class GamePongTwoPlayer extends GamePong {
                 bonusChoice = rand.nextInt((RUSH_HOUR - SPEED_X2) + 1) + SPEED_X2;
             } while (bonusChoice == previous_bonus);
             previous_bonus = bonusChoice;
-//            bonusChoice = RUSH_HOUR;
             if (deletedBonusSprite) {
                 attachSprite(bonusChoice);
             } else {
@@ -1460,7 +1438,6 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public boolean cancel() {
             if (activedBonusSprite != SPRITE_NONE) {
-                Log.d(TAG, "Sprite - TimerCancel()");
                 detachSprite(activedBonusSprite);
                 activedBonusSprite = SPRITE_NONE;
             }
@@ -1472,7 +1449,6 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public void run() {
             if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP) {
-                Log.d(TAG, "Game Timeout : Send Message");
                 AppMessage lostYourGameMessage = new AppMessage(Constants.MSG_TYPE_GAME_TIMEOUT);
                 sendBluetoothMessage(lostYourGameMessage);
                 fsmGame.setState(FSMGame.STATE_GAME_WINNER);
@@ -1480,14 +1456,16 @@ public class GamePongTwoPlayer extends GamePong {
         }
     }
 
-    //----------------------------------------------
-    // THREADS UTILITY
-    //----------------------------------------------
-
+    //===========================================
+    // TASKS UTILS
+    //===========================================
+    /**
+     * Attach activator bonus on screen
+     * @param bonusID ID of activator bonus
+     */
     private void attachSprite(int bonusID) {
         switch (bonusID) {
             case SPEED_X2:
-//                Log.d(TAG, "Sprite - Attaching SPEED_X2");
                 speedX2Bonus.registerTouch();
                 speedX2Bonus.attach();
                 activedBonusSprite = SPEED_X2;
@@ -1495,7 +1473,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case SPEED_X3:
-//                Log.d(TAG, "Sprite - Attaching SPEED_X3");
                 speedX3Bonus.registerTouch();
                 speedX3Bonus.attach();
                 activedBonusSprite = SPEED_X3;
@@ -1503,7 +1480,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case SPEED_X4:
-//                Log.d(TAG, "Sprite - Attaching SPEED_X4");
                 speedX4Bonus.registerTouch();
                 speedX4Bonus.attach();
                 activedBonusSprite = SPEED_X4;
@@ -1511,7 +1487,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case LOCK_FIELD:
-//                Log.d(TAG, "Sprite - Attaching LOCK_FIELD");
                 lockFieldBonus.registerTouch();
                 lockFieldBonus.attach();
                 activedBonusSprite = LOCK_FIELD;
@@ -1519,7 +1494,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case CUT_BAR_30:
-//                Log.d(TAG, "Sprite - Attaching CUT_BAR_30");
                 cutBar30Bonus.registerTouch();
                 cutBar30Bonus.attach();
                 activedBonusSprite = CUT_BAR_30;
@@ -1527,7 +1501,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case CUT_BAR_50:
-//                Log.d(TAG, "Sprite - Attaching CUT_BAR_50");
                 cutBar50Bonus.registerTouch();
                 cutBar50Bonus.attach();
                 activedBonusSprite = CUT_BAR_50;
@@ -1535,7 +1508,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case REVERTED_BAR:
-//                Log.d(TAG, "Sprite - Attaching REVERTED_BAR");
                 reverseBonus.registerTouch();
                 reverseBonus.attach();
                 activedBonusSprite = REVERTED_BAR;
@@ -1543,7 +1515,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case RUSH_HOUR:
-//                Log.d(TAG, "Sprite - Attaching RUSH_HOUR");
                 rushHourBonus.registerTouch();
                 rushHourBonus.attach();
                 activedBonusSprite = RUSH_HOUR;
@@ -1556,10 +1527,13 @@ public class GamePongTwoPlayer extends GamePong {
         }
     }
 
+    /**
+     * Detach activator bonus sprite from the scene
+     * @param bonusID ID of activator bonus
+     */
     private void detachSprite(int bonusID) {
         switch (bonusID) {
             case SPEED_X2:
-//                Log.d(TAG, "Sprite - Detaching SPEED_X2");
                 speedX2Bonus.unregisterTouch();
                 speedX2Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
@@ -1567,7 +1541,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case SPEED_X3:
-//                Log.d(TAG, "Sprite - Detaching SPEED_X3");
                 speedX3Bonus.unregisterTouch();
                 speedX3Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
@@ -1575,7 +1548,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case SPEED_X4:
-//                Log.d(TAG, "Sprite - Detaching SPEED_X4");
                 speedX4Bonus.unregisterTouch();
                 speedX4Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
@@ -1583,7 +1555,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case LOCK_FIELD:
-//                Log.d(TAG, "Sprite - Detaching LOCK_FIELD");
                 lockFieldBonus.unregisterTouch();
                 lockFieldBonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
@@ -1591,7 +1562,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case CUT_BAR_30:
-//                Log.d(TAG, "Sprite - Detaching CUT_BAR_30");
                 cutBar30Bonus.unregisterTouch();
                 cutBar30Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
@@ -1599,7 +1569,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case CUT_BAR_50:
-//                Log.d(TAG, "Sprite - Detaching CUT_BAR_50");
                 cutBar50Bonus.unregisterTouch();
                 cutBar50Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
@@ -1607,7 +1576,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case REVERTED_BAR:
-//                Log.d(TAG, "Sprite - Detaching REVERTED_BAR");
                 reverseBonus.unregisterTouch();
                 reverseBonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
@@ -1615,7 +1583,6 @@ public class GamePongTwoPlayer extends GamePong {
                 break;
 
             case RUSH_HOUR:
-//                Log.d(TAG, "Sprite - Detaching RUSH_HOUR");
                 rushHourBonus.unregisterTouch();
                 rushHourBonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;

@@ -84,7 +84,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
      * Collision Events
      */
     protected int previous_event;
-    protected static final int NO_COLL = 0;
+    protected static final int NO_COLL = -1;
     protected static final int BOTTOM = 1;
     protected static final int TOP = 2;
     protected static final int LEFT = 3;
