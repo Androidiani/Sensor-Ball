@@ -63,16 +63,6 @@ public class GamePongOnePlayer extends GamePong {
      */
     private int event;
     private static final int NUM_BONUS = 10;
-    private static final int NO_EVENT = 0;
-    private static final int FIRST_ENEMY = 1;
-    private static final int BUBBLE_BONUS = 2;
-    private static final int CUT_BAR_30 = 3;
-    private static final int LIFE_BONUS = 4;
-    private static final int CUT_BAR_50 = 5;
-    private static final int BIG_BAR = 6;
-    private static final int REVERSE = 7;
-    private static final int FREEZE = 8;
-    private static final int RUSH_HOUR = 9;
 
     @Override
     protected Scene onCreateScene() {
@@ -153,7 +143,7 @@ public class GamePongOnePlayer extends GamePong {
         Log.d(TAG, "Event Cleared");
 
         // Setting NO EVENT for 1 reach count
-        event = NO_EVENT;
+        event = Constants.NO_EVENT;
         gameEvent();
         reach_count = 1;
 
@@ -202,7 +192,7 @@ public class GamePongOnePlayer extends GamePong {
         score = 0;
         gain = 0;
         level = 1;
-        event = NO_EVENT;
+        event = Constants.NO_EVENT;
         reach_count = 1;
         textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
     }
@@ -238,16 +228,16 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     protected void gameEventsCollisionLogic() {
         switch (event) {
-            case FIRST_ENEMY:
+            case Constants.FIRST_ENEMY:
                 previous_event = firstEnemy.collision(previous_event, touch);
                 break;
-            case BUBBLE_BONUS:
+            case Constants.BUBBLE_BONUS:
                 score = bubble.collision(score, level, textScore);
                 break;
-            case LIFE_BONUS:
+            case Constants.LIFE_BONUS:
                 life = lifeBonus.collision(life, lifeStars);
                 break;
-            case RUSH_HOUR:
+            case Constants.RUSH_HOUR:
                 rushHour.collision();
                 break;
         }
@@ -313,15 +303,15 @@ public class GamePongOnePlayer extends GamePong {
     protected void addScore() {
         gain = getLevel() * 10;
         score += gain;
-        if (event == FIRST_ENEMY)
+        if (event == Constants.FIRST_ENEMY)
             score += gain * 2;
-        if (event == CUT_BAR_30)
+        if (event == Constants.CUT_BAR_30)
             score += gain * 4;
-        if (event == CUT_BAR_50)
+        if (event == Constants.CUT_BAR_50)
             score += gain * 8;
-        if (event == REVERSE)
+        if (event == Constants.REVERSE)
             score += gain * 16;
-        if (event == RUSH_HOUR)
+        if (event == Constants.RUSH_HOUR)
             score += gain * 32;
     }
 
@@ -344,42 +334,42 @@ public class GamePongOnePlayer extends GamePong {
 
     private void gameEvent() {
         switch (event) {
-            case NO_EVENT:
+            case Constants.NO_EVENT:
                 textEvnt.setText("");
                 break;
-            case FIRST_ENEMY:
+            case Constants.FIRST_ENEMY:
                 textEvnt.setText(getResources().getString(R.string.text_first_enemy));
                 firstEnemy.addToScene(scene);
                 break;
-            case BUBBLE_BONUS:
+            case Constants.BUBBLE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_bubble));
                 bubble.addToScene(scene);
                 break;
-            case CUT_BAR_30:
+            case Constants.CUT_BAR_30:
                 textEvnt.setText(getResources().getString(R.string.text_cut_bar_30));
                 bar.setObjectWidth(0.7f * bar.getBarWidth());
                 break;
-            case LIFE_BONUS:
+            case Constants.LIFE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_lifebonus));
                 lifeBonus.addToScene(scene, life);
                 break;
-            case CUT_BAR_50:
+            case Constants.CUT_BAR_50:
                 textEvnt.setText(getResources().getString(R.string.text_cut_bar_50));
                 bar.setObjectWidth(0.5f * bar.getBarWidth());
                 break;
-            case BIG_BAR:
+            case Constants.BIG_BAR:
                 textEvnt.setText(getResources().getString(R.string.text_big_bar));
                 bar.setObjectWidth(1.5f * bar.getBarWidth());
                 break;
-            case REVERSE:
+            case Constants.REVERSE:
                 textEvnt.setText(getResources().getString(R.string.text_reverse));
                 bar.setBarSpeed(-bar.getBarSpeed());
                 break;
-            case FREEZE:
+            case Constants.FREEZE:
                 textEvnt.setText(getResources().getString(R.string.text_freeze));
                 ball.setHandlerSpeed(ball.getHandlerSpeedX() / 2, ball.getHandlerSpeedY() / 2);
                 break;
-            case RUSH_HOUR:
+            case Constants.RUSH_HOUR:
                 textEvnt.setText(getResources().getString(R.string.text_rush));
                 rushHour.addToScene(scene);
                 break;
@@ -388,33 +378,33 @@ public class GamePongOnePlayer extends GamePong {
 
     private void clearEvent() {
         switch (event) {
-            case NO_EVENT:
+            case Constants.NO_EVENT:
                 break;
-            case FIRST_ENEMY:
+            case Constants.FIRST_ENEMY:
                 firstEnemy.clear();
                 break;
-            case BUBBLE_BONUS:
+            case Constants.BUBBLE_BONUS:
                 bubble.clear();
                 break;
-            case CUT_BAR_30:
+            case Constants.CUT_BAR_30:
                 bar.setObjectWidth(bar.getBarWidth());
                 break;
-            case LIFE_BONUS:
+            case Constants.LIFE_BONUS:
                 lifeBonus.clear();
                 break;
-            case CUT_BAR_50:
+            case Constants.CUT_BAR_50:
                 bar.setObjectWidth(bar.getBarWidth());
                 break;
-            case BIG_BAR:
+            case Constants.BIG_BAR:
                 bar.setObjectWidth(bar.getBarWidth());
                 break;
-            case REVERSE:
+            case Constants.REVERSE:
                 bar.setBarSpeed(-bar.getBarSpeed());
                 break;
-            case FREEZE:
+            case Constants.FREEZE:
                 ball.setHandlerSpeed(ball.getHandlerSpeedX() * 2, ball.getHandlerSpeedY() * 2);
                 break;
-            case RUSH_HOUR:
+            case Constants.RUSH_HOUR:
                 rushHour.clear();
                 break;
         }
@@ -427,7 +417,7 @@ public class GamePongOnePlayer extends GamePong {
         do {
             new_event = random.nextInt(level) % NUM_BONUS;
         }
-        while ((new_event == event && level > 1) || (new_event == LIFE_BONUS && life == MAX_LIFE - 1));
+        while ((new_event == event && level > 1) || (new_event == Constants.LIFE_BONUS && life == MAX_LIFE - 1));
         event = new_event;
     }
 }

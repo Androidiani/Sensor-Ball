@@ -99,7 +99,6 @@ public class GamePongTwoPlayer extends GamePong {
     //===========================================
     // PAUSE UTILS
     //===========================================
-    private final long TIMEOUT_FOR_GAME_OVER = 120000;  // Time to wait to win the game if opponent pause game for too much time
     private long tap;                                   // Register current milliseconds time to avoid fastest pause
     private int PROXIMITY_ZONE;                         // Variable to avoid pause when ball is passing
     private boolean proximityRegion;                    // Indicates when ball is in proximity zone
@@ -111,17 +110,7 @@ public class GamePongTwoPlayer extends GamePong {
     //===========================================
     private BonusManager bonusManager = null;                   // Manager for created/expired bonus
     private int previous_bonus;                                 // Indicates previous selectable bonus
-    private final long BONUS_REPEATING_TIME_MILLIS = 7000;      // Time between two selectable bonus
     private final int SPRITE_NONE = -1;                         // There is no attached sprite
-    public static final int NO_BONUS = 1;                       // ID for no bonus
-    public static final int SPEED_X2 = 2;                       // ID for bonus speed x2
-    public static final int SPEED_X3 = 3;                       // ID for bonus speed x3
-    public static final int SPEED_X4 = 4;                       // ID for bonus speed x4
-    public static final int LOCK_FIELD = 5;                     // ID for bonus lock field
-    public static final int CUT_BAR_30 = 6;                     // ID for bonus cut bar 30%
-    public static final int CUT_BAR_50 = 7;                     // ID for bonus cut bar 50%
-    public static final int REVERTED_BAR = 8;                   // ID for bonus reverted bar
-    public static final int RUSH_HOUR = 9;                      // ID for bonus rush hour
     private static final int SPEED_X2_ICON = 10;                // ID for bonus icon speed x2
     private static final int SPEED_X3_ICON = 11;                // ID for bonus icon speed x3
     private static final int SPEED_X4_ICON = 12;                // ID for bonus icon speed x4
@@ -198,7 +187,7 @@ public class GamePongTwoPlayer extends GamePong {
         SIN_X = SIN_45;
         PROXIMITY_ZONE = CAMERA_HEIGHT / 8;
         previous_event = NO_COLL;
-        previous_bonus = NO_BONUS;
+        previous_bonus = Constants.NO_BONUS;
         activedBonusSprite = SPRITE_NONE;
 
         // Attaching textInfo
@@ -245,10 +234,10 @@ public class GamePongTwoPlayer extends GamePong {
             public void onTouch() {
                 super.onTouch();
                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                    detachSprite(SPEED_X2);
+                    detachSprite(Constants.SPEED_X2);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage speedx2Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX2, randNum);
+                    AppMessage speedx2Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEED_X2, randNum);
                     sendBluetoothMessage(speedx2Message);
                 }
             }
@@ -261,10 +250,10 @@ public class GamePongTwoPlayer extends GamePong {
             public void onTouch() {
                 super.onTouch();
                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                    detachSprite(SPEED_X3);
+                    detachSprite(Constants.SPEED_X3);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage speedx3Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX3, randNum);
+                    AppMessage speedx3Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEED_X3, randNum);
                     sendBluetoothMessage(speedx3Message);
                 }
             }
@@ -277,10 +266,10 @@ public class GamePongTwoPlayer extends GamePong {
             public void onTouch() {
                 super.onTouch();
                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                    detachSprite(SPEED_X4);
+                    detachSprite(Constants.SPEED_X4);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage speedx4Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEEDX4, randNum);
+                    AppMessage speedx4Message = new AppMessage(Constants.MSG_TYPE_BONUS_SPEED_X4, randNum);
                     sendBluetoothMessage(speedx4Message);
                 }
             }
@@ -293,10 +282,10 @@ public class GamePongTwoPlayer extends GamePong {
             public void onTouch() {
                 super.onTouch();
                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                    detachSprite(LOCK_FIELD);
+                    detachSprite(Constants.LOCK_FIELD);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage lockFieldMessage = new AppMessage(Constants.MSG_TYPE_BONUS_LOCKFIELD, randNum);
+                    AppMessage lockFieldMessage = new AppMessage(Constants.MSG_TYPE_BONUS_LOCK_FIELD, randNum);
                     sendBluetoothMessage(lockFieldMessage);
                 }
             }
@@ -309,10 +298,10 @@ public class GamePongTwoPlayer extends GamePong {
             public void onTouch() {
                 super.onTouch();
                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                    detachSprite(CUT_BAR_30);
+                    detachSprite(Constants.CUT_BAR_30);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage cutBar30Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUTBAR30, randNum);
+                    AppMessage cutBar30Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUT_BAR_30, randNum);
                     sendBluetoothMessage(cutBar30Message);
                 }
             }
@@ -325,10 +314,10 @@ public class GamePongTwoPlayer extends GamePong {
             public void onTouch() {
                 super.onTouch();
                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                    detachSprite(CUT_BAR_50);
+                    detachSprite(Constants.CUT_BAR_50);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage cutBar50Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUTBAR50, randNum);
+                    AppMessage cutBar50Message = new AppMessage(Constants.MSG_TYPE_BONUS_CUT_BAR_50, randNum);
                     sendBluetoothMessage(cutBar50Message);
                 }
             }
@@ -341,10 +330,10 @@ public class GamePongTwoPlayer extends GamePong {
             public void onTouch() {
                 super.onTouch();
                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                    detachSprite(REVERTED_BAR);
+                    detachSprite(Constants.REVERSE);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage revertedBarMessage = new AppMessage(Constants.MSG_TYPE_BONUS_REVERTEDBAR, randNum);
+                    AppMessage revertedBarMessage = new AppMessage(Constants.MSG_TYPE_BONUS_REVERTED_BAR, randNum);
                     sendBluetoothMessage(revertedBarMessage);
                 }
             }
@@ -357,10 +346,10 @@ public class GamePongTwoPlayer extends GamePong {
             public void onTouch() {
                 super.onTouch();
                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                    detachSprite(RUSH_HOUR);
+                    detachSprite(Constants.RUSH_HOUR);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage rushHourMessage = new AppMessage(Constants.MSG_TYPE_BONUS_RUSHHOUR, randNum);
+                    AppMessage rushHourMessage = new AppMessage(Constants.MSG_TYPE_BONUS_RUSH_HOUR, randNum);
                     sendBluetoothMessage(rushHourMessage);
                 }
             }
@@ -654,28 +643,28 @@ public class GamePongTwoPlayer extends GamePong {
     private boolean checkTouchOnSprite(int bonusID, float x, float y) {
         boolean checkTouchSpriteStatus;
         switch (bonusID) {
-            case SPEED_X2:
+            case Constants.SPEED_X2:
                 checkTouchSpriteStatus = speedX2Bonus.checkOnTouch(x, y);
                 break;
-            case SPEED_X3:
+            case Constants.SPEED_X3:
                 checkTouchSpriteStatus = speedX3Bonus.checkOnTouch(x, y);
                 break;
-            case SPEED_X4:
+            case Constants.SPEED_X4:
                 checkTouchSpriteStatus = speedX4Bonus.checkOnTouch(x, y);
                 break;
-            case LOCK_FIELD:
+            case Constants.LOCK_FIELD:
                 checkTouchSpriteStatus = lockFieldBonus.checkOnTouch(x, y);
                 break;
-            case CUT_BAR_30:
+            case Constants.CUT_BAR_30:
                 checkTouchSpriteStatus = cutBar30Bonus.checkOnTouch(x, y);
                 break;
-            case CUT_BAR_50:
+            case Constants.CUT_BAR_50:
                 checkTouchSpriteStatus = cutBar50Bonus.checkOnTouch(x, y);
                 break;
-            case REVERTED_BAR:
+            case Constants.REVERSE:
                 checkTouchSpriteStatus = reverseBonus.checkOnTouch(x, y);
                 break;
-            case RUSH_HOUR:
+            case Constants.RUSH_HOUR:
                 checkTouchSpriteStatus = rushHourBonus.checkOnTouch(x, y);
                 break;
             default:
@@ -889,13 +878,13 @@ public class GamePongTwoPlayer extends GamePong {
                                         if(taskTimeout != null)taskTimeout.cancel();
                                         if(timerTimeout != null)timerTimeout.cancel();
                                     } else if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED) {
-                                        AppMessage resumeNotReadyMessage = new AppMessage(Constants.MSG_TYPE_RESUME_NOREADY);
+                                        AppMessage resumeNotReadyMessage = new AppMessage(Constants.MSG_TYPE_RESUME_NO_READY);
                                         sendBluetoothMessage(resumeNotReadyMessage);
                                     }
                                     break;
                                 //------------------------RESUME NOREADY------------------------
-                                case Constants.MSG_TYPE_RESUME_NOREADY:
-                                    Log.d(TAG, "Received : MSG_TYPE_RESUME_NOREADY");
+                                case Constants.MSG_TYPE_RESUME_NO_READY:
+                                    Log.d(TAG, "Received : MSG_TYPE_RESUME_NO_READY");
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                                         fsmGame.setState(FSMGame.STATE_GAME_EXIT_PAUSE);
                                     }
@@ -914,7 +903,7 @@ public class GamePongTwoPlayer extends GamePong {
                                             fsmGame.getState() == FSMGame.STATE_OPPONENT_LEFT ||
                                             fsmGame.getState() == FSMGame.STATE_GAME_WINNER ||
                                             fsmGame.getState() == FSMGame.STATE_GAME_LOSER) {
-                                        AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NOREADY);
+                                        AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NO_READY);
                                         sendBluetoothMessage(notReadyMessage);
                                     }
                                     break;
@@ -931,7 +920,7 @@ public class GamePongTwoPlayer extends GamePong {
                                     if (fsmGame.getState() != FSMGame.STATE_GAME_PAUSE_STOP) {
                                         taskTimeout = new TimerGameTimeoutTask();
                                         timerTimeout = new Timer();
-                                        timerTimeout.schedule(taskTimeout, TIMEOUT_FOR_GAME_OVER);
+                                        timerTimeout.schedule(taskTimeout, Constants.TIMEOUT_FOR_GAME_OVER);
                                     }
                                     fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
                                     break;
@@ -951,8 +940,8 @@ public class GamePongTwoPlayer extends GamePong {
                                     }
                                     break;
                                 //------------------------NOREADY------------------------
-                                case Constants.MSG_TYPE_NOREADY:
-                                    Log.d(TAG, "Received : MSG_TYPE_NOREADY");
+                                case Constants.MSG_TYPE_NO_READY:
+                                    Log.d(TAG, "Received : MSG_TYPE_NO_READY");
                                     if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
                                         fsmGame.setState(FSMGame.STATE_OPPONENT_NOT_READY);
                                     }
@@ -973,44 +962,44 @@ public class GamePongTwoPlayer extends GamePong {
                                     fsmGame.setState(FSMGame.STATE_GAME_LOSER);
                                     break;
                                 //------------------------BONUS SPEED X2------------------------
-                                case Constants.MSG_TYPE_BONUS_SPEEDX2:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEEDX2");
-                                    bonusManager.addBonus(SPEED_X2, recMsg.OP1);
+                                case Constants.MSG_TYPE_BONUS_SPEED_X2:
+                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X2");
+                                    bonusManager.addBonus(Constants.SPEED_X2, recMsg.OP1);
                                     break;
                                 //------------------------BONUS SPEED X3------------------------
-                                case Constants.MSG_TYPE_BONUS_SPEEDX3:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEEDX3");
-                                    bonusManager.addBonus(SPEED_X3, recMsg.OP1);
+                                case Constants.MSG_TYPE_BONUS_SPEED_X3:
+                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X3");
+                                    bonusManager.addBonus(Constants.SPEED_X3, recMsg.OP1);
                                     break;
                                 //------------------------BONUS SPEED X4------------------------
-                                case Constants.MSG_TYPE_BONUS_SPEEDX4:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEEDX4");
-                                    bonusManager.addBonus(SPEED_X4, recMsg.OP1);
+                                case Constants.MSG_TYPE_BONUS_SPEED_X4:
+                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X4");
+                                    bonusManager.addBonus(Constants.SPEED_X4, recMsg.OP1);
                                     break;
                                 //------------------------BONUS LOCK_FIELD------------------------
-                                case Constants.MSG_TYPE_BONUS_LOCKFIELD:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_LOCKFIELD");
-                                    bonusManager.addBonus(LOCK_FIELD, recMsg.OP1);
+                                case Constants.MSG_TYPE_BONUS_LOCK_FIELD:
+                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_LOCK_FIELD");
+                                    bonusManager.addBonus(Constants.LOCK_FIELD, recMsg.OP1);
                                     break;
                                 //------------------------BONUS CUT_BAR_30------------------------
-                                case Constants.MSG_TYPE_BONUS_CUTBAR30:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_CUTBAR30");
-                                    bonusManager.addBonus(CUT_BAR_30, recMsg.OP1);
+                                case Constants.MSG_TYPE_BONUS_CUT_BAR_30:
+                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_CUT_BAR_30");
+                                    bonusManager.addBonus(Constants.CUT_BAR_30, recMsg.OP1);
                                     break;
                                 //------------------------BONUS CUT_BAR_50------------------------
-                                case Constants.MSG_TYPE_BONUS_CUTBAR50:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_CUTBAR50");
-                                    bonusManager.addBonus(CUT_BAR_50, recMsg.OP1);
+                                case Constants.MSG_TYPE_BONUS_CUT_BAR_50:
+                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_CUT_BAR_50");
+                                    bonusManager.addBonus(Constants.CUT_BAR_50, recMsg.OP1);
                                     break;
-                                //------------------------BONUS REVERTED_BAR------------------------
-                                case Constants.MSG_TYPE_BONUS_REVERTEDBAR:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_REVERTEDBAR");
-                                    bonusManager.addBonus(REVERTED_BAR, recMsg.OP1);
+                                //------------------------BONUS REVERSE------------------------
+                                case Constants.MSG_TYPE_BONUS_REVERTED_BAR:
+                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_REVERTED_BAR");
+                                    bonusManager.addBonus(Constants.REVERSE, recMsg.OP1);
                                     break;
                                 //------------------------BONUS RUSH-HOUR------------------------
-                                case Constants.MSG_TYPE_BONUS_RUSHHOUR:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_RUSHHOUR");
-                                    bonusManager.addBonus(RUSH_HOUR, recMsg.OP1);
+                                case Constants.MSG_TYPE_BONUS_RUSH_HOUR:
+                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_RUSH_HOUR");
+                                    bonusManager.addBonus(Constants.RUSH_HOUR, recMsg.OP1);
                                     break;
                                 default:
                                     Log.d(TAG, "Received : Incorrect Message - Type is " + recMsg.TYPE);
@@ -1060,7 +1049,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 taskBonus = new TimerBonusTask();
                                 timerBonus = new Timer();
                                 scheduleDelay = scheduleDelay < 0 ? 0 : scheduleDelay;
-                                timerBonus.schedule(taskBonus, scheduleDelay, BONUS_REPEATING_TIME_MILLIS);
+                                timerBonus.schedule(taskBonus, scheduleDelay, Constants.BONUS_REPEATING_TIME_MILLIS);
                                 textInfo.setText(" ");
                                 break;
                             case FSMGame.STATE_IN_GAME_WAITING:
@@ -1078,7 +1067,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 if (taskBonus.scheduledExecutionTime() != 0) {
                                     previousScheduleTime = taskBonus.scheduledExecutionTime();
                                 }
-                                scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
+                                scheduleDelay = Constants.BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
                                 if (timerBonus != null) timerBonus.cancel();
                                 break;
                             case FSMGame.STATE_GAME_PAUSE_STOP:
@@ -1090,7 +1079,7 @@ public class GamePongTwoPlayer extends GamePong {
                                     if (taskBonus.scheduledExecutionTime() != 0) {
                                         previousScheduleTime = taskBonus.scheduledExecutionTime();
                                     }
-                                    scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
+                                    scheduleDelay = Constants.BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
                                     taskBonus = null;
                                 }
                                 if (timerBonus != null) timerBonus.cancel();
@@ -1111,7 +1100,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 if (taskBonus.scheduledExecutionTime() != 0) {
                                     previousScheduleTime = taskBonus.scheduledExecutionTime();
                                 }
-                                scheduleDelay = BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
+                                scheduleDelay = Constants.BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
                                 if (timerBonus != null) timerBonus.cancel();
                                 break;
                             case FSMGame.STATE_OPPONENT_NOT_READY:
@@ -1178,45 +1167,45 @@ public class GamePongTwoPlayer extends GamePong {
             switch (msg.what) {
                 case BonusManager.BONUS_CREATED:
                     switch (msg.arg1) {
-                        case SPEED_X2:
+                        case Constants.SPEED_X2:
                             Log.d(TAG, "Bonus Created : SPEED_X2");
-                            setVelocityBonus(SPEED_X2);
+                            setVelocityBonus(Constants.SPEED_X2);
                             safeAttachSpriteIcon(SPEED_X2_ICON);
                             break;
-                        case SPEED_X3:
+                        case Constants.SPEED_X3:
                             Log.d(TAG, "Bonus Created : SPEED_X3");
-                            setVelocityBonus(SPEED_X3);
+                            setVelocityBonus(Constants.SPEED_X3);
                             safeAttachSpriteIcon(SPEED_X3_ICON);
                             break;
-                        case SPEED_X4:
+                        case Constants.SPEED_X4:
                             Log.d(TAG, "Bonus Created : SPEED_X4");
-                            setVelocityBonus(SPEED_X4);
+                            setVelocityBonus(Constants.SPEED_X4);
                             safeAttachSpriteIcon(SPEED_X4_ICON);
                             break;
-                        case LOCK_FIELD:
+                        case Constants.LOCK_FIELD:
                             Log.d(TAG, "Bonus Created : LOCK_FIELD");
                             safeAttachSpriteIcon(LOCK_FIELD_ICON);
                             synchronized (this) {
                                 locksField = true;
                             }
                             break;
-                        case CUT_BAR_30:
+                        case Constants.CUT_BAR_30:
                             Log.d(TAG, "Bonus Created : CUT_BAR_30");
                             bar.setObjectWidth(0.7f * bar.getBarWidth());
                             safeAttachSpriteIcon(CUT_BAR_30_ICON);
                             break;
-                        case CUT_BAR_50:
+                        case Constants.CUT_BAR_50:
                             Log.d(TAG, "Bonus Created : CUT_BAR_50");
                             bar.setObjectWidth(0.5f * bar.getBarWidth());
                             safeAttachSpriteIcon(CUT_BAR_50_ICON);
                             break;
-                        case REVERTED_BAR:
-                            Log.d(TAG, "Bonus Created : REVERTED_BAR");
+                        case Constants.REVERSE:
+                            Log.d(TAG, "Bonus Created : REVERSE");
                             safeAttachSpriteIcon(REVERTED_BAR_ICON);
                             if (Math.signum(bar.getBarSpeed()) > 0)
                                 bar.setBarSpeed(-bar.getBarSpeed());
                             break;
-                        case RUSH_HOUR:
+                        case Constants.RUSH_HOUR:
                             Log.d(TAG, "Bonus Created : RUSH_HOUR");
                             safeAttachSpriteIcon(RUSH_HOUR_ICON);
                             if (!rush_hour) {
@@ -1232,25 +1221,25 @@ public class GamePongTwoPlayer extends GamePong {
                     break;
                 case BonusManager.BONUS_EXPIRED:
                     switch (msg.arg1) {
-                        case SPEED_X2:
+                        case Constants.SPEED_X2:
                             Log.d(TAG, "Bonus Expired : SPEED_X2");
-                            setVelocityBonus(NO_BONUS);
+                            setVelocityBonus(Constants.NO_BONUS);
                             speedX2BonusIcon.detachOnUIThread();
                             bonusStatusArray.remove(Integer.valueOf(SPEED_X2_ICON));
                             break;
-                        case SPEED_X3:
+                        case Constants.SPEED_X3:
                             Log.d(TAG, "Bonus Expired : SPEED_X3");
-                            setVelocityBonus(NO_BONUS);
+                            setVelocityBonus(Constants.NO_BONUS);
                             speedX3BonusIcon.detachOnUIThread();
                             bonusStatusArray.remove(Integer.valueOf(SPEED_X3_ICON));
                             break;
-                        case SPEED_X4:
+                        case Constants.SPEED_X4:
                             Log.d(TAG, "Bonus Expired : SPEED_X4");
-                            setVelocityBonus(NO_BONUS);
+                            setVelocityBonus(Constants.NO_BONUS);
                             speedX4BonusIcon.detachOnUIThread();
                             bonusStatusArray.remove(Integer.valueOf(SPEED_X4_ICON));
                             break;
-                        case LOCK_FIELD:
+                        case Constants.LOCK_FIELD:
                             Log.d(TAG, "Bonus Expired : LOCK_FIELD");
                             synchronized (this) {
                                 locksField = false;
@@ -1258,26 +1247,26 @@ public class GamePongTwoPlayer extends GamePong {
                             lockFieldBonusIcon.detachOnUIThread();
                             bonusStatusArray.remove(Integer.valueOf(LOCK_FIELD_ICON));
                             break;
-                        case CUT_BAR_30:
+                        case Constants.CUT_BAR_30:
                             Log.d(TAG, "Bonus Expired : CUT_BAR_30");
                             bar.setObjectWidth(bar.getBarWidth());
                             cutBar30BonusIcon.detachOnUIThread();
                             bonusStatusArray.remove(Integer.valueOf(CUT_BAR_30_ICON));
                             break;
-                        case CUT_BAR_50:
+                        case Constants.CUT_BAR_50:
                             Log.d(TAG, "Bonus Expired : CUT_BAR_50");
                             bar.setObjectWidth(bar.getBarWidth());
                             cutBar50BonusIcon.detachOnUIThread();
                             bonusStatusArray.remove(Integer.valueOf(CUT_BAR_50_ICON));
                             break;
-                        case REVERTED_BAR:
-                            Log.d(TAG, "Bonus Expired : REVERTED_BAR");
+                        case Constants.REVERSE:
+                            Log.d(TAG, "Bonus Expired : REVERSE");
                             if (Math.signum(bar.getBarSpeed()) < 0)
                                 bar.setBarSpeed(-bar.getBarSpeed());
                             reverseBonusIcon.detachOnUIThread();
                             bonusStatusArray.remove(Integer.valueOf(REVERTED_BAR_ICON));
                             break;
-                        case RUSH_HOUR:
+                        case Constants.RUSH_HOUR:
                             Log.d(TAG, "Bonus Expired : RUSH_HOUR");
                             runOnUpdateThread(new Runnable() {
                                 @Override
@@ -1392,16 +1381,16 @@ public class GamePongTwoPlayer extends GamePong {
 
     private void setVelocityBonus(int nextBonus) {
         switch (nextBonus) {
-            case NO_BONUS:
+            case Constants.NO_BONUS:
                 myModule = mSPEED_X1;
                 break;
-            case SPEED_X2:
+            case Constants.SPEED_X2:
                 myModule = mSPEED_X2;
                 break;
-            case SPEED_X3:
+            case Constants.SPEED_X3:
                 myModule = mSPEED_X3;
                 break;
-            case SPEED_X4:
+            case Constants.SPEED_X4:
                 myModule = mSPEED_X4;
                 break;
             default:
@@ -1418,13 +1407,13 @@ public class GamePongTwoPlayer extends GamePong {
     //===========================================
     private class TimerBonusTask extends TimerTask {
 
-        private int bonusChoice = NO_BONUS;
+        private int bonusChoice = Constants.NO_BONUS;
 
         @Override
         public void run() {
             Random rand = new Random();
             do {
-                bonusChoice = rand.nextInt((RUSH_HOUR - SPEED_X2) + 1) + SPEED_X2;
+                bonusChoice = rand.nextInt((Constants.RUSH_HOUR - Constants.SPEED_X2) + 1) + Constants.SPEED_X2;
             } while (bonusChoice == previous_bonus);
             previous_bonus = bonusChoice;
             if (deletedBonusSprite) {
@@ -1465,59 +1454,59 @@ public class GamePongTwoPlayer extends GamePong {
      */
     private void attachSprite(int bonusID) {
         switch (bonusID) {
-            case SPEED_X2:
+            case Constants.SPEED_X2:
                 speedX2Bonus.registerTouch();
                 speedX2Bonus.attach();
-                activedBonusSprite = SPEED_X2;
+                activedBonusSprite = Constants.SPEED_X2;
                 deletedBonusSprite = false;
                 break;
 
-            case SPEED_X3:
+            case Constants.SPEED_X3:
                 speedX3Bonus.registerTouch();
                 speedX3Bonus.attach();
-                activedBonusSprite = SPEED_X3;
+                activedBonusSprite = Constants.SPEED_X3;
                 deletedBonusSprite = false;
                 break;
 
-            case SPEED_X4:
+            case Constants.SPEED_X4:
                 speedX4Bonus.registerTouch();
                 speedX4Bonus.attach();
-                activedBonusSprite = SPEED_X4;
+                activedBonusSprite = Constants.SPEED_X4;
                 deletedBonusSprite = false;
                 break;
 
-            case LOCK_FIELD:
+            case Constants.LOCK_FIELD:
                 lockFieldBonus.registerTouch();
                 lockFieldBonus.attach();
-                activedBonusSprite = LOCK_FIELD;
+                activedBonusSprite = Constants.LOCK_FIELD;
                 deletedBonusSprite = false;
                 break;
 
-            case CUT_BAR_30:
+            case Constants.CUT_BAR_30:
                 cutBar30Bonus.registerTouch();
                 cutBar30Bonus.attach();
-                activedBonusSprite = CUT_BAR_30;
+                activedBonusSprite = Constants.CUT_BAR_30;
                 deletedBonusSprite = false;
                 break;
 
-            case CUT_BAR_50:
+            case Constants.CUT_BAR_50:
                 cutBar50Bonus.registerTouch();
                 cutBar50Bonus.attach();
-                activedBonusSprite = CUT_BAR_50;
+                activedBonusSprite = Constants.CUT_BAR_50;
                 deletedBonusSprite = false;
                 break;
 
-            case REVERTED_BAR:
+            case Constants.REVERSE:
                 reverseBonus.registerTouch();
                 reverseBonus.attach();
-                activedBonusSprite = REVERTED_BAR;
+                activedBonusSprite = Constants.REVERSE;
                 deletedBonusSprite = false;
                 break;
 
-            case RUSH_HOUR:
+            case Constants.RUSH_HOUR:
                 rushHourBonus.registerTouch();
                 rushHourBonus.attach();
-                activedBonusSprite = RUSH_HOUR;
+                activedBonusSprite = Constants.RUSH_HOUR;
                 deletedBonusSprite = false;
                 break;
 
@@ -1533,56 +1522,56 @@ public class GamePongTwoPlayer extends GamePong {
      */
     private void detachSprite(int bonusID) {
         switch (bonusID) {
-            case SPEED_X2:
+            case Constants.SPEED_X2:
                 speedX2Bonus.unregisterTouch();
                 speedX2Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
                 deletedBonusSprite = true;
                 break;
 
-            case SPEED_X3:
+            case Constants.SPEED_X3:
                 speedX3Bonus.unregisterTouch();
                 speedX3Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
                 deletedBonusSprite = true;
                 break;
 
-            case SPEED_X4:
+            case Constants.SPEED_X4:
                 speedX4Bonus.unregisterTouch();
                 speedX4Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
                 deletedBonusSprite = true;
                 break;
 
-            case LOCK_FIELD:
+            case Constants.LOCK_FIELD:
                 lockFieldBonus.unregisterTouch();
                 lockFieldBonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
                 deletedBonusSprite = true;
                 break;
 
-            case CUT_BAR_30:
+            case Constants.CUT_BAR_30:
                 cutBar30Bonus.unregisterTouch();
                 cutBar30Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
                 deletedBonusSprite = true;
                 break;
 
-            case CUT_BAR_50:
+            case Constants.CUT_BAR_50:
                 cutBar50Bonus.unregisterTouch();
                 cutBar50Bonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
                 deletedBonusSprite = true;
                 break;
 
-            case REVERTED_BAR:
+            case Constants.REVERSE:
                 reverseBonus.unregisterTouch();
                 reverseBonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
                 deletedBonusSprite = true;
                 break;
 
-            case RUSH_HOUR:
+            case Constants.RUSH_HOUR:
                 rushHourBonus.unregisterTouch();
                 rushHourBonus.detachOnUIThread();
                 activedBonusSprite = SPRITE_NONE;
