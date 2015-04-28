@@ -362,7 +362,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         } else if ((ball.getYCoordinate() > ball.getDisplaySize().y) && (previous_event != BOTTOM)) {
             return BOTTOM;
         }
-        //TODO - Inserire condizione di Alessandro per ridurre errori
+
         if (ball.collidesWith(bar)) {
             if ((ball.getYCoordinate() + ball.getObjectHeight() < bar.getYCoordinate() + bar.getObjectHeight()) && (previous_event != OVER) && (previous_event != SIDE)) {
                 return OVER;

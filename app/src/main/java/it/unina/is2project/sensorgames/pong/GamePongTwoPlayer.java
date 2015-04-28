@@ -710,7 +710,8 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X3 ICON INITIALIZING
         speedX3BonusIcon.addToScene(scene);
         speedX3BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-        speedX3BonusIcon.setPosition(speedX2BonusIcon.getXCoordinate() - speedX2BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX3BonusIcon.getObjectHeight() / 2);
+//        speedX3BonusIcon.setPosition(speedX2BonusIcon.getXCoordinate() - speedX2BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX3BonusIcon.getObjectHeight() / 2);
+        speedX3BonusIcon.setPosition(CAMERA_WIDTH - speedX3BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX3BonusIcon.getObjectHeight() / 2);
 
         // SPEED X4 BONUS INITIALIZING
         speedX4Bonus.addToScene(scene);
@@ -720,7 +721,8 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X4 ICON INITIALIZING
         speedX4BonusIcon.addToScene(scene);
         speedX4BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-        speedX4BonusIcon.setPosition(speedX3BonusIcon.getXCoordinate() - speedX3BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX4BonusIcon.getObjectHeight() / 2);
+//        speedX4BonusIcon.setPosition(speedX3BonusIcon.getXCoordinate() - speedX3BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX4BonusIcon.getObjectHeight() / 2);
+        speedX4BonusIcon.setPosition(CAMERA_WIDTH - speedX4BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX4BonusIcon.getObjectHeight() / 2);
 
         // LOCK FIELD INITIALIZING
         lockFieldBonus.addToScene(scene);
@@ -751,7 +753,8 @@ public class GamePongTwoPlayer extends GamePong {
         // CUT BAR 50 ICON INITIALIZING
         cutBar50BonusIcon.addToScene(scene);
         cutBar50BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-        cutBar50BonusIcon.setPosition(cutBar30BonusIcon.getXCoordinate() - cutBar30BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar50BonusIcon.getObjectHeight() / 2);
+//        cutBar50BonusIcon.setPosition(cutBar30BonusIcon.getXCoordinate() - cutBar30BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar50BonusIcon.getObjectHeight() / 2);
+        cutBar50BonusIcon.setPosition(lockFieldBonusIcon.getXCoordinate() - lockFieldBonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar50BonusIcon.getObjectHeight() / 2);
 
         // REVERTED BAR INITIALIZING
         reverseBonus.addToScene(scene);
