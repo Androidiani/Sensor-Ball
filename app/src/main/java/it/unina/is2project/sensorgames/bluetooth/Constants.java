@@ -44,23 +44,17 @@ public interface Constants {
     int MSG_TYPE_BONUS_RUSH_HOUR = 24;
 
     //======================================================
-    // Bonus IDs
+    // Bonus IDs for Two Player
     //======================================================
-    int NO_EVENT        = 0;    // 1P  //     // ID for no bonus
-    int NO_BONUS        = 1;    //     // 2P  // ID for no bonus
-    int FIRST_ENEMY     = 1;    // 1P  //     // ID for first_enemy
-    int BUBBLE_BONUS    = 2;    // 1P  //     // ID for bubble bonus
-    int SPEED_X2        = 2;    //     // 2P  // ID for bonus speed x2
-    int CUT_BAR_30      = 3;    // 1P  // 2P  // ID for bonus cut bar 30%
-    int SPEED_X3        = 4;    //     // 2P  // ID for bonus speed x3
-    int LIFE_BONUS      = 4;    // 1P  //     // ID for bonus life
-    int CUT_BAR_50      = 5;    // 1P  // 2P  // ID for bonus cut bar 50%
-    int BIG_BAR         = 6;    // 1P  //     // ID for bonus big bar
-    int SPEED_X4        = 6;    //     // 2P  // ID for bonus speed x4
-    int REVERSE         = 7;    // 1P  // 2P  // ID for bonus reverted bar
-    int FREEZE          = 8;    // 1P  //     // ID for bonus freeze
-    int LOCK_FIELD      = 8;    //     // 2P  // ID for bonus lock field
-    int RUSH_HOUR       = 9;    // 1P  // 2P  // ID for bonus rush hour
+    int NO_BONUS        = 1;    // ID for no bonus
+    int SPEED_X2        = 2;    // ID for bonus speed x2
+    int SPEED_X3        = 3;    // ID for bonus speed x3
+    int SPEED_X4        = 4;    // ID for bonus speed x4
+    int CUT_BAR_30      = 5;    // ID for bonus cut bar 30%
+    int CUT_BAR_50      = 6;    // ID for bonus cut bar 50%
+    int REVERSE         = 7;    // ID for bonus reverted bar
+    int LOCK_FIELD      = 8;    // ID for bonus lock field
+    int RUSH_HOUR       = 9;    // ID for bonus rush hour
 
     //======================================================
     // Bonus utils

@@ -24,45 +24,47 @@ import it.unina.is2project.sensorgames.stats.entity.StatOnePlayer;
 
 public class GamePongOnePlayer extends GamePong {
 
-    private final String TAG = "1PlayerGame";
+    //===========================================
+    // DEBUG
+    //===========================================
+    private final String TAG = "1PlayerGame";               // String for logcat debug
 
-    /**
-     * Graphics
-     */
-    // Text View
-    private Text textScore;
-    private Text textLvl;
-    private Text textEvnt;
+    //===========================================
+    // GRAPHICS
+    //===========================================
+    private Text textScore;                                 // TextView for current score
+    private Text textLvl;                                   // TextView for current level
+    private Text textEvnt;                                  // TextView for current event
+    private int theme_star;                                 // Life theme
+    private GameObject lifeStar;                            // Life object
+    private List<GameObject> lifeStars = new ArrayList<>(); // List of life object
+    private BubbleBonus bubble;                             // Bonus ball
+    private LifeBonus lifeBonus;                            // Life bonus
 
-    // Life
-    private int theme_star;
-    private GameObject lifeStar;
-    private List<GameObject> lifeStars = new ArrayList<>();
-
-    // Bonus ball
-    private BubbleBonus bubble;
-
-    // Life bonus
-    private LifeBonus lifeBonus;
-
-    /**
-     * Game Data
-     */
-    private int score = 0;
-    private int gain = 0;
-    private int level = 1;
-    private int old_level = 0;
-    private static final int MAX_LIFE = 3;
-    private int life = MAX_LIFE - 1;
-    private int reach_count = 1;
-    private static final int MIN_REACH_COUNT = 2;
-    private static final int MAX_REACH_COUNT = 6;
-
-    /**
-     * Event
-     */
-    private int event;
-    private static final int NUM_BONUS = 10;
+    //===========================================
+    // GAME DATA
+    //===========================================
+    private int score = 0;                              // Indicates the current score
+    private int gain = 0;                               // Indicates the current gain
+    private int level = 1;                              // Indicates the current level
+    private int old_level = 0;                          // Indicates the old level
+    private static final int MAX_LIFE = 3;              // Indicates the max number of life
+    private int life = MAX_LIFE - 1;                    // Indicates the current life
+    private int reach_count = 1;                        // Counter for event
+    private static final int MIN_REACH_COUNT = 2;       // Min value of reach count
+    private static final int MAX_REACH_COUNT = 6;       // Max value of reach count
+    private int event;                                  // Indicates the current event
+    private static final int NO_EVENT = 0;              // ID for no event
+    private static final int FIRST_ENEMY = 1;           // ID for event first_enemy
+    private static final int BUBBLE_BONUS = 2;          // ID for event event
+    private static final int CUT_BAR_30 = 3;            // ID for event cut bar 30%
+    private static final int LIFE_BONUS = 4;            // ID for event life
+    private static final int CUT_BAR_50 = 5;            // ID for event cut bar 50%
+    private static final int BIG_BAR = 6;               // ID for event big bar
+    private static final int REVERSE = 7;               // ID for event reverted bar
+    private static final int FREEZE = 8;                // ID for event freeze
+    private static final int RUSH_HOUR = 9;             // ID for event rush hour
+    private static final int NUM_BONUS = 10;            // Indicates the number of event
 
     @Override
     protected Scene onCreateScene() {
@@ -76,13 +78,14 @@ public class GamePongOnePlayer extends GamePong {
         // Adding the level text to the scene
         textLvl = new Text(10, textScore.getY() + textScore.getHeight(), font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textLvl);
+        textLvl.setText(getResources().getString(R.string.text_lvl) + " 1");
 
         // Adding the level text to the scene
         textEvnt = new Text(10, textLvl.getY() + textLvl.getHeight(), font, "", 20, getVertexBufferObjectManager());
         scene.attachChild(textEvnt);
 
         // Adding lifes to the scene
-        for (int i = 1; i <= life + 1; i++) {
+        for (int i = 1; i <= MAX_LIFE; i++) {
             GameObject lifeTemp = new GameObject(lifeStar);
             lifeTemp.addToScene(scene, 0.05f, 0.05f);
             lifeTemp.setPosition(lifeTemp.getDisplaySize().x - i * lifeTemp.getObjectWidth(), 0);
@@ -143,7 +146,7 @@ public class GamePongOnePlayer extends GamePong {
         Log.d(TAG, "Event Cleared");
 
         // Setting NO EVENT for 1 reach count
-        event = Constants.NO_EVENT;
+        event = NO_EVENT;
         gameEvent();
         reach_count = 1;
 
@@ -183,7 +186,6 @@ public class GamePongOnePlayer extends GamePong {
         }
     }
 
-    //TODO - Da Rivedere, valutare se eliminare il metodo
     @Override
     protected void clearGame() {
         super.clearGame();
@@ -192,9 +194,9 @@ public class GamePongOnePlayer extends GamePong {
         score = 0;
         gain = 0;
         level = 1;
-        event = Constants.NO_EVENT;
+        old_level = 0;
         reach_count = 1;
-        textScore.setText(getResources().getString(R.string.text_score) + ": " + score);
+        event = NO_EVENT;
     }
 
     @Override
@@ -228,16 +230,16 @@ public class GamePongOnePlayer extends GamePong {
     @Override
     protected void gameEventsCollisionLogic() {
         switch (event) {
-            case Constants.FIRST_ENEMY:
+            case FIRST_ENEMY:
                 previous_event = firstEnemy.collision(previous_event, touch);
                 break;
-            case Constants.BUBBLE_BONUS:
+            case BUBBLE_BONUS:
                 score = bubble.collision(score, level, textScore);
                 break;
-            case Constants.LIFE_BONUS:
+            case LIFE_BONUS:
                 life = lifeBonus.collision(life, lifeStars);
                 break;
-            case Constants.RUSH_HOUR:
+            case RUSH_HOUR:
                 rushHour.collision();
                 break;
         }
@@ -303,23 +305,28 @@ public class GamePongOnePlayer extends GamePong {
     protected void addScore() {
         gain = getLevel() * 10;
         score += gain;
-        if (event == Constants.FIRST_ENEMY)
+        if (event == FIRST_ENEMY)
             score += gain * 2;
-        if (event == Constants.CUT_BAR_30)
+        if (event == CUT_BAR_30)
             score += gain * 4;
-        if (event == Constants.CUT_BAR_50)
+        if (event == CUT_BAR_50)
             score += gain * 8;
-        if (event == Constants.REVERSE)
+        if (event == REVERSE)
             score += gain * 16;
-        if (event == Constants.RUSH_HOUR)
+        if (event == RUSH_HOUR)
             score += gain * 32;
     }
 
     private int getLevel() {
-        float a = 0.02567f;
-        float b = 1;
-        level = (int) Math.round((Math.log(a * score + 1) + b));
-        textLvl.setText(getResources().getString(R.string.text_lvl) + " " + level);
+        if(score >= 50) {
+            float a = 8f;
+            float b = 0.000002f;
+            float c = -6f;
+            float d = -0.00009f;
+//        level = (int) Math.round((a * Math.log(b * score + c) + d));
+            level = (int) Math.round(a * Math.exp(b * score) + c * Math.exp(d * score));
+            textLvl.setText(getResources().getString(R.string.text_lvl) + " " + level);
+        }
         return level;
     }
 
@@ -334,42 +341,42 @@ public class GamePongOnePlayer extends GamePong {
 
     private void gameEvent() {
         switch (event) {
-            case Constants.NO_EVENT:
+            case NO_EVENT:
                 textEvnt.setText("");
                 break;
-            case Constants.FIRST_ENEMY:
+            case FIRST_ENEMY:
                 textEvnt.setText(getResources().getString(R.string.text_first_enemy));
                 firstEnemy.addToScene(scene);
                 break;
-            case Constants.BUBBLE_BONUS:
+            case BUBBLE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_bubble));
                 bubble.addToScene(scene);
                 break;
-            case Constants.CUT_BAR_30:
+            case CUT_BAR_30:
                 textEvnt.setText(getResources().getString(R.string.text_cut_bar_30));
                 bar.setObjectWidth(0.7f * bar.getBarWidth());
                 break;
-            case Constants.LIFE_BONUS:
+            case LIFE_BONUS:
                 textEvnt.setText(getResources().getString(R.string.text_lifebonus));
                 lifeBonus.addToScene(scene, life);
                 break;
-            case Constants.CUT_BAR_50:
+            case CUT_BAR_50:
                 textEvnt.setText(getResources().getString(R.string.text_cut_bar_50));
                 bar.setObjectWidth(0.5f * bar.getBarWidth());
                 break;
-            case Constants.BIG_BAR:
+            case BIG_BAR:
                 textEvnt.setText(getResources().getString(R.string.text_big_bar));
                 bar.setObjectWidth(1.5f * bar.getBarWidth());
                 break;
-            case Constants.REVERSE:
+            case REVERSE:
                 textEvnt.setText(getResources().getString(R.string.text_reverse));
                 bar.setBarSpeed(-bar.getBarSpeed());
                 break;
-            case Constants.FREEZE:
+            case FREEZE:
                 textEvnt.setText(getResources().getString(R.string.text_freeze));
                 ball.setHandlerSpeed(ball.getHandlerSpeedX() / 2, ball.getHandlerSpeedY() / 2);
                 break;
-            case Constants.RUSH_HOUR:
+            case RUSH_HOUR:
                 textEvnt.setText(getResources().getString(R.string.text_rush));
                 rushHour.addToScene(scene);
                 break;
@@ -378,33 +385,33 @@ public class GamePongOnePlayer extends GamePong {
 
     private void clearEvent() {
         switch (event) {
-            case Constants.NO_EVENT:
+            case NO_EVENT:
                 break;
-            case Constants.FIRST_ENEMY:
+            case FIRST_ENEMY:
                 firstEnemy.clear();
                 break;
-            case Constants.BUBBLE_BONUS:
+            case BUBBLE_BONUS:
                 bubble.clear();
                 break;
-            case Constants.CUT_BAR_30:
+            case CUT_BAR_30:
                 bar.setObjectWidth(bar.getBarWidth());
                 break;
-            case Constants.LIFE_BONUS:
+            case LIFE_BONUS:
                 lifeBonus.clear();
                 break;
-            case Constants.CUT_BAR_50:
+            case CUT_BAR_50:
                 bar.setObjectWidth(bar.getBarWidth());
                 break;
-            case Constants.BIG_BAR:
+            case BIG_BAR:
                 bar.setObjectWidth(bar.getBarWidth());
                 break;
-            case Constants.REVERSE:
+            case REVERSE:
                 bar.setBarSpeed(-bar.getBarSpeed());
                 break;
-            case Constants.FREEZE:
+            case FREEZE:
                 ball.setHandlerSpeed(ball.getHandlerSpeedX() * 2, ball.getHandlerSpeedY() * 2);
                 break;
-            case Constants.RUSH_HOUR:
+            case RUSH_HOUR:
                 rushHour.clear();
                 break;
         }
@@ -417,7 +424,7 @@ public class GamePongOnePlayer extends GamePong {
         do {
             new_event = random.nextInt(level) % NUM_BONUS;
         }
-        while ((new_event == event && level > 1) || (new_event == Constants.LIFE_BONUS && life == MAX_LIFE - 1));
+        while ((new_event == event && level > 1) || (new_event == LIFE_BONUS && life == MAX_LIFE - 1));
         event = new_event;
     }
 }
