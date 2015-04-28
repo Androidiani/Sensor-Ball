@@ -710,7 +710,8 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X3 ICON INITIALIZING
         speedX3BonusIcon.addToScene(scene);
         speedX3BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-        speedX3BonusIcon.setPosition(speedX2BonusIcon.getXCoordinate() - speedX2BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX3BonusIcon.getObjectHeight() / 2);
+//        speedX3BonusIcon.setPosition(speedX2BonusIcon.getXCoordinate() - speedX2BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX3BonusIcon.getObjectHeight() / 2);
+        speedX3BonusIcon.setPosition(CAMERA_WIDTH - speedX3BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX3BonusIcon.getObjectHeight() / 2);
 
         // SPEED X4 BONUS INITIALIZING
         speedX4Bonus.addToScene(scene);
@@ -720,7 +721,8 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X4 ICON INITIALIZING
         speedX4BonusIcon.addToScene(scene);
         speedX4BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-        speedX4BonusIcon.setPosition(speedX3BonusIcon.getXCoordinate() - speedX3BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX4BonusIcon.getObjectHeight() / 2);
+//        speedX4BonusIcon.setPosition(speedX3BonusIcon.getXCoordinate() - speedX3BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX4BonusIcon.getObjectHeight() / 2);
+        speedX4BonusIcon.setPosition(CAMERA_WIDTH - speedX4BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX4BonusIcon.getObjectHeight() / 2);
 
         // LOCK FIELD INITIALIZING
         lockFieldBonus.addToScene(scene);
@@ -751,7 +753,8 @@ public class GamePongTwoPlayer extends GamePong {
         // CUT BAR 50 ICON INITIALIZING
         cutBar50BonusIcon.addToScene(scene);
         cutBar50BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-        cutBar50BonusIcon.setPosition(cutBar30BonusIcon.getXCoordinate() - cutBar30BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar50BonusIcon.getObjectHeight() / 2);
+//        cutBar50BonusIcon.setPosition(cutBar30BonusIcon.getXCoordinate() - cutBar30BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar50BonusIcon.getObjectHeight() / 2);
+        cutBar50BonusIcon.setPosition(lockFieldBonusIcon.getXCoordinate() - lockFieldBonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar50BonusIcon.getObjectHeight() / 2);
 
         // REVERTED BAR INITIALIZING
         reverseBonus.addToScene(scene);
@@ -764,7 +767,6 @@ public class GamePongTwoPlayer extends GamePong {
         reverseBonusIcon.setPosition(cutBar50BonusIcon.getXCoordinate() - cutBar50BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - reverseBonusIcon.getObjectHeight() / 2);
 
         // RUSH-HOUR INITIALIZING
-
         rushHourBonus.addToScene(scene);
         rushHourBonus.getSprite().setScale(rushHourBonus.getSprite().getScaleX() / 2);
         rushHourBonus.setPosition(GameObject.MIDDLE);
@@ -784,236 +786,234 @@ public class GamePongTwoPlayer extends GamePong {
         @Override
         public void handleMessage(Message msg) {
             Log.i(TAG, "mHandler Called");
-            synchronized (this) {
-                switch (msg.what) {
-                    case Constants.MESSAGE_STATE_CHANGE:
-                        switch (msg.arg1) {
-                            case BluetoothService.STATE_CONNECTED:
-                                isConnected = true;
-                                break;
-                            case BluetoothService.STATE_CONNECTING:
-                                break;
-                            case BluetoothService.STATE_LISTEN:
-                                break;
-                            case BluetoothService.STATE_NONE:
-                                if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP ||
-                                        fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED) {
-                                    winner = true;
-                                    gameOver();
-                                }
-                                fsmGame.setState(FSMGame.STATE_DISCONNECTED);
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    case Constants.MESSAGE_WRITE:
-                        Log.i(TAG, "Message Write");
-                        break;
-                    case Constants.MESSAGE_READ:
-                        Log.i(TAG, "Message Read");
-                        byte[] readBuf = (byte[]) msg.obj;
-                        AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
-                        if (recMsg != null) {
-                            switch (recMsg.TYPE) {
-                                //------------------------COORDS------------------------
-                                case Constants.MSG_TYPE_COORDS:
-                                    Log.d(TAG, "Received : MSG_TYPE_COORDS");
-                                    if (!haveBall) {
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BluetoothService.STATE_CONNECTED:
+                            isConnected = true;
+                            break;
+                        case BluetoothService.STATE_CONNECTING:
+                            break;
+                        case BluetoothService.STATE_LISTEN:
+                            break;
+                        case BluetoothService.STATE_NONE:
+                            if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP ||
+                                    fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED) {
+                                winner = true;
+                                gameOver();
+                            }
+                            fsmGame.setState(FSMGame.STATE_DISCONNECTED);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case Constants.MESSAGE_WRITE:
+                    Log.i(TAG, "Message Write");
+                    break;
+                case Constants.MESSAGE_READ:
+                    Log.i(TAG, "Message Read");
+                    byte[] readBuf = (byte[]) msg.obj;
+                    AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
+                    if (recMsg != null) {
+                        switch (recMsg.TYPE) {
+                            //------------------------COORDS------------------------
+                            case Constants.MSG_TYPE_COORDS:
+                                Log.d(TAG, "Received : MSG_TYPE_COORDS");
+                                if (!haveBall) {
 //                                        float offset = 0;
 //                                        if (recMsg.OP1 == 0) {
 //                                            offset = ball.getObjectWidth();
 //                                        } else if (recMsg.OP1 > 0) {
 //                                            offset = 2f * ball.getObjectWidth();
 //                                        }
-                                        float offset = recMsg.OP1 * ball.getObjectWidth() + ball.getObjectWidth();
-                                        float xPos = ((1 - recMsg.OP4) * CAMERA_WIDTH) - offset;
-                                        float velX = -recMsg.OP1 * myModule * recMsg.OP2;
-                                        float velY = myModule * recMsg.OP3;
-                                        COS_X = recMsg.OP2;
-                                        SIN_X = recMsg.OP3;
-                                        ball.setPosition(xPos, -ball.getObjectHeight());
-                                        ball.attach();
-                                        ball.setHandlerSpeed(velX, velY);
-                                        previous_event = TOP;
-                                        transferringBall = true;
-                                        haveBall = true;
-                                        proximityRegion = true;
-                                        textInfo.setText("");
-                                    }
-                                    break;
-                                //------------------------SYNC------------------------
-                                case Constants.MSG_TYPE_SYNC:
-                                    Log.d(TAG, "Received : MSG_TYPE_SYNC");
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
-                                        fsmGame.setState(FSMGame.STATE_IN_GAME);
-                                        // Master Increase Played Games
-                                        increasePartiteGiocate(nickname);
-                                    }
-                                    break;
-                                //------------------------FAIL------------------------
-                                case Constants.MSG_TYPE_FAIL:
-                                    Log.d(TAG, "Received : MSG_TYPE_FAIL");
-                                    if (fsmGame.getState() != FSMGame.STATE_GAME_WINNER &&
-                                            fsmGame.getState() != FSMGame.STATE_GAME_LOSER &&
-                                            fsmGame.getState() != FSMGame.STATE_DISCONNECTED &&
-                                            fsmGame.getState() != FSMGame.STATE_OPPONENT_LEFT) {
-                                        fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
-                                    }
-                                    break;
-                                //------------------------PAUSE------------------------
-                                case Constants.MSG_TYPE_PAUSE:
-                                    Log.d(TAG, "Received : MSG_TYPE_PAUSE");
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                                        fsmGame.setState(FSMGame.STATE_GAME_OPPONENT_PAUSED);
-                                    }
-                                    break;
-                                //------------------------RESUME------------------------
-                                case Constants.MSG_TYPE_RESUME:
-                                    Log.d(TAG, "Received : MSG_TYPE_RESUME");
-                                    if (fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_EXIT_PAUSE ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP) {
-                                        fsmGame.setState(FSMGame.STATE_IN_GAME);
-                                        if(taskTimeout != null)taskTimeout.cancel();
-                                        if(timerTimeout != null)timerTimeout.cancel();
-                                    } else if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED) {
-                                        AppMessage resumeNotReadyMessage = new AppMessage(Constants.MSG_TYPE_RESUME_NO_READY);
-                                        sendBluetoothMessage(resumeNotReadyMessage);
-                                    }
-                                    break;
-                                //------------------------RESUME NOREADY------------------------
-                                case Constants.MSG_TYPE_RESUME_NO_READY:
-                                    Log.d(TAG, "Received : MSG_TYPE_RESUME_NO_READY");
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                                        fsmGame.setState(FSMGame.STATE_GAME_EXIT_PAUSE);
-                                    }
-                                    break;
-                                //------------------------INTEGER------------------------
-                                case Constants.MSG_TYPE_FIRST_START:
-                                    Log.d(TAG, "Received : MSG_TYPE_FIRST_START");
-                                    // Never happen
-                                    break;
-                                //------------------------ALERT------------------------
-                                case Constants.MSG_TYPE_ALERT:
-                                    Log.d(TAG, "Received : MSG_TYPE_ALERT");
-                                    if (fsmGame.getState() == FSMGame.STATE_DISCONNECTED ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
-                                            fsmGame.getState() == FSMGame.STATE_OPPONENT_LEFT ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_WINNER ||
-                                            fsmGame.getState() == FSMGame.STATE_GAME_LOSER) {
-                                        AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NO_READY);
-                                        sendBluetoothMessage(notReadyMessage);
-                                    }
-                                    break;
-                                //------------------------STOP REQUEST------------------------
-                                case Constants.MSG_TYPE_STOP_REQUEST:
-                                    Log.d(TAG, "Received : MSG_TYPE_STOP_REQUEST");
-                                    if (!haveBall && ball.getYCoordinate() < 0) {
-                                        ball.detach();
-                                    }
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
-                                        saveHandlerState();
-                                    }
-                                    receivedStop = true;
-                                    if (fsmGame.getState() != FSMGame.STATE_GAME_PAUSE_STOP) {
-                                        taskTimeout = new TimerGameTimeoutTask();
-                                        timerTimeout = new Timer();
-                                        timerTimeout.schedule(taskTimeout, Constants.TIMEOUT_FOR_GAME_OVER);
-                                    }
+                                    float offset = recMsg.OP1 * ball.getObjectWidth() + ball.getObjectWidth();
+                                    float xPos = ((1 - recMsg.OP4) * CAMERA_WIDTH) - offset;
+                                    float velX = -recMsg.OP1 * myModule * recMsg.OP2;
+                                    float velY = myModule * recMsg.OP3;
+                                    COS_X = recMsg.OP2;
+                                    SIN_X = recMsg.OP3;
+                                    ball.setPosition(xPos, -ball.getObjectHeight());
+                                    ball.attach();
+                                    ball.setHandlerSpeed(velX, velY);
+                                    previous_event = TOP;
+                                    transferringBall = true;
+                                    haveBall = true;
+                                    proximityRegion = true;
+                                    textInfo.setText("");
+                                }
+                                break;
+                            //------------------------SYNC------------------------
+                            case Constants.MSG_TYPE_SYNC:
+                                Log.d(TAG, "Received : MSG_TYPE_SYNC");
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
+                                    fsmGame.setState(FSMGame.STATE_IN_GAME);
+                                    // Master Increase Played Games
+                                    increasePartiteGiocate(nickname);
+                                }
+                                break;
+                            //------------------------FAIL------------------------
+                            case Constants.MSG_TYPE_FAIL:
+                                Log.d(TAG, "Received : MSG_TYPE_FAIL");
+                                if (fsmGame.getState() != FSMGame.STATE_GAME_WINNER &&
+                                        fsmGame.getState() != FSMGame.STATE_GAME_LOSER &&
+                                        fsmGame.getState() != FSMGame.STATE_DISCONNECTED &&
+                                        fsmGame.getState() != FSMGame.STATE_OPPONENT_LEFT) {
+                                    fsmGame.setState(FSMGame.STATE_OPPONENT_LEFT);
+                                }
+                                break;
+                            //------------------------PAUSE------------------------
+                            case Constants.MSG_TYPE_PAUSE:
+                                Log.d(TAG, "Received : MSG_TYPE_PAUSE");
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
+                                    fsmGame.setState(FSMGame.STATE_GAME_OPPONENT_PAUSED);
+                                }
+                                break;
+                            //------------------------RESUME------------------------
+                            case Constants.MSG_TYPE_RESUME:
+                                Log.d(TAG, "Received : MSG_TYPE_RESUME");
+                                if (fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_EXIT_PAUSE ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP) {
+                                    fsmGame.setState(FSMGame.STATE_IN_GAME);
+                                    if (taskTimeout != null) taskTimeout.cancel();
+                                    if (timerTimeout != null) timerTimeout.cancel();
+                                } else if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSED) {
+                                    AppMessage resumeNotReadyMessage = new AppMessage(Constants.MSG_TYPE_RESUME_NO_READY);
+                                    sendBluetoothMessage(resumeNotReadyMessage);
+                                }
+                                break;
+                            //------------------------RESUME NOREADY------------------------
+                            case Constants.MSG_TYPE_RESUME_NO_READY:
+                                Log.d(TAG, "Received : MSG_TYPE_RESUME_NO_READY");
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
+                                    fsmGame.setState(FSMGame.STATE_GAME_EXIT_PAUSE);
+                                }
+                                break;
+                            //------------------------INTEGER------------------------
+                            case Constants.MSG_TYPE_FIRST_START:
+                                Log.d(TAG, "Received : MSG_TYPE_FIRST_START");
+                                // Never happen
+                                break;
+                            //------------------------ALERT------------------------
+                            case Constants.MSG_TYPE_ALERT:
+                                Log.d(TAG, "Received : MSG_TYPE_ALERT");
+                                if (fsmGame.getState() == FSMGame.STATE_DISCONNECTED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED ||
+                                        fsmGame.getState() == FSMGame.STATE_OPPONENT_LEFT ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_WINNER ||
+                                        fsmGame.getState() == FSMGame.STATE_GAME_LOSER) {
+                                    AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NO_READY);
+                                    sendBluetoothMessage(notReadyMessage);
+                                }
+                                break;
+                            //------------------------STOP REQUEST------------------------
+                            case Constants.MSG_TYPE_STOP_REQUEST:
+                                Log.d(TAG, "Received : MSG_TYPE_STOP_REQUEST");
+                                if (!haveBall && ball.getYCoordinate() < 0) {
+                                    ball.detach();
+                                }
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
+                                    saveHandlerState();
+                                }
+                                receivedStop = true;
+                                if (fsmGame.getState() != FSMGame.STATE_GAME_PAUSE_STOP) {
+                                    taskTimeout = new TimerGameTimeoutTask();
+                                    timerTimeout = new Timer();
+                                    timerTimeout.schedule(taskTimeout, Constants.TIMEOUT_FOR_GAME_OVER);
+                                }
+                                fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
+                                break;
+                            //------------------------SUSPEND REQUEST------------------------
+                            case Constants.MSG_TYPE_SUSPEND_REQUEST:
+                                Log.d(TAG, "Received : MSG_TYPE_SUSPEND_REQUEST");
+                                if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP) {
+                                    fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
+                                }
+                                break;
+                            //------------------------RESUME AFTER SUSPEND------------------------
+                            case Constants.MSG_TYPE_RESUME_AFTER_SUSPEND:
+                                Log.d(TAG, "Received : MSG_TYPE_RESUME_AFTER_SUSPEND");
+                                if (fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED) {
+                                    resumeAllowed = true;
                                     fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
-                                    break;
-                                //------------------------SUSPEND REQUEST------------------------
-                                case Constants.MSG_TYPE_SUSPEND_REQUEST:
-                                    Log.d(TAG, "Received : MSG_TYPE_SUSPEND_REQUEST");
-                                    if (fsmGame.getState() == FSMGame.STATE_GAME_PAUSE_STOP) {
-                                        fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
-                                    }
-                                    break;
-                                //------------------------RESUME AFTER SUSPEND------------------------
-                                case Constants.MSG_TYPE_RESUME_AFTER_SUSPEND:
-                                    Log.d(TAG, "Received : MSG_TYPE_RESUME_AFTER_SUSPEND");
-                                    if (fsmGame.getState() == FSMGame.STATE_GAME_SUSPENDED) {
-                                        resumeAllowed = true;
-                                        fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
-                                    }
-                                    break;
-                                //------------------------NOREADY------------------------
-                                case Constants.MSG_TYPE_NO_READY:
-                                    Log.d(TAG, "Received : MSG_TYPE_NO_READY");
-                                    if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
-                                        fsmGame.setState(FSMGame.STATE_OPPONENT_NOT_READY);
-                                    }
-                                    break;
-                                //------------------------POINT UP------------------------
-                                case Constants.MSG_TYPE_POINT_UP:
-                                    Log.d(TAG, "Received : MSG_TYPE_POINT_UP");
-                                    addScore();
-                                    break;
-                                //------------------------TIMEOUT-----------------------
-                                case Constants.MSG_TYPE_GAME_TIMEOUT:
-                                    Log.d(TAG, "Received : MSG_TYPE_GAME_TIMEOUT");
-                                    fsmGame.setState(FSMGame.STATE_GAME_LOSER);
-                                    break;
-                                //------------------------GAME OVER-----------------------
-                                case Constants.MSG_TYPE_GAME_OVER:
-                                    Log.d(TAG, "Received : MSG_TYPE_GAME_OVER");
-                                    fsmGame.setState(FSMGame.STATE_GAME_LOSER);
-                                    break;
-                                //------------------------BONUS SPEED X2------------------------
-                                case Constants.MSG_TYPE_BONUS_SPEED_X2:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X2");
-                                    bonusManager.addBonus(Constants.SPEED_X2, recMsg.OP1);
-                                    break;
-                                //------------------------BONUS SPEED X3------------------------
-                                case Constants.MSG_TYPE_BONUS_SPEED_X3:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X3");
-                                    bonusManager.addBonus(Constants.SPEED_X3, recMsg.OP1);
-                                    break;
-                                //------------------------BONUS SPEED X4------------------------
-                                case Constants.MSG_TYPE_BONUS_SPEED_X4:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X4");
-                                    bonusManager.addBonus(Constants.SPEED_X4, recMsg.OP1);
-                                    break;
-                                //------------------------BONUS LOCK_FIELD------------------------
-                                case Constants.MSG_TYPE_BONUS_LOCK_FIELD:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_LOCK_FIELD");
-                                    bonusManager.addBonus(Constants.LOCK_FIELD, recMsg.OP1);
-                                    break;
-                                //------------------------BONUS CUT_BAR_30------------------------
-                                case Constants.MSG_TYPE_BONUS_CUT_BAR_30:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_CUT_BAR_30");
-                                    bonusManager.addBonus(Constants.CUT_BAR_30, recMsg.OP1);
-                                    break;
-                                //------------------------BONUS CUT_BAR_50------------------------
-                                case Constants.MSG_TYPE_BONUS_CUT_BAR_50:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_CUT_BAR_50");
-                                    bonusManager.addBonus(Constants.CUT_BAR_50, recMsg.OP1);
-                                    break;
-                                //------------------------BONUS REVERSE------------------------
-                                case Constants.MSG_TYPE_BONUS_REVERTED_BAR:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_REVERTED_BAR");
-                                    bonusManager.addBonus(Constants.REVERSE, recMsg.OP1);
-                                    break;
-                                //------------------------BONUS RUSH-HOUR------------------------
-                                case Constants.MSG_TYPE_BONUS_RUSH_HOUR:
-                                    Log.d(TAG, "Received : MSG_TYPE_BONUS_RUSH_HOUR");
-                                    bonusManager.addBonus(Constants.RUSH_HOUR, recMsg.OP1);
-                                    break;
-                                default:
-                                    Log.d(TAG, "Received : Incorrect Message - Type is " + recMsg.TYPE);
-                            }
-                        } else {
-                            Log.e(TAG, "Received : Null Message");
+                                }
+                                break;
+                            //------------------------NOREADY------------------------
+                            case Constants.MSG_TYPE_NO_READY:
+                                Log.d(TAG, "Received : MSG_TYPE_NO_READY");
+                                if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
+                                    fsmGame.setState(FSMGame.STATE_OPPONENT_NOT_READY);
+                                }
+                                break;
+                            //------------------------POINT UP------------------------
+                            case Constants.MSG_TYPE_POINT_UP:
+                                Log.d(TAG, "Received : MSG_TYPE_POINT_UP");
+                                addScore();
+                                break;
+                            //------------------------TIMEOUT-----------------------
+                            case Constants.MSG_TYPE_GAME_TIMEOUT:
+                                Log.d(TAG, "Received : MSG_TYPE_GAME_TIMEOUT");
+                                fsmGame.setState(FSMGame.STATE_GAME_LOSER);
+                                break;
+                            //------------------------GAME OVER-----------------------
+                            case Constants.MSG_TYPE_GAME_OVER:
+                                Log.d(TAG, "Received : MSG_TYPE_GAME_OVER");
+                                fsmGame.setState(FSMGame.STATE_GAME_LOSER);
+                                break;
+                            //------------------------BONUS SPEED X2------------------------
+                            case Constants.MSG_TYPE_BONUS_SPEED_X2:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X2");
+                                bonusManager.addBonus(Constants.SPEED_X2, recMsg.OP1);
+                                break;
+                            //------------------------BONUS SPEED X3------------------------
+                            case Constants.MSG_TYPE_BONUS_SPEED_X3:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X3");
+                                bonusManager.addBonus(Constants.SPEED_X3, recMsg.OP1);
+                                break;
+                            //------------------------BONUS SPEED X4------------------------
+                            case Constants.MSG_TYPE_BONUS_SPEED_X4:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_SPEED_X4");
+                                bonusManager.addBonus(Constants.SPEED_X4, recMsg.OP1);
+                                break;
+                            //------------------------BONUS LOCK_FIELD------------------------
+                            case Constants.MSG_TYPE_BONUS_LOCK_FIELD:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_LOCK_FIELD");
+                                bonusManager.addBonus(Constants.LOCK_FIELD, recMsg.OP1);
+                                break;
+                            //------------------------BONUS CUT_BAR_30------------------------
+                            case Constants.MSG_TYPE_BONUS_CUT_BAR_30:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_CUT_BAR_30");
+                                bonusManager.addBonus(Constants.CUT_BAR_30, recMsg.OP1);
+                                break;
+                            //------------------------BONUS CUT_BAR_50------------------------
+                            case Constants.MSG_TYPE_BONUS_CUT_BAR_50:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_CUT_BAR_50");
+                                bonusManager.addBonus(Constants.CUT_BAR_50, recMsg.OP1);
+                                break;
+                            //------------------------BONUS REVERSE------------------------
+                            case Constants.MSG_TYPE_BONUS_REVERTED_BAR:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_REVERTED_BAR");
+                                bonusManager.addBonus(Constants.REVERSE, recMsg.OP1);
+                                break;
+                            //------------------------BONUS RUSH-HOUR------------------------
+                            case Constants.MSG_TYPE_BONUS_RUSH_HOUR:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_RUSH_HOUR");
+                                bonusManager.addBonus(Constants.RUSH_HOUR, recMsg.OP1);
+                                break;
+                            default:
+                                Log.d(TAG, "Received : Incorrect Message - Type is " + recMsg.TYPE);
                         }
-                        break;
-                    case Constants.MESSAGE_DEVICE_NAME:
-                        mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
-                        break;
-                    case Constants.MESSAGE_TOAST:
-                        break;
-                }
+                    } else {
+                        Log.e(TAG, "Received : Null Message");
+                    }
+                    break;
+                case Constants.MESSAGE_DEVICE_NAME:
+                    mConnectedDeviceName = msg.getData().getString(Constants.DEVICE_NAME);
+                    break;
+                case Constants.MESSAGE_TOAST:
+                    break;
             }
         }
     };
@@ -1022,140 +1022,180 @@ public class GamePongTwoPlayer extends GamePong {
     private final Handler fsmHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            synchronized (this) {
-                switch (msg.what) {
-                    case Constants.MESSAGE_STATE_CHANGE:
-                        switch (msg.arg1) {
-                            case FSMGame.STATE_NOT_READY:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                break;
-                            case FSMGame.STATE_CONNECTED:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                break;
-                            case FSMGame.STATE_IN_GAME:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                ball.setHandlerSpeed(old_x_speed, old_y_speed);
-                                bar.setBarSpeed(old_bar_speed);
-                                if (rush_hour) {
-                                    rushHour.restartAfterPause();
-                                }
-                                if (receivedStop && haveBall && Math.signum(ball.getHandlerSpeedY()) > 0) {
-                                    ball.setHandlerSpeedX(-ball.getHandlerSpeedX());
-                                    ball.setHandlerSpeedY(-ball.getHandlerSpeedY());
-                                    previous_event = NO_COLL;
-                                }
-                                receivedStop = false;
-                                resumeAllowed = false;
-                                taskBonus = new TimerBonusTask();
-                                timerBonus = new Timer();
-                                scheduleDelay = scheduleDelay < 0 ? 0 : scheduleDelay;
-                                timerBonus.schedule(taskBonus, scheduleDelay, Constants.BONUS_REPEATING_TIME_MILLIS);
-                                textInfo.setText(" ");
-                                break;
-                            case FSMGame.STATE_IN_GAME_WAITING:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                ball.setHandlerSpeed(0f, 0f);
-                                bar.setBarSpeed(0f);
-                                textInfo.setText(getResources().getString(R.string.text_waiting));
-                                break;
-                            case FSMGame.STATE_GAME_PAUSED:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.text_pause));
-                                saveHandlerState();
-                                ball.setHandlerSpeed(0f, 0f);
-                                bar.setBarSpeed(0f);
+            switch (msg.what) {
+                case Constants.MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        //-----------------------------------------------------
+                        // STATE NOT READY
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_NOT_READY:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            break;
+                        //-----------------------------------------------------
+                        // STATE CONNECTED
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_CONNECTED:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            break;
+                        //-----------------------------------------------------
+                        // STATE IN GAME
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_IN_GAME:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            ball.setHandlerSpeed(old_x_speed, old_y_speed);
+                            bar.setBarSpeed(old_bar_speed);
+                            if (rush_hour) {
+                                rushHour.restartAfterPause();
+                            }
+                            if (receivedStop && haveBall && Math.signum(ball.getHandlerSpeedY()) > 0) {
+                                ball.setHandlerSpeedX(-ball.getHandlerSpeedX());
+                                ball.setHandlerSpeedY(-ball.getHandlerSpeedY());
+                                previous_event = NO_COLL;
+                            }
+                            receivedStop = false;
+                            resumeAllowed = false;
+                            taskBonus = new TimerBonusTask();
+                            timerBonus = new Timer();
+                            scheduleDelay = scheduleDelay < 0 ? 0 : scheduleDelay;
+                            timerBonus.schedule(taskBonus, scheduleDelay, Constants.BONUS_REPEATING_TIME_MILLIS);
+                            textInfo.setText(" ");
+                            break;
+                        //-----------------------------------------------------
+                        // STATE IN GAME WAITING
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_IN_GAME_WAITING:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            ball.setHandlerSpeed(0f, 0f);
+                            bar.setBarSpeed(0f);
+                            textInfo.setText(getResources().getString(R.string.text_waiting));
+                            break;
+                        //-----------------------------------------------------
+                        // STATE GAME PAUSED
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_GAME_PAUSED:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.text_pause));
+                            saveHandlerState();
+                            ball.setHandlerSpeed(0f, 0f);
+                            bar.setBarSpeed(0f);
+                            if (taskBonus.scheduledExecutionTime() != 0) {
+                                previousScheduleTime = taskBonus.scheduledExecutionTime();
+                            }
+                            scheduleDelay = Constants.BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
+                            if (timerBonus != null) timerBonus.cancel();
+                            break;
+                        //-----------------------------------------------------
+                        // STATE GAME STOP
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_GAME_PAUSE_STOP:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.pause_stop));
+                            ball.setHandlerSpeed(0f, 0f);
+                            bar.setBarSpeed(0f);
+                            if (taskBonus != null) {
                                 if (taskBonus.scheduledExecutionTime() != 0) {
                                     previousScheduleTime = taskBonus.scheduledExecutionTime();
                                 }
                                 scheduleDelay = Constants.BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
-                                if (timerBonus != null) timerBonus.cancel();
-                                break;
-                            case FSMGame.STATE_GAME_PAUSE_STOP:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.pause_stop));
-                                ball.setHandlerSpeed(0f, 0f);
-                                bar.setBarSpeed(0f);
-                                if (taskBonus != null) {
-                                    if (taskBonus.scheduledExecutionTime() != 0) {
-                                        previousScheduleTime = taskBonus.scheduledExecutionTime();
+                                taskBonus = null;
+                            }
+                            if (timerBonus != null) timerBonus.cancel();
+                            break;
+                        //-----------------------------------------------------
+                        // STATE EXIT PAUSE (DEPRECATED)
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_GAME_EXIT_PAUSE:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.text_exit_pause));
+                            saveHandlerState();
+                            ball.setHandlerSpeed(0f, 0f);
+                            bar.setBarSpeed(0f);
+                            break;
+                        //-----------------------------------------------------
+                        // STATE GAME OPPONENT PAUSED
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_GAME_OPPONENT_PAUSED:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.text_opponent_pause));
+                            saveHandlerState();
+                            ball.setHandlerSpeed(0f, 0f);
+                            bar.setBarSpeed(0f);
+                            if (taskBonus.scheduledExecutionTime() != 0) {
+                                previousScheduleTime = taskBonus.scheduledExecutionTime();
+                            }
+                            scheduleDelay = Constants.BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
+                            if (timerBonus != null) timerBonus.cancel();
+                            break;
+                        //-----------------------------------------------------
+                        // STATE OPPONENT NOT READY
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_OPPONENT_NOT_READY:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.text_opponent_not_ready));
+                            break;
+                        //-----------------------------------------------------
+                        // STATE DISCONNECTED
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_DISCONNECTED:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.text_disconnected));
+                            isConnected = false;
+                            mConnectedDeviceName = "";
+                            ball.setHandlerSpeed(0f, 0f);
+                            bar.setBarSpeed(0f);
+                            isMaster = false;
+                            break;
+                        //-----------------------------------------------------
+                        // STATE GAME SUSPENDED
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_GAME_SUSPENDED:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.text_game_suspended));
+                            break;
+                        //-----------------------------------------------------
+                        // STATE OPPONENT LEFT
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_OPPONENT_LEFT:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            ball.setHandlerSpeed(0f, 0f);
+                            bar.setBarSpeed(0f);
+                            if (rush_hour) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        rush_hour = false;
+                                        rushHour.clear();
                                     }
-                                    scheduleDelay = Constants.BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
-                                    taskBonus = null;
-                                }
-                                if (timerBonus != null) timerBonus.cancel();
-                                break;
-                            case FSMGame.STATE_GAME_EXIT_PAUSE:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.text_exit_pause));
-                                saveHandlerState();
-                                ball.setHandlerSpeed(0f, 0f);
-                                bar.setBarSpeed(0f);
-                                break;
-                            case FSMGame.STATE_GAME_OPPONENT_PAUSED:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.text_opponent_pause));
-                                saveHandlerState();
-                                ball.setHandlerSpeed(0f, 0f);
-                                bar.setBarSpeed(0f);
-                                if (taskBonus.scheduledExecutionTime() != 0) {
-                                    previousScheduleTime = taskBonus.scheduledExecutionTime();
-                                }
-                                scheduleDelay = Constants.BONUS_REPEATING_TIME_MILLIS - (System.currentTimeMillis() - previousScheduleTime);
-                                if (timerBonus != null) timerBonus.cancel();
-                                break;
-                            case FSMGame.STATE_OPPONENT_NOT_READY:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.text_opponent_not_ready));
-                                break;
-                            case FSMGame.STATE_DISCONNECTED:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.text_disconnected));
-                                isConnected = false;
-                                mConnectedDeviceName = "";
-                                ball.setHandlerSpeed(0f, 0f);
-                                bar.setBarSpeed(0f);
-                                isMaster = false;
-                                break;
-                            case FSMGame.STATE_GAME_SUSPENDED:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.text_game_suspended));
-                                break;
-                            case FSMGame.STATE_OPPONENT_LEFT:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                ball.setHandlerSpeed(0f, 0f);
-                                bar.setBarSpeed(0f);
-                                if (rush_hour) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            rush_hour = false;
-                                            rushHour.clear();
-                                        }
-                                    });
-                                }
-                                textInfo.setText(getResources().getString(R.string.text_opponent_left));
-                                winner = true;
-                                gameOver();
-                                break;
-                            case FSMGame.STATE_GAME_WINNER:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.text_you_win));
-                                winner = true;
-                                gameOver();
-                                break;
-                            case FSMGame.STATE_GAME_LOSER:
-                                Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
-                                textInfo.setText(getResources().getString(R.string.text_you_lose));
-                                winner = false;
-                                gameOver();
-                                break;
-                            default:
-                                Log.d(TAG, "Invalid State : " + msg.arg1);
-                                break;
-                        }
-                    default:
-                        break;
-                }
+                                });
+                            }
+                            textInfo.setText(getResources().getString(R.string.text_opponent_left));
+                            winner = true;
+                            gameOver();
+                            break;
+                        //-----------------------------------------------------
+                        // STATE WINNER
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_GAME_WINNER:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.text_you_win));
+                            winner = true;
+                            gameOver();
+                            break;
+                        //-----------------------------------------------------
+                        // STATE LOSER
+                        //-----------------------------------------------------
+                        case FSMGame.STATE_GAME_LOSER:
+                            Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            textInfo.setText(getResources().getString(R.string.text_you_lose));
+                            winner = false;
+                            gameOver();
+                            break;
+                        default:
+                            Log.d(TAG, "Invalid State : " + msg.arg1);
+                            break;
+                    }
+                default:
+                    break;
             }
         }
     };
