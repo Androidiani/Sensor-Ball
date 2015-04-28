@@ -695,85 +695,97 @@ public class GamePongTwoPlayer extends GamePong {
         // SPEED X2 BONUS INITIALIZING
         speedX2Bonus.addToScene(scene);
         speedX2Bonus.getSprite().setScale(speedX2Bonus.getSprite().getScaleX() / 2);
+        speedX2Bonus.getSprite().setCullingEnabled(true);
         speedX2Bonus.setPosition(GameObject.MIDDLE);
 
         // SPEED X2 ICON INITIALIZING
         speedX2BonusIcon.addToScene(scene);
         speedX2BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
+        speedX2BonusIcon.getSprite().setCullingEnabled(true);
         speedX2BonusIcon.setPosition(CAMERA_WIDTH - speedX2BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX2BonusIcon.getObjectHeight() / 2);
 
         // SPEED X3 BONUS INITIALIZING
         speedX3Bonus.addToScene(scene);
         speedX3Bonus.getSprite().setScale(speedX3Bonus.getSprite().getScaleX() / 2);
+        speedX3Bonus.getSprite().setCullingEnabled(true);
         speedX3Bonus.setPosition(GameObject.MIDDLE);
 
         // SPEED X3 ICON INITIALIZING
         speedX3BonusIcon.addToScene(scene);
         speedX3BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-//        speedX3BonusIcon.setPosition(speedX2BonusIcon.getXCoordinate() - speedX2BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX3BonusIcon.getObjectHeight() / 2);
+        speedX3BonusIcon.getSprite().setCullingEnabled(true);
         speedX3BonusIcon.setPosition(CAMERA_WIDTH - speedX3BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX3BonusIcon.getObjectHeight() / 2);
 
         // SPEED X4 BONUS INITIALIZING
         speedX4Bonus.addToScene(scene);
         speedX4Bonus.getSprite().setScale(speedX4Bonus.getSprite().getScaleX() / 2);
+        speedX4Bonus.getSprite().setCullingEnabled(true);
         speedX4Bonus.setPosition(GameObject.MIDDLE);
 
         // SPEED X4 ICON INITIALIZING
         speedX4BonusIcon.addToScene(scene);
         speedX4BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-//        speedX4BonusIcon.setPosition(speedX3BonusIcon.getXCoordinate() - speedX3BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX4BonusIcon.getObjectHeight() / 2);
+        speedX4BonusIcon.getSprite().setCullingEnabled(true);
         speedX4BonusIcon.setPosition(CAMERA_WIDTH - speedX4BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - speedX4BonusIcon.getObjectHeight() / 2);
 
         // LOCK FIELD INITIALIZING
         lockFieldBonus.addToScene(scene);
         lockFieldBonus.getSprite().setScale(lockFieldBonus.getSprite().getScaleX() / 2);
+        lockFieldBonus.getSprite().setCullingEnabled(true);
         lockFieldBonus.setPosition(GameObject.MIDDLE);
 
         // LOCK FIELD ICON INITIALIZING
         lockFieldBonusIcon.addToScene(scene);
         lockFieldBonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
+        lockFieldBonusIcon.getSprite().setCullingEnabled(true);
         lockFieldBonusIcon.setPosition(speedX4BonusIcon.getXCoordinate() - speedX4BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - lockFieldBonusIcon.getObjectHeight() / 2);
 
         // CUT BAR 30 INITIALIZING
         cutBar30Bonus.addToScene(scene);
         cutBar30Bonus.getSprite().setScale(cutBar30Bonus.getSprite().getScaleX() / 2);
+        cutBar30Bonus.getSprite().setCullingEnabled(true);
         cutBar30Bonus.setPosition(GameObject.MIDDLE);
 
         // CUT BAR 30 ICON INITIALIZING
-
         cutBar30BonusIcon.addToScene(scene);
         cutBar30BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
+        cutBar30BonusIcon.getSprite().setCullingEnabled(true);
         cutBar30BonusIcon.setPosition(lockFieldBonusIcon.getXCoordinate() - lockFieldBonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar30BonusIcon.getObjectHeight() / 2);
 
         // CUT BAR 50 INITIALIZING
         cutBar50Bonus.addToScene(scene);
         cutBar50Bonus.getSprite().setScale(cutBar50Bonus.getSprite().getScaleX() / 2);
+        cutBar50Bonus.getSprite().setCullingEnabled(true);
         cutBar50Bonus.setPosition(GameObject.MIDDLE);
 
         // CUT BAR 50 ICON INITIALIZING
         cutBar50BonusIcon.addToScene(scene);
         cutBar50BonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
-//        cutBar50BonusIcon.setPosition(cutBar30BonusIcon.getXCoordinate() - cutBar30BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar50BonusIcon.getObjectHeight() / 2);
+        cutBar50BonusIcon.getSprite().setCullingEnabled(true);
         cutBar50BonusIcon.setPosition(lockFieldBonusIcon.getXCoordinate() - lockFieldBonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - cutBar50BonusIcon.getObjectHeight() / 2);
 
         // REVERTED BAR INITIALIZING
         reverseBonus.addToScene(scene);
         reverseBonus.getSprite().setScale(reverseBonus.getSprite().getScaleX() / 2);
+        reverseBonus.getSprite().setCullingEnabled(true);
         reverseBonus.setPosition(GameObject.MIDDLE);
 
         // REVERTED BAR ICON INITIALIZING
         reverseBonusIcon.addToScene(scene);
         reverseBonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
+        reverseBonusIcon.getSprite().setCullingEnabled(true);
         reverseBonusIcon.setPosition(cutBar50BonusIcon.getXCoordinate() - cutBar50BonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - reverseBonusIcon.getObjectHeight() / 2);
 
         // RUSH-HOUR INITIALIZING
         rushHourBonus.addToScene(scene);
         rushHourBonus.getSprite().setScale(rushHourBonus.getSprite().getScaleX() / 2);
+        rushHourBonus.getSprite().setCullingEnabled(true);
         rushHourBonus.setPosition(GameObject.MIDDLE);
 
         // RUSH HOUR ICON INITIALIZING
         rushHourBonusIcon.addToScene(scene);
         rushHourBonusIcon.setObjectDimension(SPRITE_ICON_SIZE);
+        rushHourBonusIcon.getSprite().setCullingEnabled(true);
         rushHourBonusIcon.setPosition(reverseBonusIcon.getXCoordinate() - reverseBonusIcon.getObjectWidth(), textPoint.getY() + textPoint.getHeight() / 2 - rushHourBonusIcon.getObjectHeight() / 2);
     }
 
@@ -1453,7 +1465,9 @@ public class GamePongTwoPlayer extends GamePong {
         public void run() {
             Random rand = new Random();
             do {
-                bonusChoice = rand.nextInt((Constants.RUSH_HOUR - Constants.SPEED_X2) + 1) + Constants.SPEED_X2;
+                //TODO codice di test
+//                bonusChoice = rand.nextInt((Constants.RUSH_HOUR - Constants.SPEED_X2) + 1) + Constants.SPEED_X2;
+                bonusChoice = rand.nextInt((Constants.SPEED_X4 - Constants.CUT_BAR_50) + 1) + Constants.CUT_BAR_50;
             } while (bonusChoice == previous_bonus);
             previous_bonus = bonusChoice;
             if (deletedBonusSprite) {
