@@ -13,32 +13,29 @@ import it.unina.is2project.sensorgames.game.entity.GameObject;
 
 public class GamePongTraining extends GamePong {
 
+    //===========================================
+    // DEBUG
+    //===========================================
     private final String TAG = "TrainingGame";
 
-    /**
-     * Graphics
-     */
-    // Setting button
-    private GameObject setting;
+    //===========================================
+    // GRAPHICS
+    //===========================================
+    private GameObject setting;     // Setting button
+    private Text textHit;           // TextView for hit count
+    private Text textEvent;         // TextView or selected event
 
-    // Text
-    private Text textHit;
-    private Text textEvent;
-
-    /**
-     * Game Data
-     */
-    // Hit count
-    private int hit_count = 0;
-
-    // Game events
-    private int event;
-    private static final int NO_EVENT = 0;
-    private static final int FIRST_ENEMY = 1;
-    private static final int CUT_30 = 2;
-    private static final int CUT_50 = 3;
-    private static final int REVERSE = 4;
-    private static final int RUSH_HOUR = 5;
+    //===========================================
+    // GAME DATA
+    //===========================================
+    private int hit_count = 0;                  // Counter of Hit
+    private int event;                          // Indicates the current event
+    private static final int NO_EVENT = 0;      // ID for no event
+    private static final int FIRST_ENEMY = 1;   // ID fot event first enemy
+    private static final int CUT_30 = 2;        // ID fot event cut bar 30%
+    private static final int CUT_50 = 3;        // ID fot event cut bar 50%
+    private static final int REVERSE = 4;       // ID fot event reverse
+    private static final int RUSH_HOUR = 5;     // ID fot event rush hour
 
     @Override
     protected Scene onCreateScene() {

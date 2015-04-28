@@ -34,18 +34,17 @@ import it.unina.is2project.sensorgames.game.entity.Bar;
 
 public abstract class GamePong extends SimpleBaseGameActivity {
 
-    /**
-     * Camera
-     */
-    //TODO - Da Rivedere
+    //===========================================
+    // CAMERA
+    //===========================================
     protected Camera camera;
     protected int CAMERA_WIDTH;
     protected int CAMERA_HEIGHT;
     protected float DEVICE_RATIO;
 
-    /**
-     * Graphics
-     */
+    //===========================================
+    // GRAPHICS
+    //===========================================
     // Game Theme
     protected int theme;
     protected int theme_ball;
@@ -64,25 +63,22 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     // Rush Hour
     protected RushHourBonus rushHour;
 
-    /**
-     * Sounds
-     */
+    //===========================================
+    // SOUNDS
+    //===========================================
     protected Sound touch;
 
-    /**
-     * Fonts
-     */
+    //===========================================
+    // FONTS
+    //===========================================
     protected ITexture fontTexture;
     protected Font font;
 
-    /**
-     * Scene
-     */
+    //===========================================
+    // Scene
+    //===========================================
     protected Scene scene;
-
-    /**
-     * Collision Events
-     */
+    // Collision events
     protected int previous_event;
     protected static final int NO_COLL = -1;
     protected static final int BOTTOM = 1;
@@ -91,10 +87,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected static final int RIGHT = 4;
     protected static final int OVER = 5;
     protected static final int SIDE = 6;
-
-    /**
-     * Bounce bar angles
-     */
+    // Bounce bar angles
     protected float COS_20 = 0.93969262078590838405410927732473f;
     protected float SIN_20 = 0.34202014332566873304409961468226f;
     protected float COS_30 = 0.86602540378443864676372317075294f;
@@ -113,17 +106,14 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected float SIN_80 = 0.98480775301220805936674302458952f;
     protected float COS_90 = 0;
     protected float SIN_90 = 1;
-
-    /**
-     * Selected angles and module
-     */
+    // Selected angles and module
     protected float SIN_X;
     protected float COS_X;
     protected float myModule;
 
-    /**
-     * Pause Utils
-     */
+    //===========================================
+    // PAUSE UTILS
+    //===========================================
     protected Text textPause;
     protected Text textPause_util;
     protected static final int PAUSE = -1;
@@ -133,18 +123,16 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected float old_bar_speed;
     protected long firstTap;
 
-    /**
-     * Animation Utils
-     */
+    //===========================================
+    // ANIMATION UTILS
+    //===========================================
     protected long ms = 0;
     protected long animTime = 3000;
     protected boolean animActive = false;
 
     @Override
     public EngineOptions onCreateEngineOptions() {
-        //TODO - Da Rivedere poichè CaMERA_WIDTH e CAMERA_HEIGHT ora vengono calcolati da ogni GameObject nel costruttore,
-        //TODO - In ogni caso servono nel costruttore di EngineOptions()
-        // Understanding the device display's dimensions
+        // Understanding the device's display dimensions
         Display display = getWindow().getWindowManager().getDefaultDisplay();
         Point displaySize = new Point();
         display.getSize(displaySize);
@@ -155,8 +143,10 @@ public abstract class GamePong extends SimpleBaseGameActivity {
 
         // Setting up the andEngine camera
         camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+
         // Setting up the andEngine options
         EngineOptions engineOptions = new EngineOptions(true, ScreenOrientation.PORTRAIT_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
+
         // Enable the sound option
         engineOptions.getAudioOptions().setNeedsSound(true);
 
@@ -199,7 +189,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         bar.addToScene(scene, 0.3f, 0.05f);
         bar.setPosition(Bar.BOTTOM);
 
-        //TODO - Da Rivedere
         // Setting game velocity
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
@@ -265,7 +254,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         firstEnemy = new FirstEnemyBonus(this, theme_bar, ball);
         // Rush Hour
         rushHour = new RushHourBonus(ball);
-
     }
 
     protected void loadFonts() {
@@ -298,15 +286,12 @@ public abstract class GamePong extends SimpleBaseGameActivity {
                     while (ms < animTime) {
                         ms = ms + 100;
                         if (ms < 1000) {
-                            Log.d("Animation", "3 - " + ms);
                             textPause.setText("  3  ");
                         }
                         if (ms > 1000 && ms < 2000) {
-                            Log.d("Animation", "2 - " + ms);
                             textPause.setText("  2  ");
                         }
                         if (ms > 2000 && ms < 3000) {
-                            Log.d("Animation", "1 - " + ms);
                             textPause.setText("  1  ");
                         }
                         sleep(100);
@@ -347,7 +332,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         });
     }
 
-    //TODO - Da Rivedere, rinominare in setGameVelocity() e inserire anche il set della velocità della barra (forse no)
     protected void setBallVelocity() {
         ball.setHandlerSpeed(0, -ball.getBallSpeed());
     }
@@ -362,12 +346,26 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         } else if ((ball.getYCoordinate() > ball.getDisplaySize().y) && (previous_event != BOTTOM)) {
             return BOTTOM;
         }
-        //TODO - Inserire condizione di Alessandro per ridurre errori
         if (ball.collidesWith(bar)) {
-            if ((ball.getYCoordinate() + ball.getObjectHeight() < bar.getYCoordinate() + bar.getObjectHeight()) && (previous_event != OVER) && (previous_event != SIDE)) {
-                return OVER;
-            } else if ((previous_event != SIDE) && (previous_event != OVER)) {
+            float ballY = ball.getYCoordinate() + ball.getObjectHeight();
+            float barY = bar.getYCoordinate() + bar.getObjectHeight();
+            float ballX = ball.getXCentreCoordinate();
+            float barX = bar.getXCentreCoordinate();
+            float leftBar = -(bar.getObjectWidth()) / 2;
+            float rightBar = (bar.getObjectWidth()) / 2;
+            Log.d("Collision", "ballY = " + ballY);
+            Log.d("Collision", "barY = " + barY);
+            Log.d("Collision", "ballX - barX = " + (ballX - barX));
+            Log.d("Collision", "LEFT BAR = " + leftBar);
+            Log.d("Collision", "RIGHT BAR = " + rightBar);
+            if ((ballY > barY) && ((ballX - barX < leftBar) || (ballX - barX > rightBar))
+                    && (previous_event != OVER) && (previous_event != SIDE)) {
+                Log.d("Collision", "SIDE. Because ballY > barY : " + ballY + " > " + barY +
+                        " && (ballX - barX < LEFT BAR : " + (ballX - barX) + " < " + leftBar +
+                        " || ballX - barX > RIGHT BAR : " + (ballX - barX)  + " > " + rightBar + ")");
                 return SIDE;
+            } else if ((previous_event != SIDE) && (previous_event != OVER)) {
+                return OVER;
             }
         }
         return NO_COLL;
@@ -421,7 +419,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         float barX = bar.getXCentreCoordinate();
         myModule = (float) Math.sqrt(Math.pow(ball.getHandlerSpeedX(), 2) + Math.pow(ball.getHandlerSpeedY(), 2));
 
-        //TODO - DA Rivedere, forse si può sostituire con 2 cicli for
         if (ballX - barX <= (-(13 * bar.getObjectWidth()) / 30)) {
             Log.d("Collision", "20° LEFT");
             SIN_X = SIN_20;
@@ -502,7 +499,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         touch.play();
     }
 
-    //TODO - Da Rivedere, valutare se eliminare il metodo
     protected void clearGame() {
         BAR_SPEED = 2 * DEVICE_RATIO;
         BALL_SPEED = 350 * DEVICE_RATIO;
