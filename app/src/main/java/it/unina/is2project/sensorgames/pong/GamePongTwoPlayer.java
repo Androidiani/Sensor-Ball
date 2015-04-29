@@ -162,7 +162,7 @@ public class GamePongTwoPlayer extends GamePong {
             ball.detach();
         }
         points = i.getIntExtra(TwoPlayerActivity.EXTRA_POINTS, 0);
-        mConnectedDeviceName = i.getStringExtra(TwoPlayerActivity.EXTRA_DEVICENAME);
+        mConnectedDeviceName = i.getStringExtra(TwoPlayerActivity.EXTRA_DEVICE_NAME);
 
         // Set result in case of failure
         setResult(Activity.RESULT_CANCELED);
@@ -333,7 +333,7 @@ public class GamePongTwoPlayer extends GamePong {
                     detachSprite(Constants.REVERSE);
                     Random rand = new Random();
                     int randNum = rand.nextInt(5) + 1;
-                    AppMessage revertedBarMessage = new AppMessage(Constants.MSG_TYPE_BONUS_REVERTED_BAR, randNum);
+                    AppMessage revertedBarMessage = new AppMessage(Constants.MSG_TYPE_BONUS_REVERSE_BAR, randNum);
                     sendBluetoothMessage(revertedBarMessage);
                 }
             }
@@ -367,6 +367,11 @@ public class GamePongTwoPlayer extends GamePong {
     protected synchronized void onResume() {
         backPressed = false;
         super.onResume();
+    }
+
+    @Override
+    protected void loadAdditionalGraphics() {
+        // do nothing
     }
 
     @Override
@@ -1005,8 +1010,8 @@ public class GamePongTwoPlayer extends GamePong {
                                 bonusManager.addBonus(Constants.CUT_BAR_50, recMsg.OP1);
                                 break;
                             //------------------------BONUS REVERSE------------------------
-                            case Constants.MSG_TYPE_BONUS_REVERTED_BAR:
-                                Log.d(TAG, "Received : MSG_TYPE_BONUS_REVERTED_BAR");
+                            case Constants.MSG_TYPE_BONUS_REVERSE_BAR:
+                                Log.d(TAG, "Received : MSG_TYPE_BONUS_REVERSE_BAR");
                                 bonusManager.addBonus(Constants.REVERSE, recMsg.OP1);
                                 break;
                             //------------------------BONUS RUSH-HOUR------------------------

@@ -38,80 +38,56 @@ import it.unina.is2project.sensorgames.pong.GamePongTwoPlayer;
 
 public class TwoPlayerActivity extends Activity {
 
-    //----------------------------------------------
+    //===========================================
     // DEBUG
-    //----------------------------------------------
-    private static final String TAG = "TwoPlayerActivity";
-    private static final String LIFE_CYCLE = "CicloDiVita2PActivity";
+    //===========================================
+    private static final String TAG         = "TwoPlayerActivity";
+    private static final String LIFE_CYCLE  = "CicloDiVita2PActivity";
 
-    //----------------------------------------------
+    //===========================================
     // BLUETOOTH SECTION
-    //----------------------------------------------
+    //===========================================
+    private String mConnectedDeviceName                 = null;     // Connected device name
+    private BluetoothAdapter mBluetoothAdapter          = null;     // Bluetooth adapter
+    private BluetoothService mBluetoothService          = null;     // Bluetooth service
+    private Set<BluetoothDevice> pairedDevice;                      // Paired device set
+    private ArrayAdapter<String> stringArrayAdapter;                // Scanned devices
+    private boolean isMaster                            = false;    // Peer role
+    private boolean mStatus                             = false;    // Adapter state
+    private Integer privateNumber                       = null;     // Synchronization's number
+    private Integer points                              = null;     // Points to reach
 
-    // Connected device name
-    private String mConnectedDeviceName = null;
-    // Bluetooth adapter
-    private BluetoothAdapter mBluetoothAdapter = null;
-    // Bluetooth service
-    private BluetoothService mBluetoothService = null;
-    // Adapter state
-    private boolean mStatus = false;
-    // Paired devices
-    private Set<BluetoothDevice> pairedDevice;
-    // Scanned devices
-    private ArrayAdapter<String> stringArrayAdapter;
-    // Peer role
-    private boolean isMaster = false;
-    // Synchronization's number
-    private Integer privateNumber = null;
-    // Points to reach bounds
-    private final Integer LOWER_BOUND_POINT = 8;
-    private final Integer UPPER_BOUND_POINT = 14;
-    // Points to reach
-    private Integer points = null;
-    // Intents code
-    public static final int REQUEST_ENABLE_BT = 1;
+    //===========================================
+    // INTENT EXTRAS
+    //===========================================
+    public static final int REQUEST_ENABLE_BT       = 1;            // Request for bluetooth enabling
+    private final int GAME_START                    = 200;          // Request Code
+    public static final String EXTRA_POINTS         = "points";     // Intent extra for points
+    public static final String EXTRA_BALL           = "ball";       // Intent extra for ball
+    public static final String EXTRA_MASTER         = "master";     // Intent extra for master
+    public static final String EXTRA_DEVICE_NAME    = "deviceName"; // Intent extra for device name
 
-    //----------------------------------------------
-    // ACTIVITY ELEMENTS
-    //----------------------------------------------
+    //===========================================
+    // LAYOUT CHILDS
+    //===========================================
+    private Typeface typeFace;      // Font typeface
+    private TextView lblBluetooth;  // TextView for constant string "Bluetooth"
+    private TextView lblEnemy;      // TextView for constant string "Play With"
+    private TextView txtEnemy;      // TextView for current paired device
+    private Button btnPlay;         // Button for start game
+    private Button btnScan;         // Button for start scan
+    private Button btnPaired;       // Button for show paired device
+    private Switch switchBluetooth; // Switch for bluetooth activation
+    private ListView listDevice;    // ListView for show devices
 
-    public static final String EXTRA_POINTS = "points";
-    public static final String EXTRA_BALL = "ball";
-    public static final String EXTRA_MASTER = "master";
-    public static final String EXTRA_DEVICENAME = "deviceName";
-
-    //----------------------------------------------
-    // ACTIVITY ELEMENTS
-    //----------------------------------------------
-
-    // Font typeface
-    private Typeface typeFace;
-    // TextView
-    private TextView lblBluetooth;
-    private TextView lblEnemy;
-    private TextView txtEnemy;
-    // Button
-    private Button btnPlay;
-    private Button btnScan;
-    private Button btnPaired;
-    // Switch
-    private Switch switchBluetooth;
-    // ListView
-    private ListView listDevice;
-    // Request Code
-    private final int GAME_START = 200;
-
-    //----------------------------------------------
-    // FSM ELEMENTS
-    //----------------------------------------------
-
+    //===========================================
+    // FSM
+    //===========================================
     private FSMGame fsmGame = null;
 
     //----------------------------------------------
     // LIFECYCLE METHODS
     //----------------------------------------------
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(LIFE_CYCLE, "OnCreate()");
@@ -197,7 +173,7 @@ public class TwoPlayerActivity extends Activity {
             fsmGame.setState(FSMGame.STATE_DISCONNECTED);
         }
         if(mBluetoothService.getState() == BluetoothService.STATE_CONNECTED){
-
+            // TODO Che cazzo volevo fare qui????
         }
 
         super.onResume();
@@ -223,7 +199,6 @@ public class TwoPlayerActivity extends Activity {
     //----------------------------------------------
     // ACTIONBAR ACTIVITY METHODS
     //----------------------------------------------
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -253,9 +228,11 @@ public class TwoPlayerActivity extends Activity {
                 if(resultCode == Activity.RESULT_OK) {
                     if (mBluetoothService != null) {
                         mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
+                        mBluetoothService.stop();
+                        mBluetoothService.start();
                     }
-                    mBluetoothService.stop();
-                    mBluetoothService.start();
+//                    mBluetoothService.stop();
+//                    mBluetoothService.start();
                     if(!mStatus){
                         mStatus = true;
                         switchBluetooth.setChecked(true);
@@ -284,6 +261,12 @@ public class TwoPlayerActivity extends Activity {
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        mBluetoothService.stop();
+        super.onBackPressed();
     }
 
     //----------------------------------------------
@@ -337,7 +320,7 @@ public class TwoPlayerActivity extends Activity {
         listDevice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onSelectedItem(parent, view, position, id);
+                onSelectedItem(view);
             }
         });
 
@@ -410,16 +393,15 @@ public class TwoPlayerActivity extends Activity {
      */
     private void btnPlayClick() {
         Log.d(TAG, "btnPlay()");
-//        int intMaster;
-//        intMaster = isMaster? 1 : 0;
         if(privateNumber == null) {
             // Crea un numero casuale per la scelta di dove far apparire la palla.
             Random rand = new Random();
             privateNumber = rand.nextInt(1000);
             privateNumber = privateNumber % 2;
             // Creo un numero casuale per definire i punti da raggiungere.
-            points = rand.nextInt((UPPER_BOUND_POINT - LOWER_BOUND_POINT) + 1) + LOWER_BOUND_POINT;
-            // Mando messaggio
+            points = rand.nextInt((Constants.UPPER_BOUND_POINT - Constants.LOWER_BOUND_POINT) + 1) +
+                    Constants.LOWER_BOUND_POINT;
+            // Invio messaggio
             AppMessage ballChoise = new AppMessage(Constants.MSG_TYPE_FIRST_START, privateNumber, points);
             sendBluetoothMessage(ballChoise);
         }
@@ -427,24 +409,25 @@ public class TwoPlayerActivity extends Activity {
         mIntent.putExtra(EXTRA_POINTS, points);
         mIntent.putExtra(EXTRA_BALL, privateNumber);
         mIntent.putExtra(EXTRA_MASTER, isMaster);
-        mIntent.putExtra(EXTRA_DEVICENAME, mConnectedDeviceName);
+        mIntent.putExtra(EXTRA_DEVICE_NAME, mConnectedDeviceName);
         startActivityForResult(mIntent, GAME_START);
     }
 
     /**
      * Manage click on listview items
-     * @param parent Indicates parent's view
      * @param view Indicates this view
-     * @param position Indicates position
-     * @param id Indicates id
      */
-    private void onSelectedItem(AdapterView<?> parent, View view, int position, long id) {
+    private void onSelectedItem(View view) {
         mBluetoothAdapter.cancelDiscovery();
         String info = ((TextView)view).getText().toString();
         String address = info.substring(info.length() - 17);
         connectDevice(address);
     }
 
+    /**
+     * Manage click on bluetooth switch
+     * @param isChecked Represent the state of the bluetooth switch
+     */
     private void onSwitchClicked(boolean isChecked) {
         if (isChecked){
             // If buttons is ON
@@ -478,12 +461,6 @@ public class TwoPlayerActivity extends Activity {
                 mStatus = false;
             }
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        mBluetoothService.stop();
-        super.onBackPressed();
     }
 
     //----------------------------------------------
@@ -522,6 +499,10 @@ public class TwoPlayerActivity extends Activity {
         }
     }
 
+    /**
+     * Start a bluetooth connection with device
+     * @param address MAC of the device to connect
+     */
     private void connectDevice(String address) {
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect
@@ -530,14 +511,21 @@ public class TwoPlayerActivity extends Activity {
         isMaster = true;
     }
 
+    /**
+     * Disconnect current connection (if it is active)
+     */
     private void disconnect() {
         mBluetoothService.stop();
         fsmGame.setState(FSMGame.STATE_DISCONNECTED);
         mBluetoothService.start();
     }
 
+    /**
+     * Send a bluetooth message
+     * @param ballChoise message that contains first informations to play game
+     */
     private void sendBluetoothMessage(AppMessage ballChoise) {
-        if (mBluetoothService.getState() != mBluetoothService.STATE_CONNECTED) {
+        if (mBluetoothService.getState() != BluetoothService.STATE_CONNECTED) {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_notConnected), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -571,7 +559,6 @@ public class TwoPlayerActivity extends Activity {
     //----------------------------------------------
     // HANDLERS
     //----------------------------------------------
-
     @SuppressWarnings("all")
     private final Handler mHandler = new Handler(){
         @Override
