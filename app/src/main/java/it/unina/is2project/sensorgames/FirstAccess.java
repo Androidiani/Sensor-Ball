@@ -26,6 +26,7 @@ public class FirstAccess extends Activity {
     private TextView appNameView;
     private EditText nickname;
     private Button okButton;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +113,8 @@ public class FirstAccess extends Activity {
             overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             finish();
         } else {
-            Toast toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_LONG);
+            if(toast != null) toast.cancel();
+            toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
             toast.show();
         }

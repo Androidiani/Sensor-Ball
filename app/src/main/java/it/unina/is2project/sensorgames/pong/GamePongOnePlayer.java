@@ -215,7 +215,7 @@ public class GamePongOnePlayer extends GamePong {
             });
             alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    restartGameAfterPause();
+                    // do nothing
                 }
             });
             alert.show();

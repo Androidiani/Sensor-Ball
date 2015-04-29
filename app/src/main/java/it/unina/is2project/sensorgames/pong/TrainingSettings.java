@@ -46,6 +46,12 @@ public class TrainingSettings extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training_settings);
 
+        // Get intent extras
+        Intent intent = getIntent();
+        ball_speed = intent.getIntExtra("ballSpeed", 1);
+        bar_speed = intent.getIntExtra("barSpeed", 1);
+        event = intent.getIntExtra("event", 0);
+
         // Set the fullscreen window
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         // Find view
@@ -100,6 +106,7 @@ public class TrainingSettings extends Activity {
         ball_speed_adapter = ArrayAdapter.createFromResource(this, R.array.ball_speed_spinner, R.layout.spinner_training_item);
         ball_speed_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         ball_speed_spinner.setAdapter(ball_speed_adapter);
+        ball_speed_spinner.setSelection(ball_speed-1);
         ball_speed_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -108,7 +115,7 @@ public class TrainingSettings extends Activity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                ball_speed = 1;
+                // do nothing
             }
         });
 
@@ -116,6 +123,7 @@ public class TrainingSettings extends Activity {
         bar_speed_adapter = ArrayAdapter.createFromResource(this, R.array.bar_speed_spinner, R.layout.spinner_training_item);
         bar_speed_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         bar_speed_spinner.setAdapter(bar_speed_adapter);
+        bar_speed_spinner.setSelection(bar_speed-1);
         bar_speed_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -124,7 +132,7 @@ public class TrainingSettings extends Activity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                bar_speed = 1;
+                // do nothing
             }
         });
 
@@ -132,6 +140,7 @@ public class TrainingSettings extends Activity {
         event_adapter = ArrayAdapter.createFromResource(this, R.array.event_spinner, R.layout.spinner_training_item);
         event_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         event_spinner.setAdapter(event_adapter);
+        event_spinner.setSelection(event);
         event_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -140,13 +149,8 @@ public class TrainingSettings extends Activity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                event = 0;
+                // do nothing
             }
         });
     }
-
-//    @Override
-//    public void onBackPressed() {
-//        // do nothing
-//    }
 }

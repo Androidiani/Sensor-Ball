@@ -3,6 +3,7 @@ package it.unina.is2project.sensorgames.pong;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -25,6 +26,7 @@ import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.math.MathConstants;
 
 import java.io.IOException;
 
@@ -135,6 +137,8 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected long ms = 0;
     protected long animTime = 3000;
     protected boolean animActive = false;
+
+    protected CountDownTimer countDownTimer;
 
     @Override
     public EngineOptions onCreateEngineOptions() {
@@ -285,34 +289,35 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     }
 
     protected void settingPhysics() {
-        //TODO - Da Rivedere, sostituire con un Thread fatto bene (TimerTask)
-        Thread physicsThread = new Thread() {
-            public void run() {
-                try {
-                    animActive = true;
-                    while (ms < animTime) {
-                        ms = ms + 100;
-                        if (ms < 1000) {
-                            textPause.setText("  3  ");
-                        }
-                        if (ms > 1000 && ms < 2000) {
-                            textPause.setText("  2  ");
-                        }
-                        if (ms > 2000 && ms < 3000) {
-                            textPause.setText("  1  ");
-                        }
-                        sleep(100);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    animActive = false;
-                    textPause.setText("");
-                    doPhysics();
-                }
+        animActive = true;
+        CountdownTimerScene countdownTimerScene = new CountdownTimerScene(3);
+        scene.registerUpdateHandler(countdownTimerScene);
+    }
+
+    private class CountdownTimerScene implements IUpdateHandler{
+
+        private float seconds;
+
+        public CountdownTimerScene(int toSecond){
+            this.seconds = toSecond;
+        }
+
+        @Override
+        public void onUpdate(float pSecondsElapsed) {
+            seconds -= pSecondsElapsed;
+            textPause.setText("  " + (int)Math.ceil(seconds) + "  ");
+            if(seconds < 0){
+                animActive = false;
+                textPause.setText("");
+                doPhysics();
+                scene.unregisterUpdateHandler(this);
             }
-        };
-        physicsThread.start();
+        }
+
+        @Override
+        public void reset() {
+            seconds = 0;
+        }
     }
 
     protected void doPhysics() {

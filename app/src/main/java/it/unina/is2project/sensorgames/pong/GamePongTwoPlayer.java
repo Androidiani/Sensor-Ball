@@ -1071,6 +1071,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 ball.setHandlerSpeedY(-ball.getHandlerSpeedY());
                                 previous_event = NO_COLL;
                             }
+                            pause = false;
                             receivedStop = false;
                             resumeAllowed = false;
                             taskBonus = new TimerBonusTask();
@@ -1093,6 +1094,7 @@ public class GamePongTwoPlayer extends GamePong {
                         //-----------------------------------------------------
                         case FSMGame.STATE_GAME_PAUSED:
                             Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            pause = true;
                             textInfo.setText(getResources().getString(R.string.text_pause));
                             saveHandlerState();
                             ball.setHandlerSpeed(0f, 0f);
@@ -1108,6 +1110,7 @@ public class GamePongTwoPlayer extends GamePong {
                         //-----------------------------------------------------
                         case FSMGame.STATE_GAME_PAUSE_STOP:
                             Log.d(TAG, "State Change From " + FSMGame.toStringDebug(msg.arg2) + " To " + fsmGame.toString());
+                            pause = true;
                             textInfo.setText(getResources().getString(R.string.pause_stop));
                             ball.setHandlerSpeed(0f, 0f);
                             bar.setBarSpeed(0f);

@@ -37,6 +37,9 @@ public class GamePongTraining extends GamePong {
     private static final int REVERSE = 4;       // ID fot event reverse
     private static final int RUSH_HOUR = 5;     // ID fot event rush hour
 
+    int ballSpeed;
+    int barSpeed;
+
     @Override
     protected Scene onCreateScene() {
         super.onCreateScene();
@@ -78,11 +81,18 @@ public class GamePongTraining extends GamePong {
             @Override
             public void onTouch() {
                 super.onTouch();
-                clearEvent();
-                Intent intent = new Intent(getBaseContext(), TrainingSettings.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                finish();
+                if (!animActive) {
+                    clearEvent();
+                    Intent intent = new Intent(getBaseContext(), TrainingSettings.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                    intent.putExtra("ballSpeed", ballSpeed);
+                    intent.putExtra("barSpeed", barSpeed);
+                    intent.putExtra("event", event);
+
+                    startActivity(intent);
+                    finish();
+                }
             }
         };
     }
@@ -91,8 +101,10 @@ public class GamePongTraining extends GamePong {
     protected void setBallVelocity() {
         // Get options by training settings
         Intent i = getIntent();
-        int ballSpeed = i.getIntExtra("ballSpeed", 1);
-        int barSpeed = i.getIntExtra("barSpeed", 1);
+//        int ballSpeed = i.getIntExtra("ballSpeed", 1);
+//        int barSpeed = i.getIntExtra("barSpeed", 1);
+        ballSpeed = i.getIntExtra("ballSpeed", 1);
+        barSpeed = i.getIntExtra("barSpeed", 1);
         event = i.getIntExtra("event", 0);
 
         setTrainingMode(ballSpeed, barSpeed);
@@ -130,7 +142,7 @@ public class GamePongTraining extends GamePong {
             });
             alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    restartGameAfterPause();
+                    // do nothing
                 }
             });
             alert.show();
