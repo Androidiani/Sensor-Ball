@@ -303,8 +303,8 @@ public abstract class GamePong extends SimpleBaseGameActivity {
             if(seconds < 0){
                 animActive = false;
                 textPause.setText("");
-                doPhysics();
                 scene.unregisterUpdateHandler(this);
+                doPhysics();
             }
         }
 
