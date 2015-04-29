@@ -371,17 +371,19 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected synchronized void onResume() {
         backPressed = false;
+        if(fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING){
+            AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_ALERT);
+            sendBluetoothMessage(resumeMessage);
+        }
         super.onResume();
     }
 
     @Override
     protected void onStop() {
         if (!backPressed) {
-
             if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                 saveHandlerState();
             }
-
             if (fsmGame.getState() == FSMGame.STATE_IN_GAME ||
                     fsmGame.getState() == FSMGame.STATE_GAME_PAUSED ||
                     fsmGame.getState() == FSMGame.STATE_GAME_OPPONENT_PAUSED) {
@@ -396,7 +398,10 @@ public class GamePongTwoPlayer extends GamePong {
                 if(timerTimeout != null)timerTimeout.cancel();
                 if(taskTimeout != null)taskTimeout.cancel();
             }
-            //TODO Contemplare il caso in cui ti trovi IN GAME WAITING
+            if(fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING){
+                AppMessage noReadyMessage = new AppMessage(Constants.MSG_TYPE_NO_READY);
+                sendBluetoothMessage(noReadyMessage);
+            }
         }
         super.onStop();
     }
@@ -928,19 +933,19 @@ public class GamePongTwoPlayer extends GamePong {
                             //------------------------STOP REQUEST------------------------
                             case Constants.MSG_TYPE_STOP_REQUEST:
                                 Log.d(TAG, "Received : MSG_TYPE_STOP_REQUEST");
-                                if (!haveBall && ball.getYCoordinate() < 0) {
-                                    ball.detach();
-                                }
                                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME) {
                                     saveHandlerState();
                                 }
-                                receivedStop = true;
                                 if (fsmGame.getState() != FSMGame.STATE_GAME_PAUSE_STOP) {
                                     taskTimeout = new TimerGameTimeoutTask();
                                     timerTimeout = new Timer();
                                     timerTimeout.schedule(taskTimeout, Constants.TIMEOUT_FOR_GAME_OVER);
                                 }
+                                receivedStop = true;
                                 fsmGame.setState(FSMGame.STATE_GAME_PAUSE_STOP);
+                                if (!haveBall && ball.getYCoordinate() < 0) {
+                                    ball.detach();
+                                }
                                 break;
                             //------------------------SUSPEND REQUEST------------------------
                             case Constants.MSG_TYPE_SUSPEND_REQUEST:

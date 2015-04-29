@@ -155,7 +155,9 @@ public class TwoPlayerActivity extends Activity {
     @Override
     protected void onResume() {
         Log.i(LIFE_CYCLE, "OnResume()");
-        if(mBluetoothService != null){
+        if(mBluetoothService != null && mBluetoothAdapter != null){
+            mStatus = mBluetoothAdapter.isEnabled();
+            switchBluetooth.setChecked(mStatus);
             if(mStatus) {
                 if (mBluetoothService.getState() == BluetoothService.STATE_NONE) {
                     mBluetoothService.start();
@@ -166,6 +168,8 @@ public class TwoPlayerActivity extends Activity {
             mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
             mBluetoothService.start();
         }
+
+
 
         // FSM STATE CHANGE
         fsmGame = FSMGame.getFsmInstance(fsmHandler);
@@ -597,7 +601,6 @@ public class TwoPlayerActivity extends Activity {
                                 case Constants.MSG_TYPE_FIRST_START:
                                     privateNumber = recMsg.OP1 == 0 ? new Integer(1) : new Integer(0);
                                     points = recMsg.OP5;
-//                                    btnPlay.setEnabled(true);
                                     break;
                                 case Constants.MSG_TYPE_SYNC:
                                     AppMessage notReadyMessage = new AppMessage(Constants.MSG_TYPE_NO_READY);
@@ -609,6 +612,8 @@ public class TwoPlayerActivity extends Activity {
                                 case Constants.MSG_TYPE_ALERT:
                                     btnPlay.setEnabled(true);
                                     break;
+                                case Constants.MSG_TYPE_NO_READY:
+                                    btnPlay.setEnabled(false);
                                 default:
                                     Log.e(TAG, "Ricevuto messaggio non idoneo - Type is " + recMsg.TYPE);
                                     break;
