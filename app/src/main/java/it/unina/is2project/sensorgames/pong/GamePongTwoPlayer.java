@@ -2,10 +2,8 @@ package it.unina.is2project.sensorgames.pong;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -60,7 +58,6 @@ public class GamePongTwoPlayer extends GamePong {
     private int points;         // Points to reach
     private int score;          // Score for current player in current game
     private int opponentScore;  // Score for opponent player in current game
-    private String nickname;    // User nickname
     private Text textInfo;      // TextView for game events
     private Text textPoint;     // TextView for show points
 
@@ -142,15 +139,6 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected Scene onCreateScene() {
         Log.d("LifeCycle", "onCreateScene()");
-        // Getting instance of fsm, service bluetooth and bonus manager
-        fsmGame = FSMGame.getFsmInstance(fsmHandler);
-        mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
-        bonusManager = BonusManager.getBonusInstance(bonusHandler);
-
-        //Retrieve user nickname
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        nickname = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
-
         super.onCreateScene();
 
         // Retrieve intent message
@@ -366,6 +354,15 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected void settingPhysics() {
         doPhysics();
+    }
+
+    @Override
+    protected void onStart() {
+        // Getting instance of fsm, service bluetooth and bonus manager
+        fsmGame = FSMGame.getFsmInstance(fsmHandler);
+        mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
+        bonusManager = BonusManager.getBonusInstance(bonusHandler);
+        super.onStart();
     }
 
     @Override

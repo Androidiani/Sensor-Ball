@@ -29,6 +29,7 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import java.io.IOException;
 
 import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.bluetooth.Constants;
 import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.Bar;
 
@@ -112,6 +113,11 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected float myModule;
 
     //===========================================
+    // GAME DATA
+    //===========================================
+    protected String nickname;    // User nickname
+
+    //===========================================
     // PAUSE UTILS
     //===========================================
     protected Text textPause;
@@ -155,6 +161,11 @@ public abstract class GamePong extends SimpleBaseGameActivity {
 
     @Override
     protected void onCreateResources() {
+        // Retrieve shared preferences
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        theme = Integer.parseInt(sharedPreferences.getString("prefGameTheme", "0"));
+        nickname = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
+
         loadGraphics();
         loadSounds();
         loadFonts();
@@ -224,9 +235,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     }
 
     protected void loadGraphics() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        theme = Integer.parseInt(sharedPreferences.getString("prefGameTheme", "0"));
-        Log.d("Selecting Theme", "Theme " + theme);
         switch (theme) {
             case CLASSIC:
                 theme_ball = R.drawable.ball_white;
