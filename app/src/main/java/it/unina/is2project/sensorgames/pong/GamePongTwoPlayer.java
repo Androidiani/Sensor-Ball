@@ -359,6 +359,11 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
+    protected void loadAdditionalGraphics() {
+        // do nothing
+    }
+
+    @Override
     protected void settingPhysics() {
         doPhysics();
     }
@@ -367,11 +372,6 @@ public class GamePongTwoPlayer extends GamePong {
     protected synchronized void onResume() {
         backPressed = false;
         super.onResume();
-    }
-
-    @Override
-    protected void loadAdditionalGraphics() {
-        // do nothing
     }
 
     @Override
@@ -1470,9 +1470,7 @@ public class GamePongTwoPlayer extends GamePong {
         public void run() {
             Random rand = new Random();
             do {
-                //TODO codice di test
-//                bonusChoice = rand.nextInt((Constants.RUSH_HOUR - Constants.SPEED_X2) + 1) + Constants.SPEED_X2;
-                bonusChoice = rand.nextInt((Constants.SPEED_X4 - Constants.CUT_BAR_50) + 1) + Constants.CUT_BAR_50;
+                bonusChoice = rand.nextInt((Constants.RUSH_HOUR - Constants.SPEED_X2) + 1) + Constants.SPEED_X2;
             } while (bonusChoice == previous_bonus);
             previous_bonus = bonusChoice;
             if (deletedBonusSprite) {

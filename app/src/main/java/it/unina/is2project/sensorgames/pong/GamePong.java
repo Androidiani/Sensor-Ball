@@ -244,16 +244,15 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         // Ball and Bar texture loading
         ball = new Ball(this, theme_ball);
         bar = new Bar(this, theme_bar);
+        // Rush Hour
+        rushHour = new RushHourBonus(ball);
 
         loadAdditionalGraphics();
     }
 
-    //TODO - Da Rivedere, ora viene ereditato pari pari anche da 2 player
     protected void loadAdditionalGraphics() {
         // First Enemy
         firstEnemy = new FirstEnemyBonus(this, theme_bar, ball);
-        // Rush Hour
-        rushHour = new RushHourBonus(ball);
     }
 
     protected void loadFonts() {
