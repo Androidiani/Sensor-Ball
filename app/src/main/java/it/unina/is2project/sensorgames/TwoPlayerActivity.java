@@ -47,15 +47,15 @@ public class TwoPlayerActivity extends Activity {
     //===========================================
     // BLUETOOTH SECTION
     //===========================================
+    private ArrayAdapter<String> stringArrayAdapter;                // Scanned devices
     private String mConnectedDeviceName                 = null;     // Connected device name
     private BluetoothAdapter mBluetoothAdapter          = null;     // Bluetooth adapter
     private BluetoothService mBluetoothService          = null;     // Bluetooth service
-    private Set<BluetoothDevice> pairedDevice;                      // Paired device set
-    private ArrayAdapter<String> stringArrayAdapter;                // Scanned devices
-    private boolean isMaster                            = false;    // Peer role
-    private boolean mStatus                             = false;    // Adapter state
     private Integer privateNumber                       = null;     // Synchronization's number
     private Integer points                              = null;     // Points to reach
+    private boolean isMaster                            = false;    // Peer role
+    private boolean mStatus                             = false;    // Adapter state
+
 
     //===========================================
     // INTENT EXTRAS
@@ -117,7 +117,7 @@ public class TwoPlayerActivity extends Activity {
             mStatus = mBluetoothAdapter.isEnabled();
 
             // Adapter set
-            stringArrayAdapter = new ArrayAdapter<String>(this, R.layout.bluetooth_list_element);
+            stringArrayAdapter = new ArrayAdapter<>(this, R.layout.bluetooth_list_element);
 
             listDevice.setAdapter(stringArrayAdapter);
 
@@ -172,9 +172,9 @@ public class TwoPlayerActivity extends Activity {
         if(fsmGame.getState() == FSMGame.STATE_DISCONNECTED){
             fsmGame.setState(FSMGame.STATE_DISCONNECTED);
         }
-        if(mBluetoothService.getState() == BluetoothService.STATE_CONNECTED){
-            // TODO Che cazzo volevo fare qui????
-        }
+//        if(mBluetoothService.getState() == BluetoothService.STATE_CONNECTED){
+//
+//        }
 
         super.onResume();
     }
@@ -364,7 +364,7 @@ public class TwoPlayerActivity extends Activity {
      */
     private void btnPairedClick() {
         Log.d(TAG, "btnPaired()");
-        pairedDevice = mBluetoothAdapter.getBondedDevices();
+        Set<BluetoothDevice> pairedDevice = mBluetoothAdapter.getBondedDevices();
         stringArrayAdapter.clear();
         for(BluetoothDevice device : pairedDevice)
             stringArrayAdapter.add(device.getName()+ "\n" + device.getAddress());
