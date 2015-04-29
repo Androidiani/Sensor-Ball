@@ -1,2 +1,154 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <!-- General -->
+    <string name="app_name">Sensor Pong</string>
+
+    <!-- Image Descriptors -->
+    <string name="btn1desc">Button for 1 player games</string>
+    <string name="btn2desc">Button for 2 players games</string>
+    <string name="btnTrngDesc">Button for training games</string>
+    <string name="btnAboutDesc">Button for app infos</string>
+    <string name="logoniversitydesc">University of \"Federico II\" logo</string>
+    <string name="imgGame">Main figure of game</string>
+
+    <!-- Main Activity Strings -->
+    <string name="two_player">2 Giocatori</string>
+    <string name="training">Allenamento</string>
+    <string name="stats">Statistiche</string>
+    <string name="settings">Opzioni</string>
+    <string name="about">About Us</string>
+    <string name="ttl_main_adv">Esci</string>
+    <string name="txt_main_adv">Vuoi uscire dal gioco?</string>
+
+    <!-- About Activity Strings -->
+    <string name="text_app_about_description">\nThis app has been developed by students of University "Federico II", Naples.\n\n
+        It is a project created within software engineering\'s course of 2014/2015 academic year.\n
+        \n
+        Authors: (in alphabetical order)\n
+        - Gargiulo Alessandro\n
+        - Marigliano Francesco\n
+        - Saviano Gabriele\n
+        - Toscano Giovanni\n
+    </string>
+
+    <!-- First access -->
+    <string name="nickname">Nickname</string>
+    <string name="submit">OK</string>
+
+    <!-- General game -->
+    <string name="text_pause">Pausa</string>
+    <string name="text_gameover">Game Over</string>
+
+    <!-- 2 Player Activity -->
+    <string name="text_bluetooth">Bluetooth</string>
+    <string name="text_none"><![CDATA[<none>]]></string>
+    <string name="text_play">Gioca</string>
+    <string name="text_scan">Cerca Disp.</string>
+    <string name="none_found">Nessun dispositivo trovato</string>
+    <string name="text_msg_twoplayer_leave">Sarai disconnesso. Sei sicuro?</string>
+
+    <!-- 2 Player Game -->
+    <string name="text_disconnected">Disconnesso</string>
+    <string name="text_disconnect">Disconnetti</string>
+    <string name="text_discoverable">Visibile</string>
+    <string name="text_opponent_left">Il tuo avversario\nha abbandonato la partita</string>
+    <string name="text_opponent_pause">Il tuo avversario\ne\' in pausa</string>
+    <string name="text_opponent_not_ready">Il tuo avversario\nnon e\' pronto</string>
+    <string name="text_waiting">In attesa del\ntuo avversario</string>
+    <string name="text_exit_pause">Il tuo avversario\ne\' in pausa</string>
+    <string name="text_you_win">Hai vinto</string>
+    <string name="text_you_lose">Hai perso</string>
+    <string name="pause_stop">Gioco temporaneamente\nfermo</string>
+    <string name="text_game_suspended">Gioco temporaneamente\nsospeso</string>
+    <!--<string name="text_first_to">First to</string>-->
+    <!--<string name="text_win">win</string>-->
+
+
+    <!-- Toasts -->
+    <string name="toast_bluetoothNotSupported">Il tuo dispositivo non supporta il bluetooth</string>
+    <string name="toast_bluetoothActived">Bluetooth attivo</string>
+    <string name="toast_bluetoothDeactived">Bluetooth disabilitato</string>
+    <string name="toast_notConnected">Non sei connesso a nessun dispositivo</string>
+    <string name="toast_unableConnect">Impossibile stabilire una connessione</string>
+    <string name="toast_connectionLost">Connessione persa</string>
+    <string name="txt_hi">Ciao</string>
+
+
+    <!-- Stats Activity -->
+    <string name="sts_multi_play">Giocate</string>
+    <string name="sts_multi_win">Vinte</string>
+    <string name="sts_multi_perc">% Vittorie</string>
+    <string name="sts_null">Null</string>
+    <string name="sts_position">#</string>
+    <string name="sts_name">Giocatore</string>
+    <string name="sts_score">Punteggio</string>
+    <string name="sts_date">Data</string>
+
+    <!-- Alert Dialog -->
+    <string name="alert_bluetooth_activator">Il bluetooth è disabilitato, perfavore attiva il bluetooth e riprova. Vuoi attivare il bluetooth adesso?</string>
+    <string name="text_yes">Si</string>
+    <string name="text_no">No</string>
+
+    <!-- One Player -->
+    <string name="text_score">Punteggio</string>
+    <string name="text_lvl">Livello</string>
+    <string name="text_first_enemy">First Enemy</string>
+    <string name="text_bubble">Bubble Bonus</string>
+    <string name="text_cut_bar_30">Riduci 30%</string>
+    <string name="text_lifebonus">Life Bonus</string>
+    <string name="text_cut_bar_50">Riduci 50%</string>
+    <string name="text_big_bar">Big Bar</string>
+    <string name="text_reverse">Reverse</string>
+    <string name="text_freeze">Freeze</string>
+    <string name="text_rush">Rush Hour</string>
+    <string name="text_ttl_oneplayer_leavegame">Abbandona partita</string>
+    <string name="text_msg_oneplayer_leavegame">Perderai la partita. Sei sicuro?</string>
+    <string name="text_ttl_oneplayer_savegame">Salva il punteggio</string>
+    <string name="text_msg_oneplayer_savegame">Vuoi salvare questo punteggio?</string>
+    <string name="text_no_user_input">Inserisci correttamente il nome</string>
+
+    <!-- Training Game -->
+    <string name="text_ttl_training_leave">Abbandona allenamento</string>
+    <string name="text_msg_training_leave">Sei sicuro di voler uscire dall\'allenamento?</string>
+    <string name="text_hit">Hit</string>
+    <string name="text_ball_speed">Velocità palla</string>
+    <string name="text_active_events">Seleziona evento</string>
+    <string name="back">INDIETRO</string>
+    <string-array name="ball_speed_spinner">
+        <item>x1</item>
+        <item>x2</item>
+        <item>x3</item>
+        <item>x4</item>
+        <item>x5</item>
+    </string-array>
+    <string-array name="bar_speed_spinner">
+        <item>x1</item>
+        <item>x2</item>
+        <item>x3</item>
+    </string-array>
+    <string-array name="event_spinner">
+        <item>No event</item>
+        <item>First Enemy</item>
+        <item>Cut bar 30%</item>
+        <item>Cut bar 50%</item>
+        <item>Reverse</item>
+        <item>Rush Hour</item>
+    </string-array>
+
+    <!-- Settings text -->
+    <string name="settings_title">Opzioni</string>
+    <string name="general_settings">Opzioni generali</string>
+    <string name="settings_nickname">Nickname</string>
+    <string name="settings_nickname_info">Imposta il tuo nickname</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_info">Imposta il tema del gioco</string>
+    <string name="txt_no_name">No Name</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="hello_view">Inserisci il tuo nickname</string>
+    <string name="one_player">1 Giocatore</string>
+    <string name="text_bar_speed">Velocità barra</string>
+    <string name="text_enemy">Gioca con</string>
+    <string name="text_paired">Disp. Accoppiati</string>
+    <string name="text_pause_not_allowed">Non puoi mettere\npausa, adesso</string>
+
+</resources>

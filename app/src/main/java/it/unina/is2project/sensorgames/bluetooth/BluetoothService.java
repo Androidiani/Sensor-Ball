@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import it.unina.is2project.sensorgames.R;
+
 public class BluetoothService implements Cloneable{
 
     //-----------------------------------------------------------------
@@ -54,6 +56,9 @@ public class BluetoothService implements Cloneable{
     // Singleton
     private static BluetoothService serviceInstance = null;
 
+    // Contex
+    private Context context;
+
     /**
      * Costruttore
      *
@@ -63,6 +68,7 @@ public class BluetoothService implements Cloneable{
     private BluetoothService(Context context, Handler handler){
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mHandler = handler;
+        this.context = context;
         setState(STATE_NONE);
     }
 
@@ -71,6 +77,7 @@ public class BluetoothService implements Cloneable{
             serviceInstance = new BluetoothService(context,handler);
         }
         serviceInstance.setmHandler(handler);
+        serviceInstance.setContext(context);
         return serviceInstance;
     }
 
@@ -110,6 +117,10 @@ public class BluetoothService implements Cloneable{
      */
     public void setmHandler(Handler mHandler) {
         this.mHandler = mHandler;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     //-----------------------------------------------------------------
@@ -290,7 +301,7 @@ public class BluetoothService implements Cloneable{
         // Creo un messaggio di fallimento
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.TOAST, "Unable to connect device");
+        bundle.putString(Constants.TOAST, context.getResources().getString(R.string.toast_unableConnect));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -308,7 +319,7 @@ public class BluetoothService implements Cloneable{
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.TOAST, "Device connection was lost");
+        bundle.putString(Constants.TOAST, context.getResources().getString(R.string.toast_connectionLost));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 

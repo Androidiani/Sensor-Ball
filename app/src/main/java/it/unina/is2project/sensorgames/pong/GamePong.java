@@ -3,7 +3,6 @@ package it.unina.is2project.sensorgames.pong;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
@@ -26,7 +25,6 @@ import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
-import org.andengine.util.math.MathConstants;
 
 import java.io.IOException;
 
@@ -134,11 +132,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     //===========================================
     // ANIMATION UTILS
     //===========================================
-    protected long ms = 0;
-    protected long animTime = 3000;
     protected boolean animActive = false;
-
-    protected CountDownTimer countDownTimer;
 
     @Override
     public EngineOptions onCreateEngineOptions() {

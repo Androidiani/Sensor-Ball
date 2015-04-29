@@ -179,7 +179,7 @@ public class GamePongTwoPlayer extends GamePong {
         activedBonusSprite = SPRITE_NONE;
 
         // Attaching textInfo
-        textInfo = new Text(10, 10, font, "", 30, getVertexBufferObjectManager());
+        textInfo = new Text(10, 10, font, "", 60, getVertexBufferObjectManager());
         scene.attachChild(textInfo);
 
         // Attachning textPoint
