@@ -48,6 +48,7 @@
     <string name="text_paired">Paired</string>
     <string name="text_scan">Scan</string>
     <string name="none_found">No discoverable device found</string>
+    <string name="text_msg_twoplayer_leave">You\'ll be disconnect. Are you sure?</string>
 
     <!-- 2 Player Game -->
     <string name="text_disconnected">Disconnected</string>

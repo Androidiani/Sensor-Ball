@@ -269,8 +269,26 @@ public class TwoPlayerActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        mBluetoothService.stop();
-        super.onBackPressed();
+        if(fsmGame.getState() == FSMGame.STATE_CONNECTED) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(getResources().getString(R.string.text_disconnect));
+            alert.setMessage(getResources().getString(R.string.text_msg_twoplayer_leave));
+            alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    mBluetoothService.stop();
+                    finish();
+                }
+            });
+            alert.setNegativeButton(getResources().getString(R.string.text_no), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // do nothing
+                }
+            });
+            alert.show();
+        }else{
+            mBluetoothService.stop();
+            super.onBackPressed();
+        }
     }
 
     //----------------------------------------------
