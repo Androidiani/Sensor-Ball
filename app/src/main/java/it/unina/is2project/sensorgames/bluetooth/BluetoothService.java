@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import it.unina.is2project.sensorgames.R;
 
@@ -58,6 +59,8 @@ public class BluetoothService implements Cloneable{
 
     // Contex
     private Context context;
+
+    private final ReentrantReadWriteLock fLock = new ReentrantReadWriteLock();
 
     /**
      * Costruttore
@@ -113,7 +116,7 @@ public class BluetoothService implements Cloneable{
 
     /**
      * Set dell'handler
-     * @param mHandler
+     * @param mHandler Handle bluetooth message
      */
     public void setmHandler(Handler mHandler) {
         this.mHandler = mHandler;
@@ -282,16 +285,21 @@ public class BluetoothService implements Cloneable{
      * @param out I bytes da scrivere
      */
     public void write(byte[] out){
-        // Creo oggetto temporaneo
-        ConnectedThread r;
-        // Sincronizza una copia del thread di connessione
-        synchronized (this){
-            if(mState != STATE_CONNECTED) return;
-            r = mConnectedThread;
+        fLock.writeLock().lock();
+        try {
+            // Creo oggetto temporaneo
+            ConnectedThread r;
+            // Sincronizza una copia del thread di connessione
+            synchronized (this){
+                if(mState != STATE_CONNECTED) return;
+                r = mConnectedThread;
+            }
+            // Scrivo su buffer
+            r.write(out);
+            Log.i(TAG, "Message Written By Service");
+        }finally {
+            fLock.writeLock().unlock();
         }
-        // Scrivo su buffer
-        r.write(out);
-        Log.i(TAG,"Message Written By Service");
     }
 
     /**
