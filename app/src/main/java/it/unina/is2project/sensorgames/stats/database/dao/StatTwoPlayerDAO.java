@@ -23,7 +23,7 @@ public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
     private static final String COL_PARTITE_VINTE = "partite_vinte";
 
     //Array contenente i nomi delle colonne. Serve in findById, findAll
-    private String[] columns = new String[]{KEY_ID_FK, COL_PARTITE_GIOCATE, COL_PARTITE_VINTE};
+    private final String[] columns = new String[]{KEY_ID_FK, COL_PARTITE_GIOCATE, COL_PARTITE_VINTE};
 
     //IMPORTANTE: Da usare in SQLiteHelper nei metodi onCreate() ed onUpgrade()
     public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
@@ -35,10 +35,9 @@ public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
     public static final String UPGRADE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     private static SQLiteDatabase db;
-    private DatabaseHandler dbHelper;
 
     public StatTwoPlayerDAO(Context context) {
-        dbHelper = new DatabaseHandler(context);
+        DatabaseHandler dbHelper = new DatabaseHandler(context);
         db = dbHelper.getWritableDatabase();
     }
 
@@ -49,8 +48,6 @@ public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
 
     /**
      * Create new StatTwoPlayer object
-     *
-     * @param statTwoPlayer
      */
     public long insert(StatTwoPlayer statTwoPlayer) {
         ContentValues contentValues = new ContentValues();
@@ -73,6 +70,8 @@ public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
     }
 
     /**
+     * Delete from DB
+     *
      * @param id statTwoPlayer
      */
     public void delete(int id) {
@@ -80,7 +79,6 @@ public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
         db.delete(TABLE_NAME, KEY_ID_FK + " = " + id, null);
     }
 
-    // Getting single todo
     public StatTwoPlayer findById(int id) {
         Cursor cursor = db.query(TABLE_NAME, columns, KEY_ID_FK + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
@@ -104,13 +102,8 @@ public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
         return statTwoPlayer;
     }
 
-    /**
-     * Get all TODOs.
-     *
-     * @return
-     */
     public List<StatTwoPlayer> findAll(boolean ordered) {
-        List<StatTwoPlayer> list = new ArrayList<StatTwoPlayer>();
+        List<StatTwoPlayer> list = new ArrayList<>();
 
         // Name of the columns we want to select
 
@@ -133,21 +126,20 @@ public class StatTwoPlayerDAO implements IDAO<StatTwoPlayer> {
             cursor.moveToNext();
         }
 
+        cursor.close();
+
         return list;
     }
 
     public int count() {
-        //String countQuery = "SELECT  * FROM " + TABLE_NAME;
         String countQuery = "SELECT  count(*) FROM " + TABLE_NAME;
         Cursor cursor = db.rawQuery(countQuery, null);
         if (cursor.getCount() > 0) {
             cursor.moveToNext();
+            cursor.close();
             return cursor.getInt(0);
         } else {
             return 0;
         }
-        //cursor.close();
-        // return count
-        //return cursor.getCount();
     }
 }

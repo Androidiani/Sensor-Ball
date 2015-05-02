@@ -1,9 +1,11 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.activity;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-public class Settings extends PreferenceActivity {
+import it.unina.is2project.sensorgames.R;
+
+public class SettingsActivity extends PreferenceActivity {
 
     @SuppressWarnings("deprecation")
     @Override

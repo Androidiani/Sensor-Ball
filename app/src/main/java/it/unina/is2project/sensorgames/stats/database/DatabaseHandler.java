@@ -14,10 +14,7 @@ import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    public static final String TAG = "DatabaseHandler";
-
-    // Database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final String TAG = "DatabaseHandler";
 
     // Database Name
     private static final String DATABASE_NAME = "statistics_db";

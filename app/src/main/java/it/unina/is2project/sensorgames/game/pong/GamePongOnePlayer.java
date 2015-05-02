@@ -1,9 +1,7 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.pong;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.andengine.entity.scene.Scene;
@@ -15,7 +13,8 @@ import java.util.List;
 import java.util.Random;
 
 import it.unina.is2project.sensorgames.R;
-import it.unina.is2project.sensorgames.bluetooth.Constants;
+import it.unina.is2project.sensorgames.game.bonus.BubbleBonus;
+import it.unina.is2project.sensorgames.game.bonus.LifeBonus;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
@@ -255,16 +254,12 @@ public class GamePongOnePlayer extends GamePong {
             @Override
             public void run() {
                 // Game over dialog
-
                 AlertDialog.Builder alert = new AlertDialog.Builder(GamePongOnePlayer.this);
                 alert.setTitle(getResources().getString(R.string.text_ttl_oneplayer_savegame));
                 alert.setMessage(getResources().getString(R.string.text_msg_oneplayer_savegame));
-
                 alert.setPositiveButton(getResources().getString(R.string.text_yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                        String user_input_name = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
-                        saveGame(user_input_name);
+                        saveGame();
                         finish();
                     }
                 });
@@ -279,13 +274,13 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     @Override
-    protected void saveGame(String user_input_name) {
+    protected void saveGame() {
         PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
-        Player player = playerDAO.findByNome(user_input_name);
+        Player player = playerDAO.findByNome(nickname);
         long idPlayer;
 
         if (player == null) {
-            player = new Player(user_input_name);
+            player = new Player(nickname);
             idPlayer = playerDAO.insert(player);
         } else idPlayer = player.getId();
 
@@ -318,7 +313,7 @@ public class GamePongOnePlayer extends GamePong {
     }
 
     private int getLevel() {
-        if(score >= 50) {
+        if (score >= 50) {
             float a = 8f;
             float b = 0.000002f;
             float c = -6f;

@@ -27,50 +27,50 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".AboutActivity"
+            android:name=".activity.AboutActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".stats.activity.StatsActivity"
+            android:name=".activity.StatsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".pong.TrainingSettings"
+            android:name=".activity.TrainingSettings"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".TwoPlayerActivity"
+            android:name=".activity.TwoPlayerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeSensorPong">
         </activity>
         <activity
-            android:name=".Settings"
+            android:name=".activity.SettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeSensorPong">
         </activity>
         <activity
-            android:name=".FirstAccess"
+            android:name=".activity.FirstAccess"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeSensorPongNoActionBar">
         </activity>
         <activity
-            android:name=".pong.GamePongTraining" >
+            android:name=".game.pong.GamePongTraining" >
         </activity>
         <activity
-            android:name=".pong.GamePongTwoPlayer" >
+            android:name=".game.pong.GamePongTwoPlayer" >
         </activity>
         <activity
-            android:name=".pong.GamePongOnePlayer"
+            android:name=".game.pong.GamePongOnePlayer"
             android:exported="true" >
         </activity>
 
         <!--Activity for test-->
         <activity
-            android:name=".pong.GamePongOnePlayerAutomatedTest"
+            android:name=".game.pong.GamePongOnePlayerAutomatedTest"
             android:exported="true" >
         </activity>
 

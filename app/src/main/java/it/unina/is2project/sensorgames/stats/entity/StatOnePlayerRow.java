@@ -1,6 +1,4 @@
-package it.unina.is2project.sensorgames.stats.activity;
-
-import it.unina.is2project.sensorgames.stats.entity.Player;
+package it.unina.is2project.sensorgames.stats.entity;
 
 public class StatOnePlayerRow {
     private Player player;

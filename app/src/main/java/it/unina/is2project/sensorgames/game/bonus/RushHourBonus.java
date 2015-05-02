@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.bonus;
 
 import android.util.Log;
 
@@ -13,12 +13,12 @@ import it.unina.is2project.sensorgames.game.entity.Ball;
 public class RushHourBonus {
 
     // Rush Hour
-    protected Ball ball;
-    protected List<Ball> rushHour = new ArrayList<>();
-    protected static final int RUSH_HOUR_MIN_NUM = 15;
-    protected static final int RUSH_HOUR_MAX_NUM = 30;
-    protected List<Float> oldRushSpeed_x = new ArrayList<>();
-    protected List<Float> oldRushSpeed_y = new ArrayList<>();
+    private final Ball ball;
+    private final List<Ball> rushHour = new ArrayList<>();
+    private static final int RUSH_HOUR_MIN_NUM = 15;
+    private static final int RUSH_HOUR_MAX_NUM = 30;
+    private final List<Float> oldRushSpeed_x = new ArrayList<>();
+    private final List<Float> oldRushSpeed_y = new ArrayList<>();
 
     public RushHourBonus(Ball ball) {
         //RushHour ha la stessa texture di ball

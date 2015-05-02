@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.activity;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -7,8 +7,8 @@ import android.view.View;
 
 public class BallView extends View {
 
-    public float x;
-    public float y;
+    private float x;
+    private float y;
     private final int r;
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -31,5 +31,9 @@ public class BallView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawCircle(x, y, r, mPaint);
+    }
+
+    public void setXCoord(float x) {
+        this.x = x;
     }
 }

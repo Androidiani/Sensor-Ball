@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,7 +18,6 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -33,9 +32,9 @@ import android.widget.Toast;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import it.unina.is2project.sensorgames.pong.GamePongOnePlayer;
-import it.unina.is2project.sensorgames.pong.GamePongTraining;
-import it.unina.is2project.sensorgames.stats.activity.StatsActivity;
+import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.game.pong.GamePongOnePlayer;
+import it.unina.is2project.sensorgames.game.pong.GamePongTraining;
 
 public class MainActivity extends Activity {
 
@@ -56,15 +55,11 @@ public class MainActivity extends Activity {
 
     // Ball
     private BallView mBallView;
-    private Handler redrawHandler = new Handler();
+    private final Handler redrawHandler = new Handler();
     private static final int BALL_RADIUS = 50;
     private static final int BALL_COLOR = Color.WHITE;
     private int x_pos;
     private int x_speed;
-
-    private Toast toast;
-
-    private int SETTINGS_RESULT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,9 +85,10 @@ public class MainActivity extends Activity {
 
         // User info
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String user = sharedPreferences.getString("prefNickname",getString(R.string.txt_no_name));
+        String user = sharedPreferences.getString("prefNickname", getString(R.string.txt_no_name));
         Log.d(TAG, "User: " + user);
-        toast.makeText(this, getString(R.string.txt_hi) + " " + user, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, getString(R.string.txt_hi) + " " + user, Toast.LENGTH_LONG);
+        toast.show();
 
         // Sensor Manager
         ((SensorManager) getSystemService(Context.SENSOR_SERVICE)).registerListener(
@@ -113,7 +109,7 @@ public class MainActivity extends Activity {
     /**
      * Find views in activity_main.xml
      */
-    public void findViews() {
+    private void findViews() {
         txtAppName = (TextView) findViewById(R.id.txt_App_Name);
         homeBar = (ImageView) findViewById(R.id.homeBar);
         mLinearLayout = (LinearLayout) findViewById(R.id.mLinearLayout);
@@ -128,7 +124,7 @@ public class MainActivity extends Activity {
     /**
      * Set the typeface
      */
-    public void setTypeface() {
+    private void setTypeface() {
         // Load the font
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
         // Set the typeface
@@ -144,7 +140,7 @@ public class MainActivity extends Activity {
     /**
      * Set listners for buttons
      */
-    public void setListners() {
+    private void setListners() {
         // 1 Player Button
         btnOnePlayer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -211,7 +207,7 @@ public class MainActivity extends Activity {
         // Get screen dimensions
         Display display = getWindowManager().getDefaultDisplay();
         display.getSize(mPoint);
-
+        Log.d(TAG, "Screen dimensions: " + mPoint.x + ", " + mPoint.y);
         return mPoint;
     }
 
@@ -256,8 +252,8 @@ public class MainActivity extends Activity {
      * Manage click on settings button.
      */
     private void btnSettingsClick() {
-        Intent i = new Intent(MainActivity.this, Settings.class);
-        startActivityForResult(i, SETTINGS_RESULT);
+        Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(i);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 
@@ -303,7 +299,7 @@ public class MainActivity extends Activity {
                 if (x_pos < -2 * BALL_RADIUS)
                     x_pos = CAMERA_WIDTH;
 
-                mBallView.x = x_pos;
+                mBallView.setXCoord(x_pos);
 
                 // Redraw ball
                 redrawHandler.post(new Runnable() {

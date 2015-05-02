@@ -17,13 +17,13 @@ import it.unina.is2project.sensorgames.stats.entity.StatOnePlayer;
 public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
 
     // StatOnePlayer table name
-    public static final String TABLE_NAME = "stat_one_player";
-    public static final String KEY_ID = "id";
+    private static final String TABLE_NAME = "stat_one_player";
+    private static final String KEY_ID = "id";
     private static final String COL_SCORE = "score";
     private static final String COL_DATA = "data";
     private static final String COL_ID_PLAYER = "id_player";
 
-    private String[] columns = new String[]{KEY_ID, COL_SCORE, COL_DATA, COL_ID_PLAYER};
+    private final String[] columns = new String[]{KEY_ID, COL_SCORE, COL_DATA, COL_ID_PLAYER};
 
     //IMPORTANTE: Da usare in SQLiteHelper nei metodi onCreate() ed onUpgrade()
     public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
@@ -36,10 +36,9 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
     public static final String UPGRADE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     private static SQLiteDatabase db;
-    private DatabaseHandler dbHelper;
 
     public StatOnePlayerDAO(Context context) {
-        dbHelper = new DatabaseHandler(context);
+        DatabaseHandler dbHelper = new DatabaseHandler(context);
         db = dbHelper.getWritableDatabase();
     }
 
@@ -50,8 +49,6 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
 
     /**
      * Create new StatOnePlayer object
-     *
-     * @param statOnePlayer
      */
     public long insert(StatOnePlayer statOnePlayer) {
         ContentValues contentValues = new ContentValues();
@@ -67,13 +64,15 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
     public int update(StatOnePlayer statOnePlayer) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_SCORE, statOnePlayer.getScore());
-        contentValues.put(COL_DATA, statOnePlayer.getData().toString());
+        contentValues.put(COL_DATA, statOnePlayer.getData());
         contentValues.put(COL_ID_PLAYER, statOnePlayer.getIdPlayer());
-        // updating row
+        // Updating row
         return db.update(TABLE_NAME, contentValues, KEY_ID + " = ?", new String[]{String.valueOf(statOnePlayer.getId())});
     }
 
     /**
+     * Delete from DB
+     *
      * @param id statOnePlayer
      */
     public void delete(int id) {
@@ -95,11 +94,9 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
                 statOnePlayer.setData(cursor.getString(2));
                 statOnePlayer.setIdPlayer(cursor.getInt(3));
 
-                // return todo
                 cursor.close();
             }
         }
-        //db.close();
 
         return statOnePlayer;
     }
@@ -112,7 +109,7 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
      */
     @Override
     public List<StatOnePlayer> findAll(boolean ordered) {
-        List<StatOnePlayer> list = new ArrayList<StatOnePlayer>();
+        List<StatOnePlayer> list = new ArrayList<>();
 
         // Name of the columns we want to select
 
@@ -136,21 +133,20 @@ public class StatOnePlayerDAO implements IDAO<StatOnePlayer> {
             cursor.moveToNext();
         }
 
+        cursor.close();
+
         return list;
     }
 
     public int count() {
-        //String countQuery = "SELECT  * FROM " + TABLE_NAME;
         String countQuery = "SELECT  count(*) FROM " + TABLE_NAME;
         Cursor cursor = db.rawQuery(countQuery, null);
         if (cursor.getCount() > 0) {
             cursor.moveToNext();
+            cursor.close();
             return cursor.getInt(0);
         } else {
             return 0;
         }
-        //cursor.close();
-        // return count
-        //return cursor.getCount();
     }
 }

@@ -7,12 +7,6 @@ public class Player {
     public Player() {
     }
 
-    //TODO da rimuovere. Usato per lo spinner
-    public Player(int id, String nome) {
-        this.id = id;
-        this.nome = nome;
-    }
-
     public Player(String nome) {
         this.nome = nome;
     }
@@ -40,10 +34,8 @@ public class Player {
 
         Player player = (Player) o;
 
-        if (id != player.id) return false;
-        if (!nome.equals(player.nome)) return false;
+        return id == player.id && nome.equals(player.nome);
 
-        return true;
     }
 
     @Override

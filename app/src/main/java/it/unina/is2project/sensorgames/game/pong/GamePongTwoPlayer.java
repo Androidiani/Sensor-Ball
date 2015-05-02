@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.pong;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,13 +16,14 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import it.unina.is2project.sensorgames.FSMGame;
+import it.unina.is2project.sensorgames.bluetooth.FSMGame;
 import it.unina.is2project.sensorgames.R;
-import it.unina.is2project.sensorgames.TwoPlayerActivity;
+import it.unina.is2project.sensorgames.activity.TwoPlayerActivity;
 import it.unina.is2project.sensorgames.bluetooth.BluetoothService;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
 import it.unina.is2project.sensorgames.bluetooth.Serializer;
 import it.unina.is2project.sensorgames.bluetooth.messages.AppMessage;
+import it.unina.is2project.sensorgames.game.bonus.BonusManager;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
@@ -69,9 +70,9 @@ public class GamePongTwoPlayer extends GamePong {
     //===========================================
     // INTENT EXTRAS
     //===========================================
-    public static String EXTRA_MASTER = "isMaster_boolean";                 // Returns master state
-    public static String EXTRA_CONNECTION_STATE = "isConnected_boolean";    // Returns connection state
-    public static String EXTRA_DEVICE = "deviceName_string";                // Returns connected device
+    public static final String EXTRA_MASTER = "isMaster_boolean";                 // Returns master state
+    public static final String EXTRA_CONNECTION_STATE = "isConnected_boolean";    // Returns connection state
+    public static final String EXTRA_DEVICE = "deviceName_string";                // Returns connected device
 
     //===========================================
     // GAME OBJECTS
@@ -205,7 +206,7 @@ public class GamePongTwoPlayer extends GamePong {
             sendBluetoothMessage(messageSync);
             fsmGame.setState(FSMGame.STATE_IN_GAME);
             // Non-Master Increase Played Games.
-            increasePartiteGiocate(nickname);
+            increasePartiteGiocate();
         }
 
         return scene;
@@ -368,7 +369,7 @@ public class GamePongTwoPlayer extends GamePong {
     @Override
     protected synchronized void onResume() {
         backPressed = false;
-        if(fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING){
+        if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
             AppMessage resumeMessage = new AppMessage(Constants.MSG_TYPE_ALERT);
             sendBluetoothMessage(resumeMessage);
         }
@@ -392,10 +393,10 @@ public class GamePongTwoPlayer extends GamePong {
                 AppMessage suspendMessage = new AppMessage(Constants.MSG_TYPE_SUSPEND_REQUEST);
                 sendBluetoothMessage(suspendMessage);
                 fsmGame.setState(FSMGame.STATE_GAME_SUSPENDED);
-                if(timerTimeout != null)timerTimeout.cancel();
-                if(taskTimeout != null)taskTimeout.cancel();
+                if (timerTimeout != null) timerTimeout.cancel();
+                if (taskTimeout != null) taskTimeout.cancel();
             }
-            if(fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING){
+            if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
                 AppMessage noReadyMessage = new AppMessage(Constants.MSG_TYPE_NO_READY);
                 sendBluetoothMessage(noReadyMessage);
             }
@@ -491,16 +492,16 @@ public class GamePongTwoPlayer extends GamePong {
             timerBonus.cancel();
         if (taskBonus != null)
             taskBonus.cancel();
-        saveGame(nickname);
+        saveGame();
     }
 
-    private void increasePartiteGiocate(String user) {
+    private void increasePartiteGiocate() {
         PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
-        Player currentPlayer = playerDAO.findByNome(user);
+        Player currentPlayer = playerDAO.findByNome(nickname);
         long idPlayer;
 
         if (currentPlayer == null) {
-            currentPlayer = new Player(user);
+            currentPlayer = new Player(nickname);
             idPlayer = playerDAO.insert(currentPlayer);
         } else idPlayer = currentPlayer.getId();
 
@@ -521,9 +522,9 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
-    protected void saveGame(String user) {
+    protected void saveGame() {
         PlayerDAO playerDAO = new PlayerDAO(getApplicationContext());
-        Player currentPlayer = playerDAO.findByNome(user);
+        Player currentPlayer = playerDAO.findByNome(nickname);
         long idPlayer;
 
         idPlayer = currentPlayer.getId();
@@ -541,7 +542,7 @@ public class GamePongTwoPlayer extends GamePong {
     }
 
     @Override
-    public void addScore() {
+    protected void addScore() {
         score++;
         textPoint.setText(getResources().getString(R.string.sts_score) + " " + score + " - " + opponentScore + " [" + points + "]");
         if (score == points) {
@@ -626,8 +627,10 @@ public class GamePongTwoPlayer extends GamePong {
     //===========================================
     // MISCELLANEA
     //===========================================
+
     /**
      * This routine is called to send a bluetooth message between two paired devices
+     *
      * @param message Message to send.
      */
     private synchronized void sendBluetoothMessage(AppMessage message) {
@@ -642,9 +645,10 @@ public class GamePongTwoPlayer extends GamePong {
 
     /**
      * This routine is called to understand if bonus activator was touched
+     *
      * @param bonusID ID of activator bonus
-     * @param x X coordinate of the touch
-     * @param y Y coordinate of the touch
+     * @param x       X coordinate of the touch
+     * @param y       Y coordinate of the touch
      * @return True if activator touched, false instead
      */
     private boolean checkTouchOnSprite(int bonusID, float x, float y) {
@@ -868,7 +872,7 @@ public class GamePongTwoPlayer extends GamePong {
                                 if (fsmGame.getState() == FSMGame.STATE_IN_GAME_WAITING) {
                                     fsmGame.setState(FSMGame.STATE_IN_GAME);
                                     // Master Increase Played Games
-                                    increasePartiteGiocate(nickname);
+                                    increasePartiteGiocate();
                                 }
                                 break;
                             //------------------------FAIL------------------------
@@ -1354,6 +1358,7 @@ public class GamePongTwoPlayer extends GamePong {
 
     /**
      * Safetely attach and detach icon sprite
+     *
      * @param spriteID ID of sprite to attach
      */
     private void safeAttachSpriteIcon(Integer spriteID) {
@@ -1510,8 +1515,10 @@ public class GamePongTwoPlayer extends GamePong {
     //===========================================
     // TASKS UTILS
     //===========================================
+
     /**
      * Attach activator bonus on screen
+     *
      * @param bonusID ID of activator bonus
      */
     private void attachSprite(int bonusID) {
@@ -1580,6 +1587,7 @@ public class GamePongTwoPlayer extends GamePong {
 
     /**
      * Detach activator bonus sprite from the scene
+     *
      * @param bonusID ID of activator bonus
      */
     private void detachSprite(int bonusID) {

@@ -14,7 +14,6 @@ import it.unina.is2project.sensorgames.stats.entity.Player;
 /**
  * PlayerDAO Object
  */
-
 public class PlayerDAO implements IDAO<Player> {
 
     // Player table name
@@ -22,7 +21,7 @@ public class PlayerDAO implements IDAO<Player> {
     public static final String KEY_ID = "id";
     private static final String COL_NOME = "nome";
 
-    private String[] columns = new String[]{KEY_ID, COL_NOME};
+    private final String[] columns = new String[]{KEY_ID, COL_NOME};
 
     //IMPORTANTE: Da usare in SQLiteHelper nei metodi onCreate() ed onUpgrade()
     public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
@@ -32,10 +31,9 @@ public class PlayerDAO implements IDAO<Player> {
     public static final String UPGRADE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     private static SQLiteDatabase db;
-    private DatabaseHandler dbHelper;
 
     public PlayerDAO(Context context) {
-        dbHelper = new DatabaseHandler(context);
+        DatabaseHandler dbHelper = new DatabaseHandler(context);
         db = dbHelper.getWritableDatabase();
     }
 
@@ -46,8 +44,6 @@ public class PlayerDAO implements IDAO<Player> {
 
     /**
      * Create new Player object
-     *
-     * @param player
      */
     public long insert(Player player) {
         ContentValues contentValues = new ContentValues();
@@ -115,13 +111,8 @@ public class PlayerDAO implements IDAO<Player> {
         return player;
     }
 
-    /**
-     * Get all TODOs.
-     *
-     * @return
-     */
     public List<Player> findAll(boolean ordered) {
-        List<Player> list = new ArrayList<Player>();
+        List<Player> list = new ArrayList<>();
 
         // Name of the columns we want to select
 
@@ -143,6 +134,8 @@ public class PlayerDAO implements IDAO<Player> {
             cursor.moveToNext();
         }
 
+        cursor.close();
+
         return list;
     }
 
@@ -152,12 +145,10 @@ public class PlayerDAO implements IDAO<Player> {
         Cursor cursor = db.rawQuery(countQuery, null);
         if (cursor.getCount() > 0) {
             cursor.moveToNext();
+            cursor.close();
             return cursor.getInt(0);
         } else {
             return 0;
         }
-        //cursor.close();
-        // return count
-        //return cursor.getCount();
     }
 }

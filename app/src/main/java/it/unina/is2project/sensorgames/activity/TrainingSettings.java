@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,27 +13,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.game.pong.GamePongTraining;
 
 public class TrainingSettings extends Activity {
 
     // Spinner
-    Spinner ball_speed_spinner;
-    Spinner bar_speed_spinner;
-    Spinner event_spinner;
-
-    // Array adapter
-    ArrayAdapter ball_speed_adapter;
-    ArrayAdapter bar_speed_adapter;
-    ArrayAdapter event_adapter;
+    private Spinner ball_speed_spinner;
+    private Spinner bar_speed_spinner;
+    private Spinner event_spinner;
 
     // TextView
-    TextView title;
-    TextView ball_speed_textview;
-    TextView bar_speed_textview;
-    TextView event_textview;
+    private TextView title;
+    private TextView ball_speed_textview;
+    private TextView bar_speed_textview;
+    private TextView event_textview;
 
     // Button
-    Button back;
+    private Button back;
 
     // Data
     private int ball_speed;
@@ -103,10 +99,10 @@ public class TrainingSettings extends Activity {
 
     private void populateSpinner() {
         // Ball Speed Spinner
-        ball_speed_adapter = ArrayAdapter.createFromResource(this, R.array.ball_speed_spinner, R.layout.spinner_training_item);
+        ArrayAdapter ball_speed_adapter = ArrayAdapter.createFromResource(this, R.array.ball_speed_spinner, R.layout.spinner_training_item);
         ball_speed_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         ball_speed_spinner.setAdapter(ball_speed_adapter);
-        ball_speed_spinner.setSelection(ball_speed-1);
+        ball_speed_spinner.setSelection(ball_speed - 1);
         ball_speed_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -120,10 +116,10 @@ public class TrainingSettings extends Activity {
         });
 
         // Bar Speed Spinner
-        bar_speed_adapter = ArrayAdapter.createFromResource(this, R.array.bar_speed_spinner, R.layout.spinner_training_item);
+        ArrayAdapter bar_speed_adapter = ArrayAdapter.createFromResource(this, R.array.bar_speed_spinner, R.layout.spinner_training_item);
         bar_speed_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         bar_speed_spinner.setAdapter(bar_speed_adapter);
-        bar_speed_spinner.setSelection(bar_speed-1);
+        bar_speed_spinner.setSelection(bar_speed - 1);
         bar_speed_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -137,7 +133,7 @@ public class TrainingSettings extends Activity {
         });
 
         // Event Spinner
-        event_adapter = ArrayAdapter.createFromResource(this, R.array.event_spinner, R.layout.spinner_training_item);
+        ArrayAdapter event_adapter = ArrayAdapter.createFromResource(this, R.array.event_spinner, R.layout.spinner_training_item);
         event_adapter.setDropDownViewResource(R.layout.spinner_training_item);
         event_spinner.setAdapter(event_adapter);
         event_spinner.setSelection(event);

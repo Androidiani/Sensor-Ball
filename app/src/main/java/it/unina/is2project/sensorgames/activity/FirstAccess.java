@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import it.unina.is2project.sensorgames.R;
+
 public class FirstAccess extends Activity {
 
     private final String TAG = "FirstAccess";
@@ -31,7 +33,7 @@ public class FirstAccess extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.firstaccess);
+        setContentView(R.layout.activity_first_access);
 
         // Set the fullscreen window
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -44,16 +46,13 @@ public class FirstAccess extends Activity {
         // Get Screen Dims for nickname form width
         Point p = getScreenDimensions();
         Log.d(TAG, "Screen dimensions: " + p.x + ", " + p.y);
-        Log.d(TAG, "Previous nickname form width: " + nickname.getWidth());
         nickname.getLayoutParams().width = (int) (0.7f * p.x);
-        Log.d(TAG, "Width set to: " + (int) (0.7f * p.x));
-        Log.d(TAG, "Nickname form width: " + nickname.getWidth());
     }
 
     /**
      * Find views in activity_main.xml
      */
-    public void findViews() {
+    private void findViews() {
         helloView = (TextView) findViewById(R.id.helloView);
         appNameView = (TextView) findViewById(R.id.nameFirstAccess);
         nickname = (EditText) findViewById(R.id.nicknameForm);
@@ -63,7 +62,7 @@ public class FirstAccess extends Activity {
     /**
      * Set the typeface
      */
-    public void setTypeface() {
+    private void setTypeface() {
         // Load the font
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
         // Set the typeface
@@ -75,7 +74,7 @@ public class FirstAccess extends Activity {
     /**
      * Set listners for buttons
      */
-    public void setListners() {
+    private void setListners() {
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +112,7 @@ public class FirstAccess extends Activity {
             overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             finish();
         } else {
-            if(toast != null) toast.cancel();
+            if (toast != null) toast.cancel();
             toast = Toast.makeText(getApplicationContext(), getResources().getString(R.string.text_no_user_input), Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
             toast.show();

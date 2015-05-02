@@ -39,11 +39,11 @@ public class StatTwoPlayer {
         this.partiteVinte = partiteVinte;
     }
 
-    public void increasePartiteGiocate(){
+    public void increasePartiteGiocate() {
         partiteGiocate++;
     }
 
-    public void increasePartiteVinte(){
+    public void increasePartiteVinte() {
         partiteVinte++;
     }
 }

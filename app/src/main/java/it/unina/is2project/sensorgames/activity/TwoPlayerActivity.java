@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,11 +30,13 @@ import android.widget.Toast;
 import java.util.Random;
 import java.util.Set;
 
+import it.unina.is2project.sensorgames.R;
 import it.unina.is2project.sensorgames.bluetooth.BluetoothService;
 import it.unina.is2project.sensorgames.bluetooth.Constants;
+import it.unina.is2project.sensorgames.bluetooth.FSMGame;
 import it.unina.is2project.sensorgames.bluetooth.Serializer;
 import it.unina.is2project.sensorgames.bluetooth.messages.AppMessage;
-import it.unina.is2project.sensorgames.pong.GamePongTwoPlayer;
+import it.unina.is2project.sensorgames.game.pong.GamePongTwoPlayer;
 
 public class TwoPlayerActivity extends Activity {
 
@@ -92,12 +94,12 @@ public class TwoPlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(LIFE_CYCLE, "OnCreate()");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_2p);
+        setContentView(R.layout.activity_two_player);
 
-        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Load the font
-        typeFace = Typeface.createFromAsset(getAssets(),"font/secrcode.ttf");
+        typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
 
         // Find Activity's View
         findViews();
@@ -108,12 +110,12 @@ public class TwoPlayerActivity extends Activity {
         // Load default adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        if(mBluetoothAdapter == null){
+        if (mBluetoothAdapter == null) {
             // If device doesn't support bluetooth, disable all buttons
             disableAllButtons();
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_bluetoothNotSupported),
                     Toast.LENGTH_LONG).show();
-        }else{
+        } else {
             mStatus = mBluetoothAdapter.isEnabled();
 
             // Adapter set
@@ -138,14 +140,14 @@ public class TwoPlayerActivity extends Activity {
     protected void onStart() {
         Log.i(LIFE_CYCLE, "OnStart()");
         // Avvio del servizio per bluetooth
-        if (mBluetoothAdapter != null && mBluetoothService == null){
+        if (mBluetoothAdapter != null && mBluetoothService == null) {
             Log.d(TAG, "setupService()");
             mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
         }
 
         // FSM STATE CHANGE
         fsmGame = FSMGame.getFsmInstance(fsmHandler);
-        if(fsmGame.getState() == FSMGame.STATE_NOT_READY) {
+        if (fsmGame.getState() == FSMGame.STATE_NOT_READY) {
             fsmGame.setState(FSMGame.STATE_DISCONNECTED);
         }
 
@@ -155,25 +157,24 @@ public class TwoPlayerActivity extends Activity {
     @Override
     protected void onResume() {
         Log.i(LIFE_CYCLE, "OnResume()");
-        if(mBluetoothService != null && mBluetoothAdapter != null){
+        if (mBluetoothService != null && mBluetoothAdapter != null) {
             mStatus = mBluetoothAdapter.isEnabled();
             switchBluetooth.setChecked(mStatus);
-            if(mStatus) {
+            if (mStatus) {
                 if (mBluetoothService.getState() == BluetoothService.STATE_NONE) {
                     mBluetoothService.start();
                 }
             }
-        }else{
+        } else {
             Log.d(TAG, "setupService()");
             mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
             mBluetoothService.start();
         }
 
 
-
         // FSM STATE CHANGE
         fsmGame = FSMGame.getFsmInstance(fsmHandler);
-        if(fsmGame.getState() == FSMGame.STATE_DISCONNECTED){
+        if (fsmGame.getState() == FSMGame.STATE_DISCONNECTED) {
             fsmGame.setState(FSMGame.STATE_DISCONNECTED);
         }
 //        if(mBluetoothService.getState() == BluetoothService.STATE_CONNECTED){
@@ -193,7 +194,7 @@ public class TwoPlayerActivity extends Activity {
     protected void onDestroy() {
         Log.i(LIFE_CYCLE, "OnDestroy()");
         super.onDestroy();
-        if(mBluetoothService != null){
+        if (mBluetoothService != null) {
             mBluetoothService.stop();
             mBluetoothService = null;
         }
@@ -214,7 +215,7 @@ public class TwoPlayerActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch (id){
+        switch (id) {
             case R.id.option_discoverable:
                 ensureDiscoverable();
                 return true;
@@ -227,9 +228,9 @@ public class TwoPlayerActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_ENABLE_BT:
-                if(resultCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
                     if (mBluetoothService != null) {
                         mBluetoothService = BluetoothService.getBluetoothService(getApplicationContext(), mHandler);
                         mBluetoothService.stop();
@@ -237,13 +238,12 @@ public class TwoPlayerActivity extends Activity {
                     }
 //                    mBluetoothService.stop();
 //                    mBluetoothService.start();
-                    if(!mStatus){
+                    if (!mStatus) {
                         mStatus = true;
                         switchBluetooth.setChecked(true);
-                        Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_bluetoothActived) ,
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_bluetoothActived), Toast.LENGTH_LONG).show();
                     }
-                }else{
+                } else {
                     mStatus = false;
                     switchBluetooth.setChecked(false);
                 }
@@ -253,13 +253,12 @@ public class TwoPlayerActivity extends Activity {
                 fsmGame = FSMGame.getFsmInstance(fsmHandler);
                 isMaster = data.getExtras().getBoolean(GamePongTwoPlayer.EXTRA_MASTER);
                 boolean isConnected = data.getExtras().getBoolean(GamePongTwoPlayer.EXTRA_CONNECTION_STATE);
-                if(resultCode == Activity.RESULT_CANCELED){
+                if (resultCode == Activity.RESULT_CANCELED) {
                     Log.d(TAG, "2 Players Game Was Canceled");
-                    if(isConnected) {
+                    if (isConnected) {
                         fsmGame.setState(FSMGame.STATE_GAME_ABORTED);
                         txtEnemy.setText(data.getStringExtra(GamePongTwoPlayer.EXTRA_DEVICE));
-                    }
-                    else {
+                    } else {
                         fsmGame.setState(FSMGame.STATE_DISCONNECTED);
                     }
                 }
@@ -269,7 +268,7 @@ public class TwoPlayerActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if(fsmGame.getState() == FSMGame.STATE_CONNECTED) {
+        if (fsmGame.getState() == FSMGame.STATE_CONNECTED) {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle(getResources().getString(R.string.text_disconnect));
             alert.setMessage(getResources().getString(R.string.text_msg_twoplayer_leave));
@@ -285,7 +284,7 @@ public class TwoPlayerActivity extends Activity {
                 }
             });
             alert.show();
-        }else{
+        } else {
             mBluetoothService.stop();
             super.onBackPressed();
         }
@@ -298,7 +297,7 @@ public class TwoPlayerActivity extends Activity {
     /**
      * Find views on activity layout
      */
-    private void findViews(){
+    private void findViews() {
         lblBluetooth = (TextView) findViewById(R.id.lblBluetooth);
         lblEnemy = (TextView) findViewById(R.id.lblEnemy);
         txtEnemy = (TextView) findViewById(R.id.txtEnemy);
@@ -359,7 +358,7 @@ public class TwoPlayerActivity extends Activity {
     /**
      * Set fonts on activity layout
      */
-    private void setFont(){
+    private void setFont() {
         lblBluetooth.setTypeface(typeFace);
         lblEnemy.setTypeface(typeFace);
         txtEnemy.setTypeface(typeFace);
@@ -388,8 +387,8 @@ public class TwoPlayerActivity extends Activity {
         Log.d(TAG, "btnPaired()");
         Set<BluetoothDevice> pairedDevice = mBluetoothAdapter.getBondedDevices();
         stringArrayAdapter.clear();
-        for(BluetoothDevice device : pairedDevice)
-            stringArrayAdapter.add(device.getName()+ "\n" + device.getAddress());
+        for (BluetoothDevice device : pairedDevice)
+            stringArrayAdapter.add(device.getName() + "\n" + device.getAddress());
 
         stringArrayAdapter.notifyDataSetChanged();
     }
@@ -400,9 +399,9 @@ public class TwoPlayerActivity extends Activity {
     private void btnScanClick() {
         Log.d(TAG, "btnScan()");
 
-        if(mBluetoothAdapter.isDiscovering()){
+        if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
-        }else{
+        } else {
             stringArrayAdapter.clear();
             mBluetoothAdapter.startDiscovery();
 
@@ -415,7 +414,7 @@ public class TwoPlayerActivity extends Activity {
      */
     private void btnPlayClick() {
         Log.d(TAG, "btnPlay()");
-        if(privateNumber == null) {
+        if (privateNumber == null) {
             // Crea un numero casuale per la scelta di dove far apparire la palla.
             Random rand = new Random();
             privateNumber = rand.nextInt(1000);
@@ -437,33 +436,35 @@ public class TwoPlayerActivity extends Activity {
 
     /**
      * Manage click on listview items
+     *
      * @param view Indicates this view
      */
     private void onSelectedItem(View view) {
         mBluetoothAdapter.cancelDiscovery();
-        String info = ((TextView)view).getText().toString();
+        String info = ((TextView) view).getText().toString();
         String address = info.substring(info.length() - 17);
         connectDevice(address);
     }
 
     /**
      * Manage click on bluetooth switch
+     *
      * @param isChecked Represent the state of the bluetooth switch
      */
     private void onSwitchClicked(boolean isChecked) {
-        if (isChecked){
+        if (isChecked) {
             // If buttons is ON
-            if(!mStatus){
+            if (!mStatus) {
                 //If bluetooth is not enable, it enables.
                 Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
-            }else{
+            } else {
                 // Not covered case
                 mStatus = true;
             }
-        }else{
+        } else {
             // If buttons is OFF
-            if(mStatus){
+            if (mStatus) {
                 mStatus = false;
                 // Stopping service
                 mBluetoothService.stop();
@@ -473,12 +474,12 @@ public class TwoPlayerActivity extends Activity {
                 stringArrayAdapter.clear();
                 stringArrayAdapter.notifyDataSetChanged();
 
-                Toast.makeText(getApplicationContext(),getApplicationContext().getString(R.string.toast_bluetoothDeactived),
+                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.toast_bluetoothDeactived),
                         Toast.LENGTH_LONG).show();
 
                 // Turn Off bluetooth
                 mBluetoothAdapter.disable();
-            }else{
+            } else {
                 // Not covered case
                 mStatus = false;
             }
@@ -488,12 +489,13 @@ public class TwoPlayerActivity extends Activity {
     //----------------------------------------------
     // MISCELLANEA
     //----------------------------------------------
+
     /**
      * Makes device discoverable
      */
     private void ensureDiscoverable() {
         Log.d(TAG, "ensureDiscoverable()");
-        if(!mStatus){
+        if (!mStatus) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage(R.string.alert_bluetooth_activator)
                     .setPositiveButton(R.string.text_yes, new DialogInterface.OnClickListener() {
@@ -512,7 +514,7 @@ public class TwoPlayerActivity extends Activity {
                     .setCancelable(false)
                     .show();
 
-        }else{
+        } else {
             if (mBluetoothAdapter.getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
                 Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
                 discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
@@ -523,6 +525,7 @@ public class TwoPlayerActivity extends Activity {
 
     /**
      * Start a bluetooth connection with device
+     *
      * @param address MAC of the device to connect
      */
     private void connectDevice(String address) {
@@ -544,6 +547,7 @@ public class TwoPlayerActivity extends Activity {
 
     /**
      * Send a bluetooth message
+     *
      * @param ballChoise message that contains first informations to play game
      */
     private void sendBluetoothMessage(AppMessage ballChoise) {
@@ -568,8 +572,8 @@ public class TwoPlayerActivity extends Activity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // Aggiungo il nome del dispositivo ed il MAC address.
                 stringArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-            }else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
-                if(stringArrayAdapter.getCount()==0){
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                if (stringArrayAdapter.getCount() == 0) {
                     String noDevices = getResources().getText(R.string.none_found).toString();
                     stringArrayAdapter.add(noDevices);
                 }
@@ -582,7 +586,7 @@ public class TwoPlayerActivity extends Activity {
     // HANDLERS
     //----------------------------------------------
     @SuppressWarnings("all")
-    private final Handler mHandler = new Handler(){
+    private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Log.i(TAG, "Handler Called");
@@ -611,11 +615,11 @@ public class TwoPlayerActivity extends Activity {
                 case Constants.MESSAGE_WRITE:
                     break;
                 case Constants.MESSAGE_READ:
-                    if(!isMaster) {
+                    if (!isMaster) {
                         byte[] readBuf = (byte[]) msg.obj;
                         AppMessage recMsg = (AppMessage) Serializer.deserializeObject(readBuf);
                         if (recMsg != null) {
-                            switch (recMsg.TYPE){
+                            switch (recMsg.TYPE) {
                                 case Constants.MSG_TYPE_FIRST_START:
                                     privateNumber = recMsg.OP1 == 0 ? new Integer(1) : new Integer(0);
                                     points = recMsg.OP5;
@@ -657,7 +661,7 @@ public class TwoPlayerActivity extends Activity {
     };
 
     @SuppressWarnings("all")
-    private final Handler fsmHandler = new Handler(){
+    private final Handler fsmHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -666,7 +670,7 @@ public class TwoPlayerActivity extends Activity {
                         case FSMGame.STATE_NOT_READY:
                             break;
                         case FSMGame.STATE_CONNECTED:
-                            if(isMaster) btnPlay.setEnabled(true);
+                            if (isMaster) btnPlay.setEnabled(true);
                             stringArrayAdapter.clear();
                             stringArrayAdapter.notifyDataSetChanged();
                             break;
@@ -687,7 +691,7 @@ public class TwoPlayerActivity extends Activity {
                             break;
                         case FSMGame.STATE_GAME_ABORTED:
                             privateNumber = null;
-                            if(!isMaster){
+                            if (!isMaster) {
                                 btnPlay.setEnabled(false);
                             }
                             stringArrayAdapter.clear();

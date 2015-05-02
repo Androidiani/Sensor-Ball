@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.pong;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,6 +9,7 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.entity.text.Text;
 
 import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.activity.TrainingSettings;
 import it.unina.is2project.sensorgames.game.entity.GameObject;
 
 public class GamePongTraining extends GamePong {
@@ -28,6 +29,8 @@ public class GamePongTraining extends GamePong {
     //===========================================
     // GAME DATA
     //===========================================
+    private int ballSpeed;                      // Ball Speed selected
+    private int barSpeed;                       // Bar Speed selected
     private int hit_count = 0;                  // Counter of Hit
     private int event;                          // Indicates the current event
     private static final int NO_EVENT = 0;      // ID for no event
@@ -37,8 +40,7 @@ public class GamePongTraining extends GamePong {
     private static final int REVERSE = 4;       // ID fot event reverse
     private static final int RUSH_HOUR = 5;     // ID fot event rush hour
 
-    int ballSpeed;
-    int barSpeed;
+
 
     @Override
     protected Scene onCreateScene() {
@@ -69,7 +71,7 @@ public class GamePongTraining extends GamePong {
     @Override
     protected void onStop() {
         super.onStop();
-        if(!pause && !animActive)
+        if (!pause && !animActive)
             pauseGame();
     }
 
@@ -172,7 +174,7 @@ public class GamePongTraining extends GamePong {
     }
 
     @Override
-    protected void saveGame(String s) {
+    protected void saveGame() {
         //do nothing
     }
 

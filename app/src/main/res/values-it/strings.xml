@@ -20,10 +20,10 @@
     <string name="txt_main_adv">Vuoi uscire dal gioco?</string>
 
     <!-- About Activity Strings -->
-    <string name="text_app_about_description">\nThis app has been developed by students of University "Federico II", Naples.\n\n
-        It is a project created within software engineering\'s course of 2014/2015 academic year.\n
+    <string name="text_app_about_description">\nQuest\'app e\' stata sviluppata da alcuni studenti dell\'Universita\' Federico II di Napoli.\n\n
+        Si tratta di un progetto creato durante il corso di Ingegneria del Software dell\'anno accademico 2014/2105.\n
         \n
-        Authors: (in alphabetical order)\n
+        Autori: (in ordine alfabetico)\n
         - Gargiulo Alessandro\n
         - Marigliano Francesco\n
         - Saviano Gabriele\n

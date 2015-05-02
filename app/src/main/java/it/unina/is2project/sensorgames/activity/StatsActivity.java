@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.stats.activity;
+package it.unina.is2project.sensorgames.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import it.unina.is2project.sensorgames.R;
+import it.unina.is2project.sensorgames.stats.entity.StatOnePlayerRow;
 import it.unina.is2project.sensorgames.stats.entity.Player;
 import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
 import it.unina.is2project.sensorgames.stats.service.StatService;
@@ -40,7 +41,7 @@ public class StatsActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stats2);
+        setContentView(R.layout.activity_stats);
 
         // Set the fullscreen window
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -51,11 +52,13 @@ public class StatsActivity extends Activity {
 
         StatService statService = new StatService(getApplicationContext());
 
-        ArrayAdapter<StatOnePlayerRow> adapter = new ArrayAdapter<StatOnePlayerRow>(this, R.layout.stat_one_player_row, statService.getStatOnePlayerList()){
+        ArrayAdapter<StatOnePlayerRow> adapter = new ArrayAdapter<StatOnePlayerRow>(this, R.layout.stat_one_player_row, statService.getStatOnePlayerList()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.stat_one_player_row, null);
+                if (convertView == null) {
+                    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.stat_one_player_row, parent, false);
+                }
 
                 TextView pos = (TextView) convertView.findViewById(R.id.textViewPosition);
                 TextView nome = (TextView) convertView.findViewById(R.id.textViewNome);
@@ -81,11 +84,13 @@ public class StatsActivity extends Activity {
         listView.setAdapter(adapter);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinnerTwoPlayer);
-        ArrayAdapter<Player> adapterSpinner = new ArrayAdapter<Player>(this, R.layout.spinner_stats_item, statService.getPlayers()){
+        ArrayAdapter<Player> adapterSpinner = new ArrayAdapter<Player>(this, R.layout.spinner_stats_item, statService.getPlayers()) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.spinner_stats_item, null);
+                if (convertView == null) {
+                    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.spinner_stats_item, parent, false);
+                }
 
                 TextView name = (TextView) convertView.findViewById(R.id.spinner_stat_item);
 
@@ -96,13 +101,15 @@ public class StatsActivity extends Activity {
                 Player p = getItem(position);
                 name.setText(p.getNome());
 
-                return  convertView;
+                return convertView;
             }
 
             @Override
             public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.spinner_stats_item, null);
+                if (convertView == null) {
+                    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    convertView = inflater.inflate(R.layout.spinner_stats_item, parent, false);
+                }
 
                 TextView name = (TextView) convertView.findViewById(R.id.spinner_stat_item);
 
@@ -113,7 +120,7 @@ public class StatsActivity extends Activity {
                 Player p = getItem(position);
                 name.setText(p.getNome());
 
-                return  convertView;
+                return convertView;
             }
         };
         spinner.setAdapter(adapterSpinner);
@@ -124,7 +131,6 @@ public class StatsActivity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> adapter, View view, int pos, long id) {
                 Player selected = (Player) adapter.getItemAtPosition(pos);
-                //Toast.makeText( getApplicationContext(), "hai selezionato " + selected.getId(), Toast.LENGTH_LONG).show();
                 statService = new StatService(getApplicationContext());
                 StatTwoPlayer s = statService.getStatTwoPlayer(selected.getId());
                 if (s != null) {
@@ -146,7 +152,7 @@ public class StatsActivity extends Activity {
         //statService.close();
     }
 
-    public void findView() {
+    private void findView() {
         top = (TextView) findViewById(R.id.txt_stat);
         single = (TextView) findViewById(R.id.txt_single);
         multi = (TextView) findViewById(R.id.txt_multi);
@@ -162,7 +168,7 @@ public class StatsActivity extends Activity {
         textViewWinningRate = (TextView) findViewById(R.id.textViewWinningRate);
     }
 
-    public void setFont() {
+    private void setFont() {
         // Load the font
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
 

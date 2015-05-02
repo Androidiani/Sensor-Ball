@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.pong;
 
 import android.util.Log;
 
@@ -24,7 +24,7 @@ public class GamePongOnePlayerAutomatedTest extends GamePongOnePlayer {
         bar.setPosition(ball.getXCoordinate() - random_number, bar.getYCoordinate());
         if (ball.collidesWith(bar)) {
             Random random = new Random();
-            random_number = random.nextInt((int)(bar.getObjectWidth() - ball.getObjectWidth()) + 1);
+            random_number = random.nextInt((int) (bar.getObjectWidth() - ball.getObjectWidth()) + 1);
             Log.d(TAG, "Bar X = " + (ball.getXCoordinate() - random_number));
             Log.d(TAG, "Bar width = " + bar.getObjectWidth() + ", Ball width = " + ball.getObjectWidth());
         }

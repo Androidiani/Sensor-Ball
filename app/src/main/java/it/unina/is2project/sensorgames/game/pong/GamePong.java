@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.pong;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -11,6 +11,8 @@ import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.handler.IUpdateHandler;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
@@ -29,7 +31,8 @@ import org.andengine.ui.activity.SimpleBaseGameActivity;
 import java.io.IOException;
 
 import it.unina.is2project.sensorgames.R;
-import it.unina.is2project.sensorgames.bluetooth.Constants;
+import it.unina.is2project.sensorgames.game.bonus.FirstEnemyBonus;
+import it.unina.is2project.sensorgames.game.bonus.RushHourBonus;
 import it.unina.is2project.sensorgames.game.entity.Ball;
 import it.unina.is2project.sensorgames.game.entity.Bar;
 
@@ -89,24 +92,24 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     protected static final int OVER = 5;
     protected static final int SIDE = 6;
     // Bounce bar angles
-    protected float COS_20 = 0.93969262078590838405410927732473f;
-    protected float SIN_20 = 0.34202014332566873304409961468226f;
-    protected float COS_30 = 0.86602540378443864676372317075294f;
-    protected float SIN_30 = 0.5f;
-    protected float COS_40 = 0.76604444311897803520239265055542f;
-    protected float SIN_40 = 0.64278760968653932632264340990726f;
-    protected float COS_45 = 0.70710678118654752440084436210485f;
-    protected float SIN_45 = 0.70710678118654752440084436210485f;
-    protected float COS_50 = 0.64278760968653932632264340990726f;
-    protected float SIN_50 = 0.76604444311897803520239265055542f;
-    protected float COS_60 = 0.5f;
-    protected float SIN_60 = 0.86602540378443864676372317075294f;
-    protected float COS_70 = 0.34202014332566873304409961468226f;
-    protected float SIN_70 = 0.93969262078590838405410927732473f;
-    protected float COS_80 = 0.17364817766693034885171662676931f;
-    protected float SIN_80 = 0.98480775301220805936674302458952f;
-    protected float COS_90 = 0;
-    protected float SIN_90 = 1;
+    protected final float COS_20 = 0.93969262078590838405410927732473f;
+    protected final float SIN_20 = 0.34202014332566873304409961468226f;
+    protected final float COS_30 = 0.86602540378443864676372317075294f;
+    protected final float SIN_30 = 0.5f;
+    protected final float COS_40 = 0.76604444311897803520239265055542f;
+    protected final float SIN_40 = 0.64278760968653932632264340990726f;
+    protected final float COS_45 = 0.70710678118654752440084436210485f;
+    protected final float SIN_45 = 0.70710678118654752440084436210485f;
+    protected final float COS_50 = 0.64278760968653932632264340990726f;
+    protected final float SIN_50 = 0.76604444311897803520239265055542f;
+    protected final float COS_60 = 0.5f;
+    protected final float SIN_60 = 0.86602540378443864676372317075294f;
+    protected final float COS_70 = 0.34202014332566873304409961468226f;
+    protected final float SIN_70 = 0.93969262078590838405410927732473f;
+    protected final float COS_80 = 0.17364817766693034885171662676931f;
+    protected final float SIN_80 = 0.98480775301220805936674302458952f;
+    protected final float COS_90 = 0;
+    protected final float SIN_90 = 1;
     // Selected angles and module
     protected float SIN_X;
     protected float COS_X;
@@ -132,6 +135,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
     //===========================================
     // ANIMATION UTILS
     //===========================================
+    protected int count = 3;
     protected boolean animActive = false;
 
     @Override
@@ -162,7 +166,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         // Retrieve shared preferences
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         theme = Integer.parseInt(sharedPreferences.getString("prefGameTheme", "0"));
-        nickname = sharedPreferences.getString(Constants.PREF_NICKNAME, getString(R.string.txt_no_name));
+        nickname = sharedPreferences.getString("prefNickname", getString(R.string.txt_no_name));
 
         loadGraphics();
         loadSounds();
@@ -284,34 +288,20 @@ public abstract class GamePong extends SimpleBaseGameActivity {
 
     protected void settingPhysics() {
         animActive = true;
-        CountdownTimerScene countdownTimerScene = new CountdownTimerScene(3);
-        scene.registerUpdateHandler(countdownTimerScene);
-    }
-
-    private class CountdownTimerScene implements IUpdateHandler{
-
-        private float seconds;
-
-        public CountdownTimerScene(int toSecond){
-            this.seconds = toSecond;
-        }
-
-        @Override
-        public void onUpdate(float pSecondsElapsed) {
-            seconds -= pSecondsElapsed;
-            textPause.setText("  " + (int)Math.ceil(seconds) + "  ");
-            if(seconds < 0){
-                animActive = false;
-                textPause.setText("");
-                scene.unregisterUpdateHandler(this);
-                doPhysics();
+        textPause.setText("  " + count + "  ");
+        scene.registerUpdateHandler(new TimerHandler(1f, true, new ITimerCallback() {
+            @Override
+            public void onTimePassed(TimerHandler pTimerHandler) {
+                count--;
+                textPause.setText("  " + count + "  ");
+                if (count == 0) {
+                    scene.unregisterUpdateHandler(pTimerHandler);
+                    animActive = false;
+                    textPause.setText("");
+                    doPhysics();
+                }
             }
-        }
-
-        @Override
-        public void reset() {
-            seconds = 0;
-        }
+        }));
     }
 
     protected void doPhysics() {
@@ -368,7 +358,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
                     && (previous_event != OVER) && (previous_event != SIDE)) {
                 Log.d("Collision", "SIDE. Because ballY > barY : " + ballY + " > " + barY +
                         " && (ballX - barX < LEFT BAR : " + (ballX - barX) + " < " + leftBar +
-                        " || ballX - barX > RIGHT BAR : " + (ballX - barX)  + " > " + rightBar + ")");
+                        " || ballX - barX > RIGHT BAR : " + (ballX - barX) + " > " + rightBar + ")");
                 return SIDE;
             } else if ((previous_event != SIDE) && (previous_event != OVER)) {
                 return OVER;
@@ -558,7 +548,7 @@ public abstract class GamePong extends SimpleBaseGameActivity {
 
     protected abstract void gameOver();
 
-    protected abstract void saveGame(String s);
+    protected abstract void saveGame();
 
     protected abstract void addScore();
 }

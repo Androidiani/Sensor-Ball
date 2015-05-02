@@ -54,12 +54,8 @@ public class StatOnePlayer {
 
         StatOnePlayer that = (StatOnePlayer) o;
 
-        if (id != that.id) return false;
-        if (idPlayer != that.idPlayer) return false;
-        if (score != that.score) return false;
-        if (!data.equals(that.data)) return false;
+        return id == that.id && idPlayer == that.idPlayer && score == that.score && data.equals(that.data);
 
-        return true;
     }
 
     @Override

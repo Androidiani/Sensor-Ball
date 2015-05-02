@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.bonus;
 
 import org.andengine.audio.sound.Sound;
 import org.andengine.entity.scene.Scene;
@@ -12,10 +12,10 @@ public class FirstEnemyBonus {
     private static final int ENEMY = 100;
 
     //Necessario per le collisioni della palla con first enemy
-    private Ball ball;
+    private final Ball ball;
 
     // First Enemy
-    private GameObject firstEnemy;
+    private final GameObject firstEnemy;
 
     public FirstEnemyBonus(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable, Ball ball) {
         this.ball = ball;

@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.bonus;
 
 import android.util.Log;
 
@@ -13,10 +13,10 @@ import it.unina.is2project.sensorgames.game.entity.GameObject;
 public class LifeBonus {
 
     //Necessario per le collisioni della palla con life bonus
-    private Ball ball;
+    private final Ball ball;
 
     // Life Bonus
-    private GameObject lifeBonus;
+    private final GameObject lifeBonus;
     private int old_life = 0;
 
     public LifeBonus(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable, Ball ball) {

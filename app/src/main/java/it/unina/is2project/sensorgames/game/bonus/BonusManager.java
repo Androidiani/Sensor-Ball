@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.pong;
+package it.unina.is2project.sensorgames.game.bonus;
 
 import android.os.Handler;
 import android.util.Log;
@@ -18,12 +18,11 @@ public class BonusManager {
     private Handler handler;
     private Map<Integer, Integer> bonusMap = new HashMap<>();
 
-    private final int DEFAULT_BONUS_COUNT = 3;
-
     public static final int BONUS_EXPIRED = 725;
     public static final int BONUS_CREATED = 825;
 
     private BonusManager(Handler handler) {
+        Log.d(TAG, "Private Constructor");
         this.handler = handler;
     }
 
@@ -45,7 +44,7 @@ public class BonusManager {
     }
 
     public void addBonus(int bonusID, int reachCount) {
-        if (reachCount <= 0) reachCount = DEFAULT_BONUS_COUNT;
+        if (reachCount <= 0) reachCount = 3;
 
         int previousBonus = Constants.NO_BONUS;
 

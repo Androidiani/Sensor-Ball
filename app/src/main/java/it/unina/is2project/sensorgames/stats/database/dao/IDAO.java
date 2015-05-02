@@ -4,15 +4,15 @@ import java.util.List;
 
 public interface IDAO<T> {
 
-    public long insert(T entity);
+    long insert(T entity);
 
-    public int update(T entity);
+    int update(T entity);
 
-    public void delete(int id);
+    void delete(int id);
 
-    public T findById(int id);
+    T findById(int id);
 
-    public List<T> findAll(boolean ordered);
+    List<T> findAll(boolean ordered);
 
-    public int count();
+    int count();
 }

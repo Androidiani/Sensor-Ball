@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unina.is2project.sensorgames.stats.activity.StatOnePlayerRow;
+import it.unina.is2project.sensorgames.stats.entity.StatOnePlayerRow;
 import it.unina.is2project.sensorgames.stats.database.dao.PlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatOnePlayerDAO;
 import it.unina.is2project.sensorgames.stats.database.dao.StatTwoPlayerDAO;
@@ -14,11 +14,10 @@ import it.unina.is2project.sensorgames.stats.entity.StatOnePlayer;
 import it.unina.is2project.sensorgames.stats.entity.StatTwoPlayer;
 
 public class StatService {
-    private StatOnePlayerRow statOnePlayerRow;
 
-    private PlayerDAO playerDAO;
-    private StatOnePlayerDAO statOnePlayerDAO;
-    private StatTwoPlayerDAO statTwoPlayerDAO;
+    private final PlayerDAO playerDAO;
+    private final StatOnePlayerDAO statOnePlayerDAO;
+    private final StatTwoPlayerDAO statTwoPlayerDAO;
 
     public StatService(Context context) {
         playerDAO = new PlayerDAO(context);
@@ -27,10 +26,10 @@ public class StatService {
     }
 
     public List<StatOnePlayerRow> getStatOnePlayerList() {
-        List<StatOnePlayerRow> ret = new ArrayList<StatOnePlayerRow>();
+        List<StatOnePlayerRow> ret = new ArrayList<>();
         List<StatOnePlayer> lista = statOnePlayerDAO.findAll(true);
         for (StatOnePlayer s : lista) {
-            statOnePlayerRow = new StatOnePlayerRow();
+            StatOnePlayerRow statOnePlayerRow = new StatOnePlayerRow();
             Player p = playerDAO.findById(s.getIdPlayer());
             statOnePlayerRow.setPlayer(p);
             statOnePlayerRow.setScore(s.getScore());
@@ -41,8 +40,7 @@ public class StatService {
     }
 
     public StatTwoPlayer getStatTwoPlayer(int idPlayer) {
-        StatTwoPlayer s = statTwoPlayerDAO.findById(idPlayer);
-        return s;
+        return statTwoPlayerDAO.findById(idPlayer);
     }
 
     public List<Player> getPlayers() {

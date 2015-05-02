@@ -1,10 +1,12 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.activity;
 
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import it.unina.is2project.sensorgames.R;
 
 
 public class AboutActivity extends Activity {

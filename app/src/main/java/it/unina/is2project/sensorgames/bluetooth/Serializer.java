@@ -8,13 +8,10 @@ import java.io.ObjectOutputStream;
 
 public class Serializer {
 
-    public Serializer() {
-    }
-
     public static byte[] serializeObject(Object o) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = null;
+        ObjectOutputStream os;
         try {
             os = new ObjectOutputStream(out);
             os.writeObject(o);
@@ -27,15 +24,13 @@ public class Serializer {
     public static Object deserializeObject(byte[] b) {
 
         ByteArrayInputStream in = new ByteArrayInputStream(b);
-        ObjectInputStream is = null;
+        ObjectInputStream is;
         Object object = null;
         try {
             is = new ObjectInputStream(in);
             object = is.readObject();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return object;

@@ -1,9 +1,7 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.bluetooth;
 
 import android.os.Handler;
 import android.util.Log;
-
-import it.unina.is2project.sensorgames.bluetooth.Constants;
 
 public class FSMGame implements Cloneable {
 
@@ -30,13 +28,13 @@ public class FSMGame implements Cloneable {
     public final static int STATE_GAME_LOSER = 490;
 
 
-
     // Private fields
     private static FSMGame fsmInstance = null;
     private Handler handler;
     private int state;
 
     private FSMGame(Handler handler) {
+        Log.d(TAG, "Private Constructor");
         this.handler = handler;
         this.state = STATE_NOT_READY;
     }
@@ -44,7 +42,7 @@ public class FSMGame implements Cloneable {
     @Override
     public String toString() {
         String result;
-        switch (state){
+        switch (state) {
             case STATE_CONNECTED:
                 result = "STATE_CONNECTED";
                 break;
@@ -97,8 +95,8 @@ public class FSMGame implements Cloneable {
         return result;
     }
 
-    public static FSMGame getFsmInstance(Handler handler){
-        if(fsmInstance == null){
+    public static FSMGame getFsmInstance(Handler handler) {
+        if (fsmInstance == null) {
             fsmInstance = new FSMGame(handler);
         }
         fsmInstance.setHandler(handler);
@@ -120,9 +118,9 @@ public class FSMGame implements Cloneable {
         return state;
     }
 
-    public static String toStringDebug(int theState){
+    public static String toStringDebug(int theState) {
         String result;
-        switch (theState){
+        switch (theState) {
             case STATE_CONNECTED:
                 result = "STATE_CONNECTED";
                 break;

@@ -12,8 +12,6 @@ public class Bar extends GameObject implements IAccelerationListener {
     // Bar field
     private float barSpeed;
     private float barWidth;
-    // Sensor
-    private AccelerationSensorOptions accelerationSensorOptions;
 
     public Bar(SimpleBaseGameActivity simpleBaseGameActivity, int idDrawable) {
         super(simpleBaseGameActivity, idDrawable);
@@ -31,18 +29,13 @@ public class Bar extends GameObject implements IAccelerationListener {
         return barWidth;
     }
 
-    public void setBarWidth(float barWidth) {
-        this.barWidth = barWidth;
-    }
-
     @Override
     public void addToScene(Scene scene, float xRatio, float yRatio) {
         super.addToScene(scene, xRatio, yRatio);
         this.barWidth = this.gSprite.getWidth();
-        /** Enable the Acceleration Sensor
-         * - Option: SensorDelay.GAME */
+        // Enable the Acceleration Sensor Option: SensorDelay.GAME
         this.simpleBaseGameActivity.getEngine().enableAccelerationSensor(context, this);
-        this.accelerationSensorOptions = new AccelerationSensorOptions(SensorDelay.GAME);
+        AccelerationSensorOptions accelerationSensorOptions = new AccelerationSensorOptions(SensorDelay.GAME);
     }
 
     @Override

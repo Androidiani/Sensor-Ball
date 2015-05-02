@@ -21,12 +21,12 @@ public class GameObject implements Runnable {
     public final static int MIDDLE = 1;
     public final static int BOTTOM = 2;
 
-    protected SimpleBaseGameActivity simpleBaseGameActivity;
-    protected Context context;
-    protected Point displaySize;
-    protected Drawable gDraw;
+    protected final SimpleBaseGameActivity simpleBaseGameActivity;
+    protected final Context context;
+    protected final Point displaySize;
+    protected final Drawable gDraw;
+    protected final ITextureRegion gTextureRegion;
     protected BitmapTextureAtlas gTexture;
-    protected ITextureRegion gTextureRegion;
     protected Sprite gSprite;
     protected Scene scene;
 
@@ -36,7 +36,9 @@ public class GameObject implements Runnable {
         this.displaySize = new Point();
         simpleBaseGameActivity.getWindow().getWindowManager().getDefaultDisplay().getSize(this.displaySize);
         this.gDraw = this.context.getResources().getDrawable(idDrawable);
-        this.gTexture = new BitmapTextureAtlas(simpleBaseGameActivity.getTextureManager(), this.gDraw.getIntrinsicWidth(), this.gDraw.getIntrinsicHeight());
+        if (this.gDraw != null) {
+            this.gTexture = new BitmapTextureAtlas(simpleBaseGameActivity.getTextureManager(), this.gDraw.getIntrinsicWidth(), this.gDraw.getIntrinsicHeight());
+        }
         this.gTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromResource(this.gTexture, this.context, idDrawable, 0, 0);
         this.gTexture.load();
     }
@@ -79,7 +81,7 @@ public class GameObject implements Runnable {
         Log.d("onTouch()", "Sprite touched");
     }
 
-    public boolean checkOnTouch(float x, float y){
+    public boolean checkOnTouch(float x, float y) {
         return (x <= gSprite.getX() + gSprite.getWidth() &&
                 x >= gSprite.getX() &&
                 y >= gSprite.getY() &&
@@ -147,8 +149,8 @@ public class GameObject implements Runnable {
     public void setRandomPosition() {
         Random random = new Random();
         this.gSprite.setPosition(
-                getObjectWidth() * 2 + random.nextInt(this.displaySize.x - (int)(getObjectWidth() * 4)),
-                getObjectHeight() * 2 + random.nextInt(this.displaySize.y - (int)(getObjectHeight() * 4))
+                getObjectWidth() * 2 + random.nextInt(this.displaySize.x - (int) (getObjectWidth() * 4)),
+                getObjectHeight() * 2 + random.nextInt(this.displaySize.y - (int) (getObjectHeight() * 4))
         );
     }
 

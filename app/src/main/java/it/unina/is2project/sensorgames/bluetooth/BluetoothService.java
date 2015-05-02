@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import it.unina.is2project.sensorgames.R;
 
-public class BluetoothService implements Cloneable{
+public class BluetoothService implements Cloneable {
 
     //-----------------------------------------------------------------
     // DICHIARAZIONE VARIABILI E COSTANTI
@@ -43,7 +43,7 @@ public class BluetoothService implements Cloneable{
     private final BluetoothAdapter mAdapter;
     private Handler mHandler;
     private AcceptThread mSecureAcceptThread;
-//    private AcceptThread mInsecureAcceptThread;
+    //    private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
@@ -68,16 +68,16 @@ public class BluetoothService implements Cloneable{
      * @param context Il contesto dell'activity chiamante
      * @param handler Un handler per inviare un messaggio all'activity
      */
-    private BluetoothService(Context context, Handler handler){
+    private BluetoothService(Context context, Handler handler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mHandler = handler;
         this.context = context;
         setState(STATE_NONE);
     }
 
-    public static BluetoothService getBluetoothService(Context context, Handler handler){
-        if(serviceInstance == null){
-            serviceInstance = new BluetoothService(context,handler);
+    public static BluetoothService getBluetoothService(Context context, Handler handler) {
+        if (serviceInstance == null) {
+            serviceInstance = new BluetoothService(context, handler);
         }
         serviceInstance.setmHandler(handler);
         serviceInstance.setContext(context);
@@ -98,8 +98,8 @@ public class BluetoothService implements Cloneable{
      *
      * @param state Un intero che identifica un particolare stato di connessione
      */
-    private synchronized void setState(int state){
-        if(mState == STATE_NONE)
+    private synchronized void setState(int state) {
+        if (mState == STATE_NONE)
             Log.d(TAG, " setState() " + "First state is " + state);
         else
             Log.d(TAG, " setState() " + mState + " -> " + state);
@@ -116,6 +116,7 @@ public class BluetoothService implements Cloneable{
 
     /**
      * Set dell'handler
+     *
      * @param mHandler Handle bluetooth message
      */
     public void setmHandler(Handler mHandler) {
@@ -136,17 +137,17 @@ public class BluetoothService implements Cloneable{
      * Istanzia un thread per iniziare l'ascolto di eventuali connessioni.
      * Chiamato da onResume() dell'activity.
      */
-    public synchronized void start(){
+    public synchronized void start() {
         Log.d(TAG, " start()");
 
         // Ferma il thread che sta tentando di stabilire una connessione
-        if(mConnectThread != null){
+        if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
         }
 
         // Ferma il thread che han stabilito una connessione
-        if(mConnectedThread != null){
+        if (mConnectedThread != null) {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
@@ -155,7 +156,7 @@ public class BluetoothService implements Cloneable{
         setState(STATE_LISTEN);
 
         // Avvia il thread in ascolto per eventuali connessioni (sia in modalità sicura che insicura)
-        if(mSecureAcceptThread == null){
+        if (mSecureAcceptThread == null) {
             mSecureAcceptThread = new AcceptThread(true);
             mSecureAcceptThread.start();
         }
@@ -175,19 +176,19 @@ public class BluetoothService implements Cloneable{
      *               true - Secure
      *               false - Insecure
      */
-    public synchronized void connect(BluetoothDevice device, boolean secure){
+    public synchronized void connect(BluetoothDevice device, boolean secure) {
         Log.d(TAG, " connect to: " + device);
 
         // Ferma il thread che tenta di stabilire una connessione
-        if(mState == STATE_CONNECTING){
-            if(mConnectThread != null){
+        if (mState == STATE_CONNECTING) {
+            if (mConnectThread != null) {
                 mConnectThread.cancel();
                 mConnectThread = null;
             }
         }
 
         // Ferma il thread che sta gestendo una connessione
-        if(mConnectedThread != null){
+        if (mConnectedThread != null) {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
@@ -207,7 +208,7 @@ public class BluetoothService implements Cloneable{
      * @param socket La socket bluetooth dove la connessione è stata stabilita
      * @param device Il device con il quale si è connessi
      */
-    public synchronized void connected(BluetoothSocket socket, BluetoothDevice device, final String socketType){
+    public synchronized void connected(BluetoothSocket socket, BluetoothDevice device, final String socketType) {
         Log.d(TAG, " connected, Socket Type:" + socketType);
 
         // Ferma il thread che sta stabilendo una connessione
@@ -284,20 +285,20 @@ public class BluetoothService implements Cloneable{
      *
      * @param out I bytes da scrivere
      */
-    public void write(byte[] out){
+    public void write(byte[] out) {
         fLock.writeLock().lock();
         try {
             // Creo oggetto temporaneo
             ConnectedThread r;
             // Sincronizza una copia del thread di connessione
-            synchronized (this){
-                if(mState != STATE_CONNECTED) return;
+            synchronized (this) {
+                if (mState != STATE_CONNECTED) return;
                 r = mConnectedThread;
             }
             // Scrivo su buffer
             r.write(out);
             Log.i(TAG, "Message Written By Service");
-        }finally {
+        } finally {
             fLock.writeLock().unlock();
         }
     }
@@ -305,7 +306,7 @@ public class BluetoothService implements Cloneable{
     /**
      * Indica che il tentativo di connessione è fallito e notifica la main activity
      */
-    private void connectionFailed(){
+    private void connectionFailed() {
         // Creo un messaggio di fallimento
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
@@ -315,7 +316,7 @@ public class BluetoothService implements Cloneable{
 
         // Avvio di nuovo il servizio
         BluetoothService.this.stop();
-        if(mAdapter.isEnabled()) {
+        if (mAdapter.isEnabled()) {
             BluetoothService.this.start();
         }
     }
@@ -333,7 +334,7 @@ public class BluetoothService implements Cloneable{
 
         // Start the service over to restart listening mode
         BluetoothService.this.stop();
-        if(mAdapter.isEnabled()) {
+        if (mAdapter.isEnabled()) {
             BluetoothService.this.start();
         }
     }
@@ -342,33 +343,34 @@ public class BluetoothService implements Cloneable{
     // THREAD:
     // ACCETTAZIONE RICHIESTE - CONNESSIONE - GESTIONE CONNESSIONE
     //-----------------------------------------------------------------
+
     /**
      * Questo thread resta in ascolto di eventuali connessioni in ingresso.
      * Esso resterà attivo fin quando un'eccezione viene lanciata o una connessione creata.
      */
-    private class AcceptThread extends Thread{
+    private class AcceptThread extends Thread {
         // Server socket localE
         private final BluetoothServerSocket mmServerSocket;
-        private String mSocketType;
+        private final String mSocketType;
 
-        public AcceptThread(boolean secure){
+        public AcceptThread(boolean secure) {
             // Creiamo un oggetto temporaneo di tipo BluetootkServerSocket poichè quello dichiarato è final.
             BluetoothServerSocket tmp = null;
             // Stabiliamo tipo di connessione sicura o non
             mSocketType = secure ? "Secure" : "Insecure";
-            try{
-                if(secure){
+            try {
+                if (secure) {
                     tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE, MY_UUID_SECURE);
-                }else{
+                } else {
                     tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME_INSECURE, MY_UUID_INSECURE);
                 }
-            }catch (IOException e){
+            } catch (IOException e) {
                 Log.e(TAG, "Socket Type: " + mSocketType + " listen() failed (" + counterThread + " Thread)", e);
             }
             mmServerSocket = tmp;
             Log.i(TAG, "Socket secure:" + secure + " - Created");
 
-            synchronized (BluetoothService.this){
+            synchronized (BluetoothService.this) {
                 counterThread++;
             }
             Log.d(TAG, "Thread Accept(Secure: " + secure + ") Created # " + counterThread);
@@ -379,13 +381,13 @@ public class BluetoothService implements Cloneable{
             Log.d(TAG, "Socket Type: " + mSocketType + " - BEGIN mAcceptThread" + this);
             setName("AcceptThread" + mSocketType);
 
-            BluetoothSocket socket = null;
+            BluetoothSocket socket;
 
-            while(mState != STATE_CONNECTED){
-                try{
+            while (mState != STATE_CONNECTED) {
+                try {
                     // Chiamata bloccante per accettare richieste.
                     socket = mmServerSocket.accept();
-                }catch(IOException e){
+                } catch (IOException e) {
                     Log.e(TAG, " Socket Type: " + mSocketType + " - accept() failed (" + counterThread + " Thread)", e);
                     try {
                         mmServerSocket.close();
@@ -396,9 +398,9 @@ public class BluetoothService implements Cloneable{
                 }
 
                 // Se una connessione è stata stabilita
-                if(socket != null){
-                    synchronized (BluetoothService.this){
-                        switch (mState){
+                if (socket != null) {
+                    synchronized (BluetoothService.this) {
+                        switch (mState) {
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
                                 // Avvia il thread per la connessione
@@ -428,7 +430,7 @@ public class BluetoothService implements Cloneable{
             } catch (IOException e) {
                 Log.e(TAG, "Socket Type:" + mSocketType + " close() of server failed (" + counterThread + " Thread)", e);
             }
-            synchronized (BluetoothService.this){
+            synchronized (BluetoothService.this) {
                 counterThread--;
             }
         }
@@ -438,10 +440,10 @@ public class BluetoothService implements Cloneable{
      * Questo thread resterà attivo tentando di stabilire una connessione in uscita.
      * Verrà interrotto a seguito di una connessione stabilita oppure di un'eccezione lanciata
      */
-    private class ConnectThread extends Thread{
+    private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
-        private String mSocketType;
+        private final String mSocketType;
 
         public ConnectThread(BluetoothDevice device, boolean secure) {
             mmDevice = device;
@@ -452,18 +454,18 @@ public class BluetoothService implements Cloneable{
             BluetoothSocket tmp = null;
 
             // Ottieni una socket per la connessione con un dato dispositivo.
-            try{
-                if(secure){
+            try {
+                if (secure) {
                     tmp = device.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
-                }else{
+                } else {
                     tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID_INSECURE);
                 }
-            }catch (IOException e){
+            } catch (IOException e) {
                 Log.e(TAG, "Socket Type: " + mSocketType + " create() failed (" + counterThread + " Thread)", e);
             }
             mmSocket = tmp;
 
-            synchronized (BluetoothService.this){
+            synchronized (BluetoothService.this) {
                 counterThread++;
             }
             Log.d(TAG, "Thread Connect Created # " + counterThread);
@@ -481,7 +483,7 @@ public class BluetoothService implements Cloneable{
             try {
                 // Chiamata bloccante
                 mmSocket.connect();
-            }catch (IOException e){
+            } catch (IOException e) {
                 // Chiudi la socket
                 try {
                     mmSocket.close();
@@ -493,7 +495,7 @@ public class BluetoothService implements Cloneable{
             }
 
             // Reset del thread di connessione poichè abbiamo finito
-            synchronized (BluetoothService.this){
+            synchronized (BluetoothService.this) {
                 mConnectThread = null;
             }
 
@@ -507,7 +509,7 @@ public class BluetoothService implements Cloneable{
             } catch (IOException e) {
                 Log.e(TAG, " close() of connect " + mSocketType + " socket failed (" + counterThread + " Thread)", e);
             }
-            synchronized (BluetoothService.this){
+            synchronized (BluetoothService.this) {
                 counterThread--;
             }
         }
@@ -518,7 +520,7 @@ public class BluetoothService implements Cloneable{
      * Gestisce connessioni in ingresso ed uscita
      */
 
-    private class ConnectedThread extends Thread{
+    private class ConnectedThread extends Thread {
 
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
@@ -530,17 +532,17 @@ public class BluetoothService implements Cloneable{
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
-            try{
+            try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
-            }catch (IOException e){
+            } catch (IOException e) {
                 Log.e(TAG, " temp sockets not created", e);
             }
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
 
-            synchronized (BluetoothService.this){
+            synchronized (BluetoothService.this) {
                 counterThread++;
             }
             Log.d(TAG, "Thread Connected Created # " + counterThread);
@@ -555,13 +557,13 @@ public class BluetoothService implements Cloneable{
             int bytes;
 
             // Lettura continua dell'inputStream fin quando siamo connessi
-            while (true){
-                try{
+            while (true) {
+                try {
                     // Lettura dall'imput stream
                     bytes = mmInStream.read(buffer);
                     // Mando il messaggio alla UI
                     mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
-                }catch (IOException e){
+                } catch (IOException e) {
                     Log.e(TAG, "disconnected while reading", e);
                     connectionLost();
                     break;
@@ -575,7 +577,7 @@ public class BluetoothService implements Cloneable{
             } catch (IOException e) {
                 Log.e(TAG, " close() of connect socket failed", e);
             }
-            synchronized (BluetoothService.this){
+            synchronized (BluetoothService.this) {
                 counterThread--;
             }
         }
