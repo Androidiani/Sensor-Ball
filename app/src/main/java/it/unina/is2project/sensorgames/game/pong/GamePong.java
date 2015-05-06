@@ -217,11 +217,6 @@ public abstract class GamePong extends SimpleBaseGameActivity {
         return scene;
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
     private void setBackground() {
         switch (theme) {
             case CLASSIC:

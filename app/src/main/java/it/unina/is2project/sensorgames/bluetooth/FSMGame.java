@@ -103,7 +103,7 @@ public class FSMGame implements Cloneable {
         return fsmInstance;
     }
 
-    public void setHandler(Handler handler) {
+    private void setHandler(Handler handler) {
         this.handler = handler;
     }
 
@@ -173,6 +173,7 @@ public class FSMGame implements Cloneable {
         return result;
     }
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     protected Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();

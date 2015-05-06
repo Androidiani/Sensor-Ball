@@ -27,7 +27,7 @@ public class BluetoothService implements Cloneable {
 
     // Debugging
     private static final String TAG = "BluetoothService";
-    public static int counterThread = 0;
+    private int counterThread = 0;
 
     // Nomi delle connessioni sicure e insicure.
     private static final String NAME_SECURE = "BluetoothSecure";
@@ -84,6 +84,7 @@ public class BluetoothService implements Cloneable {
         return serviceInstance;
     }
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     protected Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
@@ -119,11 +120,11 @@ public class BluetoothService implements Cloneable {
      *
      * @param mHandler Handle bluetooth message
      */
-    public void setmHandler(Handler mHandler) {
+    private void setmHandler(Handler mHandler) {
         this.mHandler = mHandler;
     }
 
-    public void setContext(Context context) {
+    private void setContext(Context context) {
         this.context = context;
     }
 

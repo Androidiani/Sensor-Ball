@@ -62,7 +62,7 @@ public class TwoPlayerActivity extends Activity {
     //===========================================
     // INTENT EXTRAS
     //===========================================
-    public static final int REQUEST_ENABLE_BT       = 1;            // Request for bluetooth enabling
+    private final int REQUEST_ENABLE_BT             = 1;            // Request for bluetooth enabling
     private final int GAME_START                    = 200;          // Request Code
     public static final String EXTRA_POINTS         = "points";     // Intent extra for points
     public static final String EXTRA_BALL           = "ball";       // Intent extra for ball
@@ -563,7 +563,7 @@ public class TwoPlayerActivity extends Activity {
     //----------------------------------------------
     // BROADCAST RECEIVERS
     //----------------------------------------------
-    final BroadcastReceiver bReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver bReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             // Quando si è scoperto un nuovo device

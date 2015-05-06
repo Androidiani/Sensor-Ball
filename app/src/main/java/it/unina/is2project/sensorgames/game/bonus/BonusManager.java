@@ -34,10 +34,11 @@ public class BonusManager {
         return bonusManagerInstance;
     }
 
-    public void setHandler(Handler handler) {
+    private void setHandler(Handler handler) {
         this.handler = handler;
     }
 
+    @SuppressWarnings("CloneDoesntCallSuperClone")
     @Override
     protected Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
@@ -91,10 +92,10 @@ public class BonusManager {
             Map.Entry pair = (Map.Entry) it.next();
             value = (Integer) pair.getValue();
             value--;
-            Log.d("BonusManager", "Remain " + value + " of ID: " + pair.getKey());
+            //Log.d("BonusManager", "Remain " + value + " of ID: " + pair.getKey());
             if (value == 0) {
                 it.remove();
-                Log.d("BonusManager", "Removed bonus ID: " + pair.getKey());
+                //Log.d("BonusManager", "Removed bonus ID: " + pair.getKey());
                 handler.obtainMessage(BONUS_EXPIRED, (Integer) pair.getKey(), -1).sendToTarget();
             } else {
                 bonusMap.put((Integer) pair.getKey(), value);
