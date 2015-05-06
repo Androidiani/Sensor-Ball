@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames.splash;
+package it.unina.is2project.sensorgames.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,11 +10,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import it.unina.is2project.sensorgames.activity.FirstAccess;
-import it.unina.is2project.sensorgames.activity.MainActivity;
 import it.unina.is2project.sensorgames.R;
 
-public class SplashScreenMain extends Activity {
+public class SplashScreenActivity extends Activity {
 
     private long ms = 0;
     private final long splashTime = 3000;
@@ -24,7 +22,7 @@ public class SplashScreenMain extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen_main);
+        setContentView(R.layout.activity_splash_screen);
 
         // Set the fullscreen window
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -53,9 +51,9 @@ public class SplashScreenMain extends Activity {
                 } finally {
                     Intent intent;
                     if (nickname.compareTo(getString(R.string.txt_no_name)) != 0) {
-                        intent = new Intent(SplashScreenMain.this, MainActivity.class);
+                        intent = new Intent(SplashScreenActivity.this, MainActivity.class);
                     } else {
-                        intent = new Intent(SplashScreenMain.this, FirstAccess.class);
+                        intent = new Intent(SplashScreenActivity.this, FirstAccess.class);
                     }
                     startActivity(intent);
                     finish();
