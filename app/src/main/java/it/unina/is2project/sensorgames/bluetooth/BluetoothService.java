@@ -591,8 +591,7 @@ public class BluetoothService implements Cloneable {
         public void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-                //TODO Potenzialmente inutile questo "Message Write"
-                //mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
+//                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, " Exception during write", e);
             }
