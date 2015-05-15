@@ -262,6 +262,7 @@ public class MainActivity extends Activity {
      */
     private void btnAboutUsClick() {
         Intent i = new Intent(MainActivity.this, AboutActivity.class);
+//        Intent i = new Intent(MainActivity.this, HelpActivity.class);
         startActivity(i);
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
