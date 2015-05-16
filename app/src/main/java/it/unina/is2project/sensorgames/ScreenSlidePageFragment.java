@@ -17,12 +17,15 @@ public class ScreenSlidePageFragment extends Fragment {
         Bundle bundle = this.getArguments();
         switch (bundle.getInt("id")){
             case 1:
+                rootView.setPadding(0, 0, 0, 60);
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.help1));
                 break;
             case 2:
+                rootView.setPadding(0, 0, 0, 60);
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.help2));
                 break;
             case 3:
+                rootView.setPadding(0, 0, 0, 60);
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.help3));
                 break;
             case 4:
@@ -32,6 +35,7 @@ public class ScreenSlidePageFragment extends Fragment {
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.help5));
                 break;
             case 6:
+                rootView.setPadding(0, 0, 0, 60);
                 imageView.setImageDrawable(getResources().getDrawable(R.drawable.help6));
                 break;
             default:

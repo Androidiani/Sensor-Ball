@@ -45,6 +45,7 @@
     <string name="text_enemy">Play with</string>
     <string name="text_none" translatable="false"><![CDATA[<none>]]></string>
     <string name="text_play">Play</string>
+    <string name="text_help">Help</string>
     <string name="text_paired">Paired</string>
     <string name="text_scan">Scan</string>
     <string name="none_found">No discoverable device found</string>

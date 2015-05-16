@@ -1,17 +1,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:compat="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".TwoPlayerActivity">
 
     <item
+        android:id="@+id/option_help"
+        android:title="@string/text_help"
+        android:icon="@drawable/help"
+        android:visible="true"
+        compat:showAsAction="ifRoom|withText"/>
+
+    <item
         android:id="@+id/option_discoverable"
         android:title="@string/text_discoverable"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+        compat:showAsAction="never" />
 
     <item
         android:id="@+id/option_disconnect"
         android:title="@string/text_disconnect"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+        compat:showAsAction="never" />
+
 </menu>

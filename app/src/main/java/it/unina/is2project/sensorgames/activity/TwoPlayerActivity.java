@@ -14,6 +14,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -208,7 +209,7 @@ public class TwoPlayerActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_2player_bluetooth, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -221,6 +222,10 @@ public class TwoPlayerActivity extends Activity {
                 return true;
             case R.id.option_disconnect:
                 disconnect();
+                return true;
+            case R.id.option_help:
+                Intent i = new Intent(this, HelpActivity.class);
+                startActivity(i);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -540,9 +545,11 @@ public class TwoPlayerActivity extends Activity {
      * Disconnect current connection (if it is active)
      */
     private void disconnect() {
-        mBluetoothService.stop();
-        fsmGame.setState(FSMGame.STATE_DISCONNECTED);
-        mBluetoothService.start();
+        if(mStatus) {
+            mBluetoothService.stop();
+            fsmGame.setState(FSMGame.STATE_DISCONNECTED);
+            mBluetoothService.start();
+        }
     }
 
     /**

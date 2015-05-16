@@ -150,5 +150,6 @@
     <string name="text_enemy">Gioca con</string>
     <string name="text_paired">Disp. Accoppiati</string>
     <string name="text_pause_not_allowed">Non puoi mettere\npausa, adesso</string>
+    <string name="text_help">Aiuto</string>
 
 </resources>
