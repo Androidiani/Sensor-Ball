@@ -19,17 +19,6 @@
     <string name="ttl_main_adv">Esci</string>
     <string name="txt_main_adv">Vuoi uscire dal gioco?</string>
 
-    <!-- About Activity Strings -->
-    <string name="text_app_about_description">\nQuest\'app e\' stata sviluppata da alcuni studenti dell\'Universita\' Federico II di Napoli.\n\n
-        Si tratta di un progetto creato durante il corso di Ingegneria del Software dell\'anno accademico 2014/2105.\n
-        \n
-        Autori: (in ordine alfabetico)\n
-        - Gargiulo Alessandro\n
-        - Marigliano Francesco\n
-        - Saviano Gabriele\n
-        - Toscano Giovanni\n
-    </string>
-
     <!-- First access -->
     <string name="nickname">Nickname</string>
     <string name="submit">OK</string>
@@ -151,5 +140,35 @@
     <string name="text_paired">Disp. Accoppiati</string>
     <string name="text_pause_not_allowed">Non puoi mettere\npausa, adesso</string>
     <string name="text_help">Aiuto</string>
+
+    <!-- About Activity Strings -->
+    <string name="text_app_about_description">
+        <![CDATA[
+            <!doctype html>
+                <html>
+                    <body>
+                        <h1>About Sensor Pong</h1>
+                        <p><em>Sensor Pong is a&nbsp;revisiting of the 70&#39; famous game of Atari named &quot;Pong&quot;</em></p>
+                        <p>This app has been developed&nbsp;by students of University &quot;Federico II&quot;, Naples.<br/>
+                        It is a project created within software engineering&#39;s course of 2014/2015 academic year.</p>
+                        <p>If you try this application and want to report us suggestes or report bugs, please contact us to our email:</p>
+                        <p>ouremail@gmail.com</p>
+                        <p>Developers: (in alphabetical order):</p>
+                        <ul>
+                            <li>Gargiulo Alessandro</li>
+                            <li>Marigliano Francesco</li>
+                            <li>Saviano Gabriele</li>
+                            <li>Toscano Giovanni</li>
+                        </ul>
+                        <h2>Changelog</h2>
+                        <h3>Version 1.0</h3>
+                        <ul>
+                            <li>Launch version.</li>
+                        </ul>
+                        <p style="text-align: center;">&nbsp;</p>
+                    </body>
+                </html>
+        ]]>
+    </string>
 
 </resources>

@@ -20,17 +20,6 @@
     <string name="ttl_main_adv">Exit Game</string>
     <string name="txt_main_adv">Do you really want to exit game?</string>
 
-    <!-- About Activity Strings -->
-    <string name="text_app_about_description">\nThis app has been developed by students of University "Federico II", Naples.\n\n
-        It is a project created within software engineering\'s course of 2014/2015 academic year.\n
-        \n
-        Authors: (in alphabetical order)\n
-        - Gargiulo Alessandro\n
-        - Marigliano Francesco\n
-        - Saviano Gabriele\n
-        - Toscano Giovanni\n
-    </string>
-
     <!-- First access -->
     <string name="hello_view">Please, enter your nickname</string>
     <string name="nickname" translatable="false">Nickname</string>
@@ -45,7 +34,7 @@
     <string name="text_enemy">Play with</string>
     <string name="text_none" translatable="false"><![CDATA[<none>]]></string>
     <string name="text_play">Play</string>
-    <string name="text_help">Help</string>
+    <string name="text_help">Help.</string>
     <string name="text_paired">Paired</string>
     <string name="text_scan">Scan</string>
     <string name="none_found">No discoverable device found</string>
@@ -147,5 +136,35 @@
     <string name="txt_no_name" translatable="false">No Name</string>
 
     <string name="hello_world" translatable="false">Hello world!</string>
+
+    <!-- About Activity Strings -->
+    <string name="text_app_about_description">
+        <![CDATA[
+            <!doctype html>
+                <html>
+                    <body>
+                        <h1>About Sensor Pong</h1>
+                        <p><em>Sensor Pong is a&nbsp;revisiting of the 70&#39; famous game of Atari named &quot;Pong&quot;</em></p>
+                        <p>This app has been developed&nbsp;by students of University &quot;Federico II&quot;, Naples.<br/>
+                        It is a project created within software engineering&#39;s course of 2014/2015 academic year.</p>
+                        <p>If you try this application and want to report us suggestes or report bugs, please contact us to our email:</p>
+                        <p>ouremail@gmail.com</p>
+                        <p>Developers: (in alphabetical order):</p>
+                        <ul>
+                            <li>Gargiulo Alessandro</li>
+                            <li>Marigliano Francesco</li>
+                            <li>Saviano Gabriele</li>
+                            <li>Toscano Giovanni</li>
+                        </ul>
+                        <h2>Changelog</h2>
+                        <h3>Version 1.0</h3>
+                        <ul>
+                            <li>Launch version.</li>
+                        </ul>
+                        <p style="text-align: center;">&nbsp;</p>
+                    </body>
+                </html>
+        ]]>
+    </string>
 
 </resources>
