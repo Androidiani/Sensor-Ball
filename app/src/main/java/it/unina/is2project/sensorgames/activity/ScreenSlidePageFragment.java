@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorgames;
+package it.unina.is2project.sensorgames.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import it.unina.is2project.sensorgames.R;
 
 
 public class ScreenSlidePageFragment extends Fragment {

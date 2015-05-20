@@ -148,19 +148,19 @@
                         <p>This app has been developed&nbsp;by students of University &quot;Federico II&quot;, Naples.<br/>
                         It is a project created within software engineering&#39;s course of 2014/2015 academic year.</p>
                         <p>If you try this application and want to report us suggestes or report bugs, please contact us to our email:</p>
-                        <p>ouremail@gmail.com</p>
+                        <p><a href="mailto:ouremail@gmail.com">ouremail@gmail.com</a></p>
                         <p>Developers: (in alphabetical order):</p>
-                        <ul>
-                            <li>Gargiulo Alessandro</li>
-                            <li>Marigliano Francesco</li>
-                            <li>Saviano Gabriele</li>
-                            <li>Toscano Giovanni</li>
-                        </ul>
+                            - Gargiulo Alessandro<br/>
+                            - Marigliano Francesco<br/>
+                            - Saviano Gabriele<br/>
+                            - Toscano Giovanni<br/>
+                        <br/>
+                        The application use <a href="http://www.andengine.org/">AndEngine</a> for the development of some of its features.
+                        <br/><br/>
                         <h2>Changelog</h2>
-                        <h3>Version 1.0</h3>
-                        <ul>
-                            <li>Launch version.</li>
-                        </ul>
+                        <b>Version 1.0<b>
+                            *Launch version.<br/>
+                        <br/>
                         <p style="text-align: center;">&nbsp;</p>
                     </body>
                 </html>

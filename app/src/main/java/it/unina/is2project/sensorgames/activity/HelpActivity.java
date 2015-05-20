@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.unina.is2project.sensorgames.R;
-import it.unina.is2project.sensorgames.ScreenSlidePageFragment;
 
 public class HelpActivity extends FragmentActivity {
     private static final int NUM_PAGES = 6;

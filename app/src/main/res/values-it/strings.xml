@@ -148,23 +148,25 @@
                 <html>
                     <body>
                         <h1>About Sensor Pong</h1>
-                        <p><em>Sensor Pong is a&nbsp;revisiting of the 70&#39; famous game of Atari named &quot;Pong&quot;</em></p>
-                        <p>This app has been developed&nbsp;by students of University &quot;Federico II&quot;, Naples.<br/>
-                        It is a project created within software engineering&#39;s course of 2014/2015 academic year.</p>
-                        <p>If you try this application and want to report us suggestes or report bugs, please contact us to our email:</p>
-                        <p>ouremail@gmail.com</p>
-                        <p>Developers: (in alphabetical order):</p>
-                        <ul>
-                            <li>Gargiulo Alessandro</li>
-                            <li>Marigliano Francesco</li>
-                            <li>Saviano Gabriele</li>
-                            <li>Toscano Giovanni</li>
-                        </ul>
-                        <h2>Changelog</h2>
-                        <h3>Version 1.0</h3>
-                        <ul>
-                            <li>Launch version.</li>
-                        </ul>
+                        <p><em>Sensor Pong &egrave; una rivisitazione del famoso gioco degli anni 70\' della casa prodruttrice Atari</em></p>
+                        <p>Quest\'app &egrave; stata sviluppata da alcuni studenti dell\'Universit&agrave; &quot;Federico II&quot; di Napoli.<br/>
+                        Si tratta di un progetto creato durante il corso di Ingegneria del Software, anno accademico 2014/2015.</p>
+
+                        <p>Se vuoi darci suggerimenti o riportare eventuali bug, perfavore contattaci all\'indirizzo email:</p>
+
+                        <p><a href="mailto:ouremail@gmail.com">ouremail@gmail.com</a></p>
+                        <p>Sviluppatori: (in ordine alfabetico):</p>
+                            - Gargiulo Alessandro<br/>
+                            - Marigliano Francesco<br/>
+                            - Saviano Gabriele<br/>
+                            - Toscano Giovanni<br/>
+                        <br/>
+                        Lo sviluppo è stato reso possibile grazie all\'utilizzo di <a href="http://www.andengine.org/">AndEngine</a>.
+                        <br/><br/>
+                        <h2>Storico Versioni</h2>
+                        <b>Versione 1.0<b>
+                            *Versione di lancio<br/>
+                        <br/>
                         <p style="text-align: center;">&nbsp;</p>
                     </body>
                 </html>

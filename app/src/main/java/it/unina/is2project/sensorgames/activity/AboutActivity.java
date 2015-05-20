@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -25,5 +26,6 @@ public class AboutActivity extends Activity {
 //        Typeface typeFace = Typeface.createFromAsset(getAssets(), "font/secrcode.ttf");
 //        descrizione.setTypeface(typeFace);
         descrizione.setText(Html.fromHtml(getResources().getString(R.string.text_app_about_description)));
+        descrizione.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
