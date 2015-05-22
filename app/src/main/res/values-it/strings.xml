@@ -15,7 +15,7 @@
     <string name="training">Allenamento</string>
     <string name="stats">Statistiche</string>
     <string name="settings">Opzioni</string>
-    <string name="about">About Us</string>
+    <string name="about">About</string>
     <string name="ttl_main_adv">Esci</string>
     <string name="txt_main_adv">Vuoi uscire dal gioco?</string>
 
@@ -149,25 +149,26 @@
                     <body>
                         <h1>About Sensor Pong</h1>
                         <p><em>Sensor Pong &egrave; una rivisitazione del famoso gioco degli anni 70\' della casa prodruttrice Atari</em></p>
-                        <p>Quest\'app &egrave; stata sviluppata da alcuni studenti dell\'Universit&agrave; &quot;Federico II&quot; di Napoli.<br/>
+                        <p>Quest\'app &egrave; stata sviluppata da alcuni studenti dell\'Universit&agrave; &quot;Federico II&quot; di Napoli.
                         Si tratta di un progetto creato durante il corso di Ingegneria del Software, anno accademico 2014/2015.</p>
 
                         <p>Se vuoi darci suggerimenti o riportare eventuali bug, perfavore contattaci all\'indirizzo email:</p>
+                        <p><a href="mailto:group.androidiani@gmail.com">group.androidiani@gmail.com</a></p>
+                        <br/>
 
-                        <p><a href="mailto:ouremail@gmail.com">ouremail@gmail.com</a></p>
                         <p>Sviluppatori: (in ordine alfabetico):</p>
                             - Gargiulo Alessandro<br/>
                             - Marigliano Francesco<br/>
                             - Saviano Gabriele<br/>
                             - Toscano Giovanni<br/>
                         <br/>
-                        Lo sviluppo è stato reso possibile grazie all\'utilizzo di <a href="http://www.andengine.org/">AndEngine</a>.
-                        <br/><br/>
-                        <h2>Storico Versioni</h2>
-                        <b>Versione 1.0<b>
-                            *Versione di lancio<br/>
+
+                        <p>Lo sviluppo è stato reso possibile grazie all\'utilizzo di <a href="http://www.andengine.org/">AndEngine</a>.</p>
                         <br/>
-                        <p style="text-align: center;">&nbsp;</p>
+
+                        <h2>Versioni</h2>
+                        <p><b>Versione 1.0</b></p>
+                            *Versione di lancio<br/>
                     </body>
                 </html>
         ]]>

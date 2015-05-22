@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="it.unina.is2project.sensorgames.activity.SplashScreenActivity"
+    tools:context="it.unina.is2project.sensorpong.activity.SplashScreenActivity"
     android:background="#ff000000">
 
     <ImageView

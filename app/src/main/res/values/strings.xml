@@ -16,7 +16,7 @@
     <string name="training">Training</string>
     <string name="stats">Stats</string>
     <string name="settings">Settings</string>
-    <string name="about" translatable="false">About Us</string>
+    <string name="about" translatable="false">About</string>
     <string name="ttl_main_adv">Exit Game</string>
     <string name="txt_main_adv">Do you really want to exit game?</string>
 
@@ -144,24 +144,27 @@
                 <html>
                     <body>
                         <h1>About Sensor Pong</h1>
-                        <p><em>Sensor Pong is a&nbsp;revisiting of the 70&#39; famous game of Atari named &quot;Pong&quot;</em></p>
-                        <p>This app has been developed&nbsp;by students of University &quot;Federico II&quot;, Naples.<br/>
-                        It is a project created within software engineering&#39;s course of 2014/2015 academic year.</p>
-                        <p>If you try this application and want to report us suggestes or report bugs, please contact us to our email:</p>
-                        <p><a href="mailto:ouremail@gmail.com">ouremail@gmail.com</a></p>
+                        <p><em>Sensor Pong is a revisiting of the 70\' famous game of Atari named &quot;Pong&quot;</em></p>
+                        <p>This app has been developed by students of University &quot;Federico II&quot;, Naples.
+                        It is a project created within software engineering\'s course of 2014/2015 academic year.</p>
+
+                        <p>If you want to report us suggestes or bugs, please contact us to our email:</p>
+                        <p><a href="mailto:group.androidiani@gmail.com">group.androidiani@gmail.com</a></p>
+                        <br/>
+
                         <p>Developers: (in alphabetical order):</p>
                             - Gargiulo Alessandro<br/>
                             - Marigliano Francesco<br/>
                             - Saviano Gabriele<br/>
                             - Toscano Giovanni<br/>
                         <br/>
-                        The application use <a href="http://www.andengine.org/">AndEngine</a> for the development of some of its features.
-                        <br/><br/>
-                        <h2>Changelog</h2>
-                        <b>Version 1.0<b>
-                            *Launch version.<br/>
+
+                        <p>The application use <a href="http://www.andengine.org/">AndEngine</a> for the development of some of its features.</p>
                         <br/>
-                        <p style="text-align: center;">&nbsp;</p>
+
+                        <h2>Changelog</h2>
+                        <p><b>Version 1.0</b></p>
+                            *Launch version<br/>
                     </body>
                 </html>
         ]]>
