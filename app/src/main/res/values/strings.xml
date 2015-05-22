@@ -1,14 +1,14 @@
 <resources>
     <!-- General -->
-    <string name="app_name" translatable="false">Sensor Pong</string>
+    <string name="app_name">Sensor Pong</string>
 
     <!-- Image Descriptors -->
-    <string name="btn1desc" translatable="false">Button for 1 player games</string>
-    <string name="btn2desc" translatable="false">Button for 2 players games</string>
-    <string name="btnTrngDesc" translatable="false">Button for training games</string>
-    <string name="btnAboutDesc" translatable="false">Button for app infos</string>
-    <string name="logoniversitydesc" translatable="false">University of \"Federico II\" logo</string>
-    <string name="imgGame" translatable="false">Main figure of game</string>
+    <string name="btn1desc">Button for 1 player games</string>
+    <string name="btn2desc">Button for 2 players games</string>
+    <string name="btnTrngDesc">Button for training games</string>
+    <string name="btnAboutDesc">Button for app infos</string>
+    <string name="logoniversitydesc" >University of \"Federico II\" logo</string>
+    <string name="imgGame" >Main figure of game</string>
 
     <!-- Main Activity Strings -->
     <string name="one_player">One Player</string>
@@ -16,23 +16,23 @@
     <string name="training">Training</string>
     <string name="stats">Stats</string>
     <string name="settings">Settings</string>
-    <string name="about" translatable="false">About</string>
+    <string name="about">About</string>
     <string name="ttl_main_adv">Exit Game</string>
     <string name="txt_main_adv">Do you really want to exit game?</string>
 
     <!-- First access -->
     <string name="hello_view">Please, enter your nickname</string>
-    <string name="nickname" translatable="false">Nickname</string>
-    <string name="submit" translatable="false">OK</string>
+    <string name="nickname">Nickname</string>
+    <string name="submit">OK</string>
 
     <!-- General game -->
     <string name="text_pause">Pause</string>
-    <string name="text_gameover" translatable="false">Game Over</string>
+    <string name="text_gameover" >Game Over</string>
 
     <!-- 2 Player Activity -->
-    <string name="text_bluetooth" translatable="false">Bluetooth</string>
+    <string name="text_bluetooth" >Bluetooth</string>
     <string name="text_enemy">Play with</string>
-    <string name="text_none" translatable="false"><![CDATA[<none>]]></string>
+    <string name="text_none" ><![CDATA[<none>]]></string>
     <string name="text_play">Play</string>
     <string name="text_help">Help.</string>
     <string name="text_paired">Paired</string>
@@ -48,7 +48,7 @@
     <string name="text_opponent_pause">Your opponent\npaused the game</string>
     <string name="text_opponent_not_ready">Your opponent\nis not ready</string>
     <string name="text_waiting">Waiting for\nyour opponent</string>
-    <string name="text_exit_pause" translatable="false">Your opponent\nis in pause</string>
+    <string name="text_exit_pause">Your opponent\nis in pause</string>
     <string name="text_pause_not_allowed">Pause not\nallowed now</string>
     <string name="text_you_win">You win\nthe game</string>
     <string name="text_you_lose">You lose\nthe game</string>
@@ -68,8 +68,8 @@
     <string name="sts_multi_play">Played</string>
     <string name="sts_multi_win">Win</string>
     <string name="sts_multi_perc">Winning rate</string>
-    <string name="sts_null" translatable="false">Null</string>
-    <string name="sts_position" translatable="false">#</string>
+    <string name="sts_null">Null</string>
+    <string name="sts_position">#</string>
     <string name="sts_name">Player</string>
     <string name="sts_score">Score</string>
     <string name="sts_date">Date</string>
@@ -77,20 +77,20 @@
     <!-- Alert Dialog -->
     <string name="alert_bluetooth_activator">Bluetooth is disabled, please active bluetooth and retry. Do you want to activate bluetooth now?</string>
     <string name="text_yes">Yes</string>
-    <string name="text_no" translatable="false">No</string>
+    <string name="text_no">No</string>
 
     <!-- One Player -->
     <string name="text_score">Score</string>
     <string name="text_lvl">Level</string>
-    <string name="text_first_enemy" translatable="false">First Enemy</string>
-    <string name="text_bubble" translatable="false">Bubble Bonus</string>
+    <string name="text_first_enemy">First Enemy</string>
+    <string name="text_bubble">Bubble Bonus</string>
     <string name="text_cut_bar_30">Cut Bar 30%</string>
-    <string name="text_lifebonus" translatable="false">Life Bonus</string>
+    <string name="text_lifebonus">Life Bonus</string>
     <string name="text_cut_bar_50">Cut Bar 50%</string>
-    <string name="text_big_bar" translatable="false">Big Bar</string>
-    <string name="text_reverse" translatable="false">Reverse</string>
-    <string name="text_freeze" translatable="false">Freeze</string>
-    <string name="text_rush" translatable="false">Rush Hour</string>
+    <string name="text_big_bar">Big Bar</string>
+    <string name="text_reverse">Reverse</string>
+    <string name="text_freeze">Freeze</string>
+    <string name="text_rush">Rush Hour</string>
     <string name="text_ttl_oneplayer_leavegame">Leave the game</string>
     <string name="text_msg_oneplayer_leavegame">You\'ll lose the game. Are you sure?</string>
     <string name="text_ttl_oneplayer_savegame">Save the game score</string>
@@ -100,7 +100,7 @@
     <!-- Training Game -->
     <string name="text_ttl_training_leave">Leave training</string>
     <string name="text_msg_training_leave">Are you sure to quit training?</string>
-    <string name="text_hit" translatable="false">Hit</string>
+    <string name="text_hit">Hit</string>
     <string name="text_ball_speed">Ball Speed</string>
     <string name="text_bar_speed">Bar Speed</string>
     <string name="text_active_events">Select Event</string>
@@ -129,13 +129,13 @@
     <!-- Settings text -->
     <string name="settings_title">Settings</string>
     <string name="general_settings">General Settings</string>
-    <string name="settings_nickname" translatable="false">Nickname</string>
+    <string name="settings_nickname">Nickname</string>
     <string name="settings_nickname_info">Set Your Nickname</string>
     <string name="settings_theme">Game Theme</string>
     <string name="settings_theme_info">Set the Game Theme</string>
-    <string name="txt_no_name" translatable="false">No Name</string>
+    <string name="txt_no_name">No Name</string>
 
-    <string name="hello_world" translatable="false">Hello world!</string>
+    <string name="hello_world">Hello world!</string>
 
     <!-- About Activity Strings -->
     <string name="text_app_about_description">

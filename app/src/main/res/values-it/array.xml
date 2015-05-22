@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="selectTheme">
+        <item name="classic">Classico</item>
+        <item name="gold">Oro</item>
+        <item name="blue">Blu</item>
+    </string-array>
+    <string-array name="selectThemeValues">
+        <item name="classic">0</item>
+        <item name="gold">1</item>
+        <item name="blue">2</item>
+    </string-array>
+</resources>

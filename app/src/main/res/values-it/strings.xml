@@ -48,8 +48,6 @@
     <string name="text_you_lose">Hai perso</string>
     <string name="pause_stop">Gioco temporaneamente\nfermo</string>
     <string name="text_game_suspended">Gioco temporaneamente\nsospeso</string>
-    <!--<string name="text_first_to">First to</string>-->
-    <!--<string name="text_win">win</string>-->
 
 
     <!-- Toasts -->
