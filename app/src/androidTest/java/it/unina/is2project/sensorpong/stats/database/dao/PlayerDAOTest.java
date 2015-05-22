@@ -51,7 +51,6 @@ public class PlayerDAOTest extends AndroidTestCase {
         //findById per aggiornare
         Player g2 = playerDAO.findById((int) id);
         assertNotNull("Record con id " + id + " non trovato.", g2);
-        String nome = "Gianluca";
         int rows = playerDAO.update(g2);
         assertTrue("Nessun record aggiornato.", rows > 0);
 

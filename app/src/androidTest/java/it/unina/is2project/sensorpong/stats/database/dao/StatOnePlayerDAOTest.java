@@ -55,14 +55,13 @@ public class StatOnePlayerDAOTest extends AndroidTestCase {
         //findById per aggiornare
         StatOnePlayer stat2 = statOnePlayerDAO.findById((int) id);
         assertNotNull("Record con id " + id + " non trovato.", stat2);
-        String nome = "Gianluca";
         long score = stat2.getScore();
         String data = stat2.getData();
         int player = stat2.getIdPlayer();
 
         //Update
         stat2.setScore(++score);
-        stat2.setData("2015-03-20");
+        stat2.setData(data);
         stat2.setIdPlayer(player);
         int rows = statOnePlayerDAO.update(stat2);
         assertTrue("Nessun record aggiornato.", rows > 0);
