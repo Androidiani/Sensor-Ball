@@ -1,5 +1,5 @@
-# Sensor Pong
-Android App - Sensor Pong
+# Sensor Ball
+Android App - Sensor Ball
 
 # Developers
 * Alessandro Gargiulo
