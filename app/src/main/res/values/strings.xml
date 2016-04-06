@@ -1,6 +1,6 @@
 <resources>
     <!-- General -->
-    <string name="app_name">Sensor Pong</string>
+    <string name="app_name">Sensor Ball</string>
 
     <!-- Image Descriptors -->
     <string name="btn1desc">Button for 1 player games</string>
@@ -143,8 +143,8 @@
             <!doctype html>
                 <html>
                     <body>
-                        <h1>About Sensor Pong</h1>
-                        <p><em>Sensor Pong is a revisiting of the 70\' famous game of Atari named &quot;Pong&quot;</em></p>
+                        <h1>About Sensor Ball</h1>
+                        <p><em>Sensor Ball is a revisiting of the 70\' famous game of Atari.</em></p>
                         <p>This app has been developed by students of University &quot;Federico II&quot;, Naples.
                         It is a project created within software engineering\'s course of 2014/2015 academic year.</p>
 

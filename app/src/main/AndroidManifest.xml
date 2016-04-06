@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="it.unina.is2project.sensorpong" >
+    package="it.unina.is2project.sensorball" >
 
     <!-- Permessi di connessione e trasferimento dati via bluetooth -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -27,59 +27,59 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="it.unina.is2project.sensorpong.activity.MainActivity"
+            android:name="it.unina.is2project.sensorball.activity.MainActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.activity.AboutActivity"
+            android:name="it.unina.is2project.sensorball.activity.AboutActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.activity.StatsActivity"
+            android:name="it.unina.is2project.sensorball.activity.StatsActivity"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.activity.TrainingSettings"
+            android:name="it.unina.is2project.sensorball.activity.TrainingSettings"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.activity.TwoPlayerActivity"
+            android:name="it.unina.is2project.sensorball.activity.TwoPlayerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeSensorPong">
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.activity.SettingsActivity"
+            android:name="it.unina.is2project.sensorball.activity.SettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeSensorPong">
         </activity>
         <activity
-            android:name=".activity.FirstAccessActivity"
+            android:name="it.unina.is2project.sensorball.activity.FirstAccessActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeSensorPongNoActionBar">
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.game.pong.GamePongTraining" >
+            android:name="it.unina.is2project.sensorball.game.pong.GamePongTraining" >
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.game.pong.GamePongTwoPlayer" >
+            android:name="it.unina.is2project.sensorball.game.pong.GamePongTwoPlayer" >
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.game.pong.GamePongOnePlayer"
+            android:name="it.unina.is2project.sensorball.game.pong.GamePongOnePlayer"
             android:exported="true" >
         </activity>
 
         <!--Activity for test-->
         <activity
-            android:name="it.unina.is2project.sensorpong.game.pong.GamePongOnePlayerAutomatedTest"
+            android:name="it.unina.is2project.sensorball.game.pong.GamePongOnePlayerAutomatedTest"
             android:exported="true" >
         </activity>
         <activity
-            android:name="it.unina.is2project.sensorpong.activity.HelpActivity"
+            android:name="it.unina.is2project.sensorball.activity.HelpActivity"
             android:exported="true" >
         </activity>
 
         <activity
-            android:name="it.unina.is2project.sensorpong.activity.SplashScreenActivity"
+            android:name="it.unina.is2project.sensorball.activity.SplashScreenActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
