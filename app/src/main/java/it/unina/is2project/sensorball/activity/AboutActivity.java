@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorpong.activity;
+package it.unina.is2project.sensorball.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import it.unina.is2project.sensorpong.R;
+import it.unina.is2project.sensorball.R;
 
 
 public class AboutActivity extends Activity {
