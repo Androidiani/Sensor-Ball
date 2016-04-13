@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorpong;
+package it.unina.is2project.sensorball;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,6 +1,6 @@
 //TODO: i test non sono funzionanti perché associati alla precedente versione del database
 
-package it.unina.is2project.sensorpong.stats.database.dao;
+package it.unina.is2project.sensorball.stats.database.dao;
 
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
@@ -8,7 +8,7 @@ import android.util.Log;
 
 import java.util.List;
 
-import it.unina.is2project.sensorpong.stats.entity.Player;
+import it.unina.is2project.sensorball.stats.entity.Player;
 
 public class PlayerDAOTest extends AndroidTestCase {
 

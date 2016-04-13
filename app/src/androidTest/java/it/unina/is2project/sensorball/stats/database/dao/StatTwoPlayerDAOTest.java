@@ -1,4 +1,4 @@
-package it.unina.is2project.sensorpong.stats.database.dao;
+package it.unina.is2project.sensorball.stats.database.dao;
 
 import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
@@ -6,8 +6,8 @@ import android.util.Log;
 
 import java.util.List;
 
-import it.unina.is2project.sensorpong.stats.entity.Player;
-import it.unina.is2project.sensorpong.stats.entity.StatTwoPlayer;
+import it.unina.is2project.sensorball.stats.entity.Player;
+import it.unina.is2project.sensorball.stats.entity.StatTwoPlayer;
 
 public class StatTwoPlayerDAOTest extends AndroidTestCase {
 
